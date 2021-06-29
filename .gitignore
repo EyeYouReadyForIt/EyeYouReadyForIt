@@ -2,10 +2,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,gradle,forgegradle,macos,vim,intellij+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,gradle,forgegradle,macos,vim,intellij+all
 
-### ForgeGradle ###
-# Minecraft client/server files
-run/
-
 ### Intellij+all ###
 .idea
 
