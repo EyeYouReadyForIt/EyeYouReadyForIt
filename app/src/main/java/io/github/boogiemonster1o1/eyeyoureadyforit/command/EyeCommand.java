@@ -37,7 +37,7 @@ public class EyeCommand extends AbstractCommand {
 			event.getSource().getMessage().getChannel()
 					.flatMap(channel -> channel.createEmbed(spec -> {
 						spec.setColor(Color.RED);
-						spec.setTitle("There is already a context. Use `c.reset` to reset");
+						spec.setTitle("There is already a context. Use `e.reset` to reset");
 					}))
 					.subscribe();
 			return -Command.SINGLE_SUCCESS;
