@@ -36,6 +36,8 @@ public class CommandManager {
 		}
 		this.init = true;
 		this.register(EyeCommand.create(this.dispatcher));
+		this.register(HintCommand.create(this.dispatcher));
+		this.register(ResetCommand.create(this.dispatcher));
 		this.dispatcher.register(
 				literal("help")
 						.executes(ctx -> {
@@ -81,7 +83,7 @@ public class CommandManager {
 						.split(" ")[0]))
 				.subscribe(event -> {
 					try {
-						this.dispatcher.execute(event.getMessage().getContent().substring(1), event);
+						this.dispatcher.execute(event.getMessage().getContent().substring(PREFIX.length()), event);
 					} catch (CommandSyntaxException e) {
 						error(event, e);
 					}

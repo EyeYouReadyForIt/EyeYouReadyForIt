@@ -36,7 +36,7 @@ public class HintCommand extends AbstractCommand {
 			event.getSource().getMessage().getChannel()
 					.flatMap(channel -> channel.createEmbed(spec -> {
 						spec.setColor(Color.RED);
-						spec.setTitle("No Context Available. Start using `c.eyes`");
+						spec.setTitle("No Context Available. Start using `e.eyes`");
 					}))
 					.subscribe();
 			return -Command.SINGLE_SUCCESS;

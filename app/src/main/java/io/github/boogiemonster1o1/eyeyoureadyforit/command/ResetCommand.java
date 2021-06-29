@@ -40,6 +40,10 @@ public class ResetCommand extends AbstractCommand {
 				}
 				spec.setContent(content);
 			})).subscribe();
+		} else {
+			event.getSource().getMessage().getChannel().flatMap(channel -> channel.createMessage(spec -> {
+				spec.setContent("Reset");
+			})).subscribe();
 		}
 		data.reset();
 		return Command.SINGLE_SUCCESS;
