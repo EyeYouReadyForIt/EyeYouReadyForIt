@@ -74,4 +74,8 @@ public final class EyeEntry {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static EyeEntry getRandom() {
+		return ENTRIES.stream().findAny().orElseThrow();
+	}
 }

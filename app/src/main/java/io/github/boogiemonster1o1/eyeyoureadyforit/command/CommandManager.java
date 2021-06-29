@@ -35,6 +35,7 @@ public class CommandManager {
 			return;
 		}
 		this.init = true;
+		this.register(EyeCommand.create(this.dispatcher));
 		this.dispatcher.register(
 				literal("help")
 						.executes(ctx -> {
@@ -44,7 +45,7 @@ public class CommandManager {
 								this.commandList.forEach(command -> {
 									if (command.hasDescription()) spec.addField(command.getLiteral(), command.getUsage(ctx), true);
 								});
-								CommandManager.appendFooter(spec, ctx.getSource());
+								CommandManager.appendFooter(spec);
 							})).subscribe();
 							return Command.SINGLE_SUCCESS;
 						})
@@ -61,7 +62,7 @@ public class CommandManager {
 												spec.setTitle(commandStr);
 												spec.addField("Usage", "`" + command.getUsage(ctx) + "`", false);
 												spec.addField("Description", command.getDescription(), false);
-												CommandManager.appendFooter(spec, ctx.getSource());
+												CommandManager.appendFooter(spec);
 											})).subscribe();
 											return Command.SINGLE_SUCCESS;
 										})
@@ -72,6 +73,7 @@ public class CommandManager {
 		App.getClient()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getMember().isPresent() && !event.getMember().get().isBot())
+				.filter(event -> event.getGuildId().isPresent())
 				.filter(event -> event.getMessage().getContent().startsWith(PREFIX)
 						&& commands.contains(event.getMessage()
 						.getContent()
@@ -104,10 +106,7 @@ public class CommandManager {
 		return RequiredArgumentBuilder.argument(name, argumentType);
 	}
 
-	public static void appendFooter(EmbedCreateSpec spec, MessageCreateEvent event) {
-		if (event.getMember().isPresent()) {
-			spec.setFooter("Requested by " + event.getMember().get().getDisplayName() + "#" + event.getMember().get().getDiscriminator(), event.getMember().get().getAvatarUrl());
-		}
+	public static void appendFooter(EmbedCreateSpec spec) {
 		spec.setTimestamp(Instant.now());
 	}
 
@@ -116,7 +115,7 @@ public class CommandManager {
 			spec.setTitle("Error parsing command: ")
 					.setColor(Color.RED)
 					.setDescription(e.getMessage());
-			appendFooter(spec, event);
+			appendFooter(spec);
 		})).subscribe();
 	}
 

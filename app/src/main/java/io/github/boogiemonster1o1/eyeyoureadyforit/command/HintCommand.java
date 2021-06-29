@@ -7,19 +7,18 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.rest.util.Color;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 
 import static io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager.literal;
 
-public class EyeCommand extends AbstractCommand {
-	public EyeCommand(LiteralCommandNode<MessageCreateEvent> node) {
+public class HintCommand extends AbstractCommand {
+	public HintCommand(LiteralCommandNode<MessageCreateEvent> node) {
 		super(node);
 	}
 
 	@Override
 	public String getDescription() {
-		return "Shows a pair of eyes. Guess who they belong to!";
+		return "Resets. Use only if broken.";
 	}
 
 	@Override
@@ -27,33 +26,27 @@ public class EyeCommand extends AbstractCommand {
 		return true;
 	}
 
-	public static EyeCommand create(CommandDispatcher<MessageCreateEvent> dispatcher) {
-		return new EyeCommand(dispatcher.register(literal("eyes").executes(EyeCommand::execute)));
+	public static HintCommand create(CommandDispatcher<MessageCreateEvent> dispatcher) {
+		return new HintCommand(dispatcher.register(literal("reset").executes(HintCommand::execute)));
 	}
 
 	private static int execute(CommandContext<MessageCreateEvent> event) {
 		GuildSpecificData data = App.getGuildSpecificData(event.getSource().getMessage().getGuildId().orElseThrow());
-		if (data.getMessageId() != null && data.getCurrent() != null) {
+		if (data.getCurrent() == null) {
 			event.getSource().getMessage().getChannel()
 					.flatMap(channel -> channel.createEmbed(spec -> {
 						spec.setColor(Color.RED);
-						spec.setTitle("There is already a context. Use `c.reset` to reset");
+						spec.setTitle("No Context Available. Start using `c.eyes`");
 					}))
 					.subscribe();
 			return -Command.SINGLE_SUCCESS;
 		}
-		EyeEntry entry = EyeEntry.getRandom();
-		event.getSource().getMessage().getChannel().flatMap(channel -> channel.createEmbed(spec -> {
-			spec.setImage(entry.getImageUrl());
-			spec.setTitle("Guess the Person");
-			spec.setDescription("Reply to this message with the answer");
-			CommandManager.appendFooter(spec);
-		})).subscribe(message -> {
-			synchronized (GuildSpecificData.LOCK) {
-				data.setCurrent(entry);
-				data.setMessageId(message.getId());
-			}
-		});
+		event.getSource().getMessage().getChannel().flatMap(channel -> {
+			return channel.createMessage(spec -> {
+				spec.setMessageReference(event.getSource().getMessage().getId());
+				spec.setContent(data.getCurrent().getHint());
+			});
+		}).subscribe();
 		return Command.SINGLE_SUCCESS;
 	}
 }
