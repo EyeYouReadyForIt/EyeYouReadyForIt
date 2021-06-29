@@ -45,7 +45,7 @@ public class CommandManager {
 								spec.setColor(Color.DISCORD_WHITE);
 								spec.setTitle("Commands");
 								this.commandList.forEach(command -> {
-									if (command.hasDescription()) spec.addField(command.getLiteral(), command.getUsage(ctx), true);
+									if (command.hasDescription()) spec.addField(command.getLiteral(), "`" + command.getUsage(ctx) + "`", true);
 								});
 								CommandManager.appendFooter(spec);
 							})).subscribe();

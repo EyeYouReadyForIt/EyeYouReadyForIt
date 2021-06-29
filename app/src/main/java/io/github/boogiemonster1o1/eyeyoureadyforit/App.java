@@ -54,7 +54,7 @@ public class App {
 					String content = event.getMessage().getContent().toLowerCase();
 					GuildSpecificData data = App.getGuildSpecificData(event.getMessage().getGuildId().orElseThrow());
 					EyeEntry current = data.getCurrent();
-					if (current.getName().equals(content) || current.getAliases().contains(content)) {
+					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content)) {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
 							mspec.setEmbed(spec -> {
 								spec.setTitle("Correct!");

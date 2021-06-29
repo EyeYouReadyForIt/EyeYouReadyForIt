@@ -18,7 +18,7 @@ public class HintCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Resets. Use only if broken.";
+		return "Gives a hint";
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class HintCommand extends AbstractCommand {
 	}
 
 	public static HintCommand create(CommandDispatcher<MessageCreateEvent> dispatcher) {
-		return new HintCommand(dispatcher.register(literal("reset").executes(HintCommand::execute)));
+		return new HintCommand(dispatcher.register(literal("hint").executes(HintCommand::execute)));
 	}
 
 	private static int execute(CommandContext<MessageCreateEvent> event) {

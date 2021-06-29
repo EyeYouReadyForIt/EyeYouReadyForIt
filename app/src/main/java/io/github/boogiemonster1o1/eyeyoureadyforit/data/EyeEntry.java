@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class EyeEntry {
+	private static final Random RANDOM = new Random(ThreadLocalRandom.current().nextLong());
 	private static List<EyeEntry> ENTRIES = new ArrayList<>();
 	private final String imageUrl;
 	private final int id;
@@ -76,6 +79,6 @@ public final class EyeEntry {
 	}
 
 	public static EyeEntry getRandom() {
-		return ENTRIES.stream().findAny().orElseThrow();
+		return ENTRIES.get(RANDOM.nextInt(ENTRIES.size()));
 	}
 }
