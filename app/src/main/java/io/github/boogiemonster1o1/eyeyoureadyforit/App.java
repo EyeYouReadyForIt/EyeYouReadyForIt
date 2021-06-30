@@ -58,6 +58,7 @@ public class App {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
 							mspec.setEmbed(spec -> {
 								spec.setTitle("Correct!");
+								spec.setDescription(current.getName());
 								spec.setColor(Color.GREEN);
 								CommandManager.appendFooter(spec);
 							});
