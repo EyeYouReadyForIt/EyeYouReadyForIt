@@ -40,7 +40,9 @@
     "id": 5,
     "hint": "Rhymed a bunch of words with Orange",
     "name": "Eminem",
-    "aliases": []
+    "aliases": [
+      "slim shady"
+    ]
   },
   {
     "imageUrl": "https://i.imgur.com/YQ0CXO4.png",
@@ -55,7 +57,8 @@
     "hint": "Acted in High School Musical: The Musical: The Series",
     "name": "Olivia Rodrigo",
     "aliases": [
-      "nini salazar-roberts"
+      "nini salazar-roberts",
+      "nini"
     ]
   },
   {
