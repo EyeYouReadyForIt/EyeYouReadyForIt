@@ -394,5 +394,234 @@
     "hint": "Acted in Hugo and Ender's Game",
     "name": "Asa Butterfield",
     "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/GCFkehn.png",
+    "id": 49,
+    "hint": "Plays Danny Ocean's ex-wife",
+    "name": "Julia Roberts",
+    "aliases": [
+      "tess ocean",
+      "beatrice ocean"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/48wqfMi.png",
+    "id": 50,
+    "hint": "Plays a character who likes robbing casinos",
+    "name": "George Clooney",
+    "aliases": [
+      "danny ocean",
+      "daniel ocean"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/kc66ly8.png",
+    "id": 51,
+    "hint": "Looks like Markiplier",
+    "name": "Keanu Reeves",
+    "aliases": [
+      "neo"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/IyiQZZ9.png",
+    "id": 52,
+    "hint": "American and German Actress",
+    "name": "Sandra Bullock",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/5tCcVU5.png",
+    "id": 53,
+    "hint": "Acts in Titanic",
+    "name": "Kate Winslet",
+    "aliases": [
+      "rose",
+      "rose dewitt bukater",
+      "rose dawson",
+      "rose calvert",
+      "rose dawson calvert"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/zGGQAh4.png",
+    "id": 54,
+    "hint": "Psych!",
+    "name": "Dule Hill",
+    "aliases": [
+      "alex williams",
+      "gus"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ExeEg4r.png",
+    "id": 55,
+    "hint": "One of Elon Musk's companies wasn't founded by him",
+    "name": "Nikola Tesla",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/18WMHuq.png",
+    "id": 56,
+    "hint": "Invented the Ferris Wheel",
+    "name": "George Ferris",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/5VKm3FW.png",
+    "id": 57,
+    "hint": "Has a famous broadway musical based on his life",
+    "name": "Alexander Hamilton",
+    "aliases": [
+      "10 dollar bill guy",
+      "the only new yorker"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/I7aGtca.png",
+    "id": 58,
+    "hint": "Civil Engineer who worked on the Eiffel tower",
+    "name": "Gustave Eiffel",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/kAvWDXe.png",
+    "id": 59,
+    "hint": "When I say science and women, who comes to your mind?",
+    "name": "Marie Curie",
+    "aliases": [
+      "m4r13 cur13"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/AAFGirH.png",
+    "id": 60,
+    "hint": "Missionaries of Charity",
+    "name": "Mother Teresa",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/CuhzZkS.png",
+    "id": 61,
+    "hint": "Acted in Hugo and Ender's Game",
+    "name": "Princess Diana",
+    "aliases": [
+      "princess of wales"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/rvg6mY6.png",
+    "id": 62,
+    "hint": "Animals",
+    "name": "Martin Garrix",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/5OTv5Of.png",
+    "id": 63,
+    "hint": "Apparently the most handsome man alive",
+    "name": "Robert Pattinson",
+    "aliases": [
+      "cedric diggory",
+      "edward cullen"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/1NI9Otn.png",
+    "id": 64,
+    "hint": "1D",
+    "name": "Louis Tomlinson",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ZGvLAWJ.png",
+    "id": 65,
+    "hint": "1D",
+    "name": "Harry Styles",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/DAzvt00.png",
+    "id": 66,
+    "hint": "1D",
+    "name": "Liam Payne",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/SxUGSTB.png",
+    "id": 67,
+    "hint": "1D",
+    "name": "Zayn Malik",
+    "aliases": [
+      "zayn"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/fXXrcDT.png",
+    "id": 68,
+    "hint": "1D",
+    "name": "Niall Horan",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ValA6rN.png",
+    "id": 69,
+    "hint": "Made a song that references Oops I did it again, I got 99 Problems, Bye Bye Bye, Ride wit me and Baby One More Time in its chorus",
+    "name": "Anne-Marie",
+    "aliases": [
+      "anne marie"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/jtMk2Fd.png",
+    "id": 70,
+    "hint": "im the baaaaaaaaaaaaaaad guy",
+    "name": "Billie Eilish",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Tk9dOif.png",
+    "id": 71,
+    "hint": "Talk show host",
+    "name": "Ellen DeGeneres",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/cgNq6TJ.png",
+    "id": 72,
+    "hint": "Talk show host",
+    "name": "Oprah Winfrey",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/s1CFgNO.png",
+    "id": 73,
+    "hint": "Century",
+    "name": "Sachin Tendulkar",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/DUdB044.png",
+    "id": 74,
+    "hint": "Civil War General From Virginia",
+    "name": "Robert Lee",
+    "aliases": [
+      "robert e lee"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/NkKpab6.png",
+    "id": 75,
+    "hint": "Sang the national anthem at Joe Biden's Inauguration",
+    "name": "Lady Gaga",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/wwzXuAZ.png",
+    "id": 76,
+    "hint": "Lead vocalist of an Indie rock band",
+    "name": "Chris Martin",
+    "aliases": []
   }
 ]
