@@ -139,7 +139,10 @@
     "hint": "Crew member of Ares III",
     "aliases": [
       "winter soldier",
-      "bucky barnes"
+      "bucky barnes",
+      "james buchanan barnes",
+      "bucky",
+      "james barnes"
     ]
   },
   {
@@ -615,7 +618,7 @@
     "id": 75,
     "hint": "Sang the national anthem at Joe Biden's Inauguration",
     "name": "Lady Gaga",
-    "aliases",: []
+    "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/wwzXuAZ.png",
