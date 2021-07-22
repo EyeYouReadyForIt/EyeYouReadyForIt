@@ -626,5 +626,331 @@
     "hint": "Lead vocalist of an Indie rock band",
     "name": "Chris Martin",
     "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/8lARibH.png",
+    "id": 77,
+    "hint": "Virgin",
+    "name": "Richard Branson",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/HNUxCEd.png",
+    "id": 78,
+    "hint": "Unveiled the iPhone 4 at a WWDC",
+    "name": "Steve Jobs",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/z2bg2LS.png",
+    "id": 79,
+    "hint": "Rich dude",
+    "name": "Bill Gates",
+    "aliases": [
+      "william gates"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/t4763eW.png",
+    "id": 80,
+    "hint": "Google",
+    "name": "Sundar Pichai",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/PMWFmEM.png",
+    "id": 81,
+    "hint": "Microsoft",
+    "name": "Satya Nadella",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/iGghOvW.png",
+    "id": 82,
+    "hint": "Makes Expensive Electric Cars",
+    "name": "Elon Musk",
+    "aliases": [
+      "muskmelon"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/8pRhIKN.png",
+    "id": 83,
+    "hint": "Owns around 17% of Aston Martin",
+    "name": "Lawrence Stroll",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/uCtrbtl.png",
+    "id": 84,
+    "hint": "Where is his hand",
+    "name": "Napolean Bonaparte",
+    "aliases": [
+      "napolean"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/fp9lSJg.png",
+    "id": 85,
+    "hint": "His physics books are saving you",
+    "name": "HC Verma",
+    "aliases": [
+      "h c verma"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/T8rbrax.png",
+    "id": 86,
+    "hint": "Rachel",
+    "name": "Jennifer Aniston",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/j667eZC.png",
+    "id": 87,
+    "hint": "Bond. James Bond",
+    "name": "Pierce Brosnan",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/8XSsKcQ.png",
+    "id": 88,
+    "hint": "Bond. James Bond.",
+    "name": "Daniel Craig",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/P7HYOVD.png",
+    "id": 89,
+    "hint": "Bond. James Bond.",
+    "name": "Sean Connery",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/NvCSmgU.png",
+    "id": 90,
+    "hint": "'get that walking carpet outta my face'",
+    "name": "Carrie Fisher",
+    "aliases": [
+      "princess leia",
+      "leia organa",
+      "leia skywalker",
+      "general leia"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/TTd23mo.png",
+    "id": 91,
+    "hint": "Slapstick and Silent Film",
+    "name": "Charlie Chaplin",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ERJ5x4t.png",
+    "id": 92,
+    "hint": "stabbed to death :tm:",
+    "name": "Julius Caeser",
+    "aliases": [
+      "julius cæser"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/2wQ39KL.png",
+    "id": 93,
+    "hint": "Ferrari is named after me",
+    "name": "Enzo Ferrari",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Dn1RRGR.png",
+    "id": 94,
+    "hint": "Rich dude",
+    "name": "Jeff Bezos",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/rbi2uA5.png",
+    "id": 95,
+    "hint": "Mavericks",
+    "name": "Mark Cuban",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/GDKT0ty.png",
+    "id": 96,
+    "hint": "Rich dude",
+    "name": "Warren Buffet",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/EGxE6eM.png",
+    "id": 97,
+    "hint": "Snapdeal",
+    "name": "Aamir Khan",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/6VGpxuI.png",
+    "id": 98,
+    "hint": "People fall in love in mysterious ways",
+    "name": "Ed Sheeran",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/3tLc7gd.png",
+    "id": 99,
+    "hint": "Ground Control to Major Tom...",
+    "name": "David Bowie",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/4OUJvVO.png",
+    "id": 100,
+    "hint": "Can't help falling in love with you",
+    "name": "Elvis Presley",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/aNyzwXt.png",
+    "id": 101,
+    "hint": "Say you won't let go",
+    "name": "James Arthur",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Y34lonb.png",
+    "id": 102,
+    "hint": "Is it too late to say sorry now",
+    "name": "Justin Bieber",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ClwEvTG.png",
+    "id": 103,
+    "hint": "I got new rules I got em",
+    "name": "Dua Lipa",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/l5lkpWl.png",
+    "id": 104,
+    "hint": "Plastic Surgery :tm:",
+    "name": "Michael Jackson",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Wy8Hmbf.png",
+    "id": 105,
+    "hint": "Agent K, Hip Hop singer",
+    "name": "Will Smith",
+    "aliases": [
+      "fresh prince"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ZSZbq0G.png",
+    "id": 106,
+    "hint": "Hip Hop DJ",
+    "name": "DJ Jazzy Jeff",
+    "aliases": [
+      "jazz"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/TEG0wOL.png",
+    "id": 107,
+    "hint": "Hip Hop Singer",
+    "name": "Jay Z",
+    "aliases": [
+      "jayz"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/xhjxW2y.png",
+    "id": 108,
+    "hint": "smh",
+    "name": "Kanye West",
+    "aliases": [
+      "kanye"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/5HHYFWZ.png",
+    "id": 109,
+    "hint": "Queen of Rap",
+    "name": "Nicki Minaj",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/53sw9oj.png",
+    "id": 110,
+    "hint": "My video on youtube has more views than the earth's population",
+    "name": "Luis Fonsi",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/v7ZBMJd.png",
+    "id": 111,
+    "hint": "One of the Nine Gems :tm:",
+    "name": "Tansen",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/GKuhEdk.png",
+    "id": 112,
+    "hint": "champagnepapi",
+    "name": "Drake",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/e6Bv24o.png",
+    "id": 113,
+    "hint": "Acted in High School Musical",
+    "name": "Zac Efron",
+    "aliases": [
+      "troy bolton"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/8nTF02x.png",
+    "id": 114,
+    "hint": "Nineteen Eighty-Four",
+    "name": "George Orwell",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/k5yMaaX.png",
+    "id": 115,
+    "hint": "Mysterious Island",
+    "name": "Jules Verne",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/njKRWe7.png",
+    "id": 116,
+    "hint": "Drama",
+    "name": "William Shakespeare",
+    "aliases": [
+      "shakespeare",
+      "shakespere",
+      "shaxper",
+      "william shakespere",
+      "shaxpere",
+      "shakespear"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ARQETpF.png",
+    "id": 117,
+    "hint": "Fifth in line to the throne",
+    "name": "Prince Harry",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Dkv5fcr.png",
+    "id": 118,
+    "hint": "First Female Vice President",
+    "name": "Kamala Harris",
+    "aliases": []
   }
 ]
