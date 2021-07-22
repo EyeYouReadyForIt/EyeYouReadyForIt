@@ -504,7 +504,7 @@
   {
     "imageUrl": "https://i.imgur.com/CuhzZkS.png",
     "id": 61,
-    "hint": "Acted in Hugo and Ender's Game",
+    "hint": "Prince Charles' wife",
     "name": "Princess Diana",
     "aliases": [
       "princess of wales"
@@ -595,7 +595,7 @@
     "aliases": []
   },
   {
-    "imageUrl": "https://i.imgur.com/s1CFgNO.png",
+    "imageUrl": "https://i.imgur.com/a1yXTkw.png",
     "id": 73,
     "hint": "Century",
     "name": "Sachin Tendulkar",
@@ -615,7 +615,7 @@
     "id": 75,
     "hint": "Sang the national anthem at Joe Biden's Inauguration",
     "name": "Lady Gaga",
-    "aliases": []
+    "aliases",: []
   },
   {
     "imageUrl": "https://i.imgur.com/wwzXuAZ.png",
