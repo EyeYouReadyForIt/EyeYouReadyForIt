@@ -11,6 +11,8 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.MessageReference;
 import discord4j.core.object.entity.Message;
+import discord4j.discordjson.json.ApplicationCommandRequest;
+import discord4j.rest.interaction.Interactions;
 import discord4j.rest.util.Color;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
@@ -46,6 +48,15 @@ public class App {
 					LOGGER.info("Session ID: {}", event.getSessionId());
 					LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
 				});
+		Interactions interactions = Interactions.create()
+				.onGuildCommand(
+						ApplicationCommandRequest.builder().name("test").description("Test slash command").build(),
+						Snowflake.of(859274373084479508L),
+						(interaction) -> {
+							return interaction.replyEphemeral("tm");
+						}
+				);
+		interactions.createCommands(CLIENT.getRestClient()).block();
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
