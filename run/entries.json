@@ -1,7 +1,6 @@
 [
   {
     "imageUrl": "https://i.imgur.com/renLecQ.png",
-    "id": 1,
     "name": "Harrison Ford",
     "hint": "Acted in Star Wars",
     "aliases": [
@@ -11,14 +10,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/og4HIjo.png",
-    "id": 2,
     "hint": "Talk show Host",
     "name": "Jimmy Fallon",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/wSjHPsY.png",
-    "id": 3,
     "hint": "She made Country Music",
     "name": "Taylor Swift",
     "aliases": [
@@ -27,7 +24,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/iixaLVj.png",
-    "id": 4,
     "hint": "She's a Princess",
     "name": "Meghan Markle",
     "aliases": [
@@ -37,7 +33,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/v0Ff8u4.png",
-    "id": 5,
     "hint": "Rhymed a bunch of words with Orange",
     "name": "Eminem",
     "aliases": [
@@ -46,14 +41,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/YQ0CXO4.png",
-    "id": 6,
     "hint": "Levels",
     "name": "Avicii",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/UfzdW5l.png",
-    "id": 7,
     "hint": "Acted in High School Musical: The Musical: The Series",
     "name": "Olivia Rodrigo",
     "aliases": [
@@ -63,7 +56,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/CkPsDUp.png",
-    "id": 8,
     "hint": "Pig Helmet",
     "name": "Digital Farm Animals",
     "aliases": [
@@ -72,7 +64,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/pFcNdyQ.png",
-    "id": 9,
     "hint": "Firework",
     "name": "Katy Perry",
     "aliases": []
@@ -86,28 +77,24 @@
   },
   {
     "imageUrl": "https://i.imgur.com/UW8o6r0.png",
-    "id": 11,
     "hint": "Rolling in the deep",
     "name": "Adele",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/zTjtfS7.png",
-    "id": 12,
     "hint": "W47K3R5_J01N",
     "name": "Alan Walker",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/pPIZvw7.png",
-    "id": 13,
     "hint": "Circles",
     "name": "Post Malone",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/3DlIhA4.png",
-    "id": 14,
     "hint": "Acted in Wizards of Waverly Place",
     "name": "Selena Gomez",
     "aliases": [
@@ -116,7 +103,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/DNoIGSW.png",
-    "id": 15,
     "hint": "Retired Professional Wrestler",
     "name": "Dwayne Johnson",
     "aliases": [
@@ -125,7 +111,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/J7PsfYr.png",
-    "id": 16,
     "name": "Chris Evans",
     "hint": "Acts in The Avengers",
     "aliases": [
@@ -134,7 +119,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/23WMalF.png",
-    "id": 17,
     "name": "Sebastian Stan",
     "hint": "Crew member of Ares III",
     "aliases": [
@@ -147,7 +131,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/mkF5zwV.png",
-    "id": 18,
     "hint": "Acted in The Avengers",
     "name": "Scarlett Johansson",
     "aliases": [
@@ -157,7 +140,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/fIvLxYp.png",
-    "id": 19,
     "hint": "Acted as a Field Agent alongside Ethan Hunt",
     "name": "Jeremy Renner",
     "aliases": [
@@ -178,7 +160,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/IeTZJ4j.png",
-    "id": 21,
     "hint": "Director of the CIA",
     "name": "Alec Baldwin",
     "aliases": [
@@ -187,7 +168,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/JxW5mDk.png",
-    "id": 22,
     "hint": "Played the Daughter of Minerva",
     "name": "Alexandra Daddario",
     "aliases": [
@@ -196,7 +176,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/Fp4qEgN.png",
-    "id": 23,
     "hint": "The Force is strong in my family",
     "name": "Mark Hamill",
     "aliases": [
@@ -205,7 +184,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/C0CtbKG.png",
-    "id": 24,
     "hint": "Too much radiation",
     "name": "Mark Ruffalo",
     "aliases": [
@@ -214,35 +192,30 @@
   },
   {
     "imageUrl": "https://i.imgur.com/hgNYxam.png",
-    "id": 25,
     "hint": "Acted in Spiderman: Homecoming",
     "name": "Tom Holland",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/mjYsddO.png",
-    "id": 26,
     "hint": "Dates Camila Cabello",
     "name": "Shawn Mendes",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/6Rwh8gk.png",
-    "id": 27,
     "hint": "Dates Shawn Mendes",
     "name": "Camila Cabello",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/zM0kLqK.png",
-    "id": 28,
     "hint": "Queen :tm:",
     "name": "Freddie Mercury",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/wcCNds8.png",
-    "id": 29,
     "hint": "The Beatles :tm:",
     "name": "John Lennon",
     "aliases": []
@@ -256,7 +229,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/lu6CqMJ.png",
-    "id": 31,
     "hint": "Acted in The Office",
     "name": "John Krasinski",
     "aliases": [
@@ -266,7 +238,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/MQMZA6g.png",
-    "id": 32,
     "hint": "Crew member of Ares III",
     "name": "Matt Damon",
     "aliases": [
@@ -275,14 +246,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/MgRlyhX.png",
-    "id": 33,
     "hint": "Married to Brad Pitt",
     "name": "Angelina Jolie",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/yu16A7H.png",
-    "id": 34,
     "hint": "Comic book author",
     "name": "Stan Lee",
     "aliases": [
@@ -292,28 +261,24 @@
   },
   {
     "imageUrl": "https://i.imgur.com/rpAvewZ.png",
-    "id": 35,
     "hint": "Flew across the Atlantic",
     "name": "Amelia Earhart",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/VlyV9Tv.png",
-    "id": 36,
     "hint": "My Heart Will Go On",
     "name": "Celine Dion",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/6yuVvNN.png",
-    "id": 37,
     "hint": "No Tears left to Cry",
     "name": "Ariana Grande",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/kafQ6Ft.png",
-    "id": 38,
     "hint": "Hmm. Strange.",
     "name": "Benedict Cumberbatch",
     "aliases": [
@@ -323,7 +288,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/q4ObahQ.png",
-    "id": 39,
     "hint": "You have a blazing talent for observing the obvious",
     "name": "Martin Freeman",
     "aliases": [
@@ -339,42 +303,36 @@
   },
   {
     "imageUrl": "https://i.imgur.com/iqFGLUU.png",
-    "id": 41,
     "hint": "Acted in The Intern",
     "name": "Anne Hathaway",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/gOXHUr7.png",
-    "id": 42,
     "hint": "Acted in Ocean's 8",
     "name": "Rihanna",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/UkZO1K1.png",
-    "id": 43,
     "hint": "Hit me baby one more time",
     "name": "Britney Spears",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/GwJIdWd.png",
-    "id": 44,
     "hint": "Call me Cruella",
     "name": "Emma Stone",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/opoFZq4.png",
-    "id": 45,
     "hint": "Hey Girl",
     "name": "Ryan Gosling",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/euK4Cel.png",
-    "id": 46,
     "hint": "Acted in Harry Potter",
     "name": "Helena Bonham Carter",
     "aliases": [
@@ -383,7 +341,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/UlBwqbK.png",
-    "id": 47,
     "hint": "Acted in Catch me if you can",
     "name": "Leonardo Dicaprio",
     "aliases": [
@@ -393,14 +350,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/s1CFgNO.png",
-    "id": 48,
     "hint": "Acted in Hugo and Ender's Game",
     "name": "Asa Butterfield",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/GCFkehn.png",
-    "id": 49,
     "hint": "Plays Danny Ocean's ex-wife",
     "name": "Julia Roberts",
     "aliases": [
@@ -420,7 +375,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/kc66ly8.png",
-    "id": 51,
     "hint": "Looks like Markiplier",
     "name": "Keanu Reeves",
     "aliases": [
@@ -429,14 +383,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/IyiQZZ9.png",
-    "id": 52,
     "hint": "American and German Actress",
     "name": "Sandra Bullock",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/5tCcVU5.png",
-    "id": 53,
     "hint": "Acts in Titanic",
     "name": "Kate Winslet",
     "aliases": [
@@ -449,7 +401,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/zGGQAh4.png",
-    "id": 54,
     "hint": "Psych!",
     "name": "Dule Hill",
     "aliases": [
@@ -459,21 +410,18 @@
   },
   {
     "imageUrl": "https://i.imgur.com/ExeEg4r.png",
-    "id": 55,
     "hint": "One of Elon Musk's companies wasn't founded by him",
     "name": "Nikola Tesla",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/18WMHuq.png",
-    "id": 56,
     "hint": "Invented the Ferris Wheel",
     "name": "George Ferris",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/5VKm3FW.png",
-    "id": 57,
     "hint": "Has a famous broadway musical based on his life",
     "name": "Alexander Hamilton",
     "aliases": [
@@ -483,14 +431,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/I7aGtca.png",
-    "id": 58,
     "hint": "Civil Engineer who worked on the Eiffel tower",
     "name": "Gustave Eiffel",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/kAvWDXe.png",
-    "id": 59,
     "hint": "When I say science and women, who comes to your mind?",
     "name": "Marie Curie",
     "aliases": [
@@ -506,7 +452,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/CuhzZkS.png",
-    "id": 61,
     "hint": "Prince Charles' wife",
     "name": "Princess Diana",
     "aliases": [
@@ -515,14 +460,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/rvg6mY6.png",
-    "id": 62,
     "hint": "Animals",
     "name": "Martin Garrix",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/5OTv5Of.png",
-    "id": 63,
     "hint": "Apparently the most handsome man alive",
     "name": "Robert Pattinson",
     "aliases": [
@@ -532,28 +475,24 @@
   },
   {
     "imageUrl": "https://i.imgur.com/1NI9Otn.png",
-    "id": 64,
     "hint": "1D",
     "name": "Louis Tomlinson",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/ZGvLAWJ.png",
-    "id": 65,
     "hint": "1D",
     "name": "Harry Styles",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/DAzvt00.png",
-    "id": 66,
     "hint": "1D",
     "name": "Liam Payne",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/SxUGSTB.png",
-    "id": 67,
     "hint": "1D",
     "name": "Zayn Malik",
     "aliases": [
@@ -562,14 +501,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/fXXrcDT.png",
-    "id": 68,
     "hint": "1D",
     "name": "Niall Horan",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/ValA6rN.png",
-    "id": 69,
     "hint": "Made a song that references Oops I did it again, I got 99 Problems, Bye Bye Bye, Ride wit me and Baby One More Time in its chorus",
     "name": "Anne-Marie",
     "aliases": [
@@ -585,28 +522,24 @@
   },
   {
     "imageUrl": "https://i.imgur.com/Tk9dOif.png",
-    "id": 71,
     "hint": "Talk show host",
     "name": "Ellen DeGeneres",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/cgNq6TJ.png",
-    "id": 72,
     "hint": "Talk show host",
     "name": "Oprah Winfrey",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/a1yXTkw.png",
-    "id": 73,
     "hint": "Century",
     "name": "Sachin Tendulkar",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/DUdB044.png",
-    "id": 74,
     "hint": "Civil War General From Virginia",
     "name": "Robert Lee",
     "aliases": [
@@ -615,35 +548,30 @@
   },
   {
     "imageUrl": "https://i.imgur.com/NkKpab6.png",
-    "id": 75,
     "hint": "Sang the national anthem at Joe Biden's Inauguration",
     "name": "Lady Gaga",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/wwzXuAZ.png",
-    "id": 76,
     "hint": "Lead vocalist of an Indie rock band",
     "name": "Chris Martin",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/8lARibH.png",
-    "id": 77,
     "hint": "Virgin",
     "name": "Richard Branson",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/HNUxCEd.png",
-    "id": 78,
     "hint": "Unveiled the iPhone 4 at a WWDC",
     "name": "Steve Jobs",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/z2bg2LS.png",
-    "id": 79,
     "hint": "Rich dude",
     "name": "Bill Gates",
     "aliases": [
@@ -659,14 +587,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/PMWFmEM.png",
-    "id": 81,
     "hint": "Microsoft",
     "name": "Satya Nadella",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/iGghOvW.png",
-    "id": 82,
     "hint": "Makes Expensive Electric Cars",
     "name": "Elon Musk",
     "aliases": [
@@ -675,14 +601,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/8pRhIKN.png",
-    "id": 83,
     "hint": "Owns around 17% of Aston Martin",
     "name": "Lawrence Stroll",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/uCtrbtl.png",
-    "id": 84,
     "hint": "Where is his hand",
     "name": "Napolean Bonaparte",
     "aliases": [
@@ -691,7 +615,6 @@
   },
   {
     "imageUrl": "https://i.imgur.com/fp9lSJg.png",
-    "id": 85,
     "hint": "His physics books are saving you",
     "name": "HC Verma",
     "aliases": [
@@ -700,28 +623,24 @@
   },
   {
     "imageUrl": "https://i.imgur.com/T8rbrax.png",
-    "id": 86,
     "hint": "Rachel",
     "name": "Jennifer Aniston",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/j667eZC.png",
-    "id": 87,
     "hint": "Bond. James Bond",
     "name": "Pierce Brosnan",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/8XSsKcQ.png",
-    "id": 88,
     "hint": "Bond. James Bond.",
     "name": "Daniel Craig",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/P7HYOVD.png",
-    "id": 89,
     "hint": "Bond. James Bond.",
     "name": "Sean Connery",
     "aliases": []
@@ -740,14 +659,12 @@
   },
   {
     "imageUrl": "https://i.imgur.com/TTd23mo.png",
-    "id": 91,
     "hint": "Slapstick and Silent Film",
     "name": "Charlie Chaplin",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/ERJ5x4t.png",
-    "id": 92,
     "hint": "stabbed to death :tm:",
     "name": "Julius Caeser",
     "aliases": [
@@ -756,49 +673,42 @@
   },
   {
     "imageUrl": "https://i.imgur.com/2wQ39KL.png",
-    "id": 93,
     "hint": "Ferrari is named after me",
     "name": "Enzo Ferrari",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/Dn1RRGR.png",
-    "id": 94,
     "hint": "Rich dude",
     "name": "Jeff Bezos",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/rbi2uA5.png",
-    "id": 95,
     "hint": "Mavericks",
     "name": "Mark Cuban",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/GDKT0ty.png",
-    "id": 96,
     "hint": "Rich dude",
     "name": "Warren Buffet",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/EGxE6eM.png",
-    "id": 97,
     "hint": "Snapdeal",
     "name": "Aamir Khan",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/6VGpxuI.png",
-    "id": 98,
     "hint": "People fall in love in mysterious ways",
     "name": "Ed Sheeran",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/3tLc7gd.png",
-    "id": 99,
     "hint": "Ground Control to Major Tom...",
     "name": "David Bowie",
     "aliases": []
@@ -890,21 +800,18 @@
   },
   {
     "imageUrl": "https://i.imgur.com/v7ZBMJd.png",
-    "id": 111,
     "hint": "One of the Nine Gems :tm:",
     "name": "Tansen",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/GKuhEdk.png",
-    "id": 112,
     "hint": "champagnepapi",
     "name": "Drake",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/e6Bv24o.png",
-    "id": 113,
     "hint": "Acted in High School Musical",
     "name": "Zac Efron",
     "aliases": [
@@ -913,21 +820,18 @@
   },
   {
     "imageUrl": "https://i.imgur.com/8nTF02x.png",
-    "id": 114,
     "hint": "Nineteen Eighty-Four",
     "name": "George Orwell",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/k5yMaaX.png",
-    "id": 115,
     "hint": "Mysterious Island",
     "name": "Jules Verne",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/njKRWe7.png",
-    "id": 116,
     "hint": "Drama",
     "name": "William Shakespeare",
     "aliases": [
@@ -941,16 +845,306 @@
   },
   {
     "imageUrl": "https://i.imgur.com/ARQETpF.png",
-    "id": 117,
     "hint": "Fifth in line to the throne",
     "name": "Prince Harry",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/Dkv5fcr.png",
-    "id": 118,
     "hint": "First Female Vice President",
     "name": "Kamala Harris",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/lDLCpMv.png",
+    "hint": "American Chess Player",
+    "name": "Bobby Fischer",
+    "aliases": [
+      "Robert Fischer",
+      "Robert James Fischer"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Dkv5fcr.png",
+    "hint": "First Female Vice President",
+    "name": "Kamala Harris",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/kso88gF.png",
+    "hint": "Indian Chess Player",
+    "name": "Vishwanathan Anand",
+    "aliases": [
+      "Vishy"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ddhSJsk.png",
+    "hint": "Russian Chess Player",
+    "name": "Garry Kasporav",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/ZKUO01g.png",
+    "hint": "Alekhine's Defense is named after me",
+    "name": "Alexander Alekhine",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/jfbYdH8.png",
+    "hint": "American cover artist and chess player",
+    "name": "Kurt Hugo Schneider",
+    "aliases": [
+      "KHS"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/N7zA7jq.png",
+    "hint": "Indian cover artist and singer",
+    "name": "Vidya Vox",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/BxsBoKO.png",
+    "hint": "Call me maybe",
+    "name": "Carly Rae Jepsen",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/NzHWBO4.png",
+    "hint": "Acted as Hannah Montana",
+    "name": "Miley Cyrus",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/73fjVxe.png",
+    "hint": "Acted in the 2017 and 2019 Jumanji movies",
+    "name": "Nick Jonas",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/SVyEu8W.png",
+    "hint": "American Singer-Songwriter",
+    "name": "Halsey",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/t80pH8L.png",
+    "hint": "Sang How Far I'll Go from Moana",
+    "name": "Alessia Cara",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/gumjMEo.png",
+    "hint": "Dancing with your ghost",
+    "name": "Sasha Sloan",
+    "aliases": [
+      "Sasha Alex Sloan"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/WhbHuB7.png",
+    "hint": "you broke me first",
+    "name": "Tate McRae",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/RVzIWf7.png",
+    "hint": "Starvin' till I tasted you",
+    "name": "Hailee Steinfeld",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Do3qrUZ.png",
+    "hint": "Acted in Stranger Things",
+    "name": "Millie Bobby Brown",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/I1asFtQ.png",
+    "hint": "Acted in Star Wars",
+    "name": "Natalie Portman",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/Hh6AHZM.png",
+    "hint": "Collaborated with Clean Bandit on the song Symphony",
+    "name": "Zara Larsson",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/4sC1WPZ.png",
+    "hint": "Collaborated with Alan Walker on the song On my way",
+    "name": "Sabrina Carpenter",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/9lSGUt8.png",
+    "hint": "Collaborated with Alan Walker on the song Alone Pt. II",
+    "name": "Ava Max",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/66UqrHw.png",
+    "hint": "Collaborated with Martin Garrix on the song In the name of Love",
+    "name": "Bebe Rexha",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/kplcuPY.png",
+    "hint": "Collaborated with Clean Bandit on the song Mama",
+    "name": "Ellie Goulding",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/5nV5m5Q.png",
+    "hint": "Clean Bandit",
+    "name": "Grace Chatto",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/9lIfjf3.png",
+    "hint": "Little Mix",
+    "name": "Jade Thirlwall",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/MiePkdI.png",
+    "hint": "Little Mix",
+    "name": "Perrie Edwards",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/sfRBQJI.png",
+    "hint": "Little Mix",
+    "name": "Leigh-Anne Pinnock",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/5NF1sV8.png",
+    "hint": "Little Mix (not anymore :/)",
+    "name": "Jesy Nelson",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/wsxsgNz.png",
+    "hint": "English Rapper",
+    "name": "Saweetie",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/idzYnXt.png",
+    "hint": "1729 is a number named after him",
+    "name": "Ramanujan",
+    "aliases": [
+      "Srinivasa Ramanujan"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/xxLVeZL.png",
+    "hint": "Gave a proof to Pythagoras' Theorem",
+    "name": "Bhaskara",
+    "aliases": [
+      "Bhaskaracharya",
+      "Bhaskara II"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/yveCJiw.png",
+    "hint": "I struck in 2012",
+    "name": "Hurricane Sandy",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/NhslZU3.png",
+    "hint": "Acted in The Dark Knight",
+    "name": "Maggie Gyllenhaal",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/mSpnLGV.png",
+    "hint": "Lives in Malibu. Acted in The Martian.",
+    "name": "Jennifer Aniston",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/gCXd1DM.png",
+    "hint": "Acted in Oceans 11",
+    "name": "Brad Pitt",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/uC028nK.png",
+    "hint": "Hip Hop Artist",
+    "name": "Lil Wayne",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/JLyKPA4.png",
+    "hint": "West Coast Hip Hop Artist",
+    "name": "Tupac",
+    "aliases": [
+      "2pac"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/mrz8DVw.png",
+    "hint": "East Coast Hip Hop Artist",
+    "name": "Biggie",
+    "aliases": [
+      "The Notorious B.I.G."
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/gL5nuYP.png",
+    "hint": "Acted in Oceans 11",
+    "name": "Bernie Mac",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/bWqRaE8.png",
+    "hint": "Acted in Parks and Recreation",
+    "name": "Rick Offerman",
+    "aliases": [
+      "Ron Swanson"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/IH3WI7y.png",
+    "hint": "Acted in Suits",
+    "name": "Sarah Rafferty",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/2GtE52s.png",
+    "hint": "Famous Hip Hop Artist and Actor",
+    "name": "Donald Glover",
+    "aliases": [
+      "Childish Gambino"
+    ]
+  },
+  {
+    "imageUrl": "https://i.imgur.com/I7etEME.png",
+    "hint": "The Mercedes AMG Petronas team principal",
+    "name": "Toto Wolff",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/tTs5qEO.png",
+    "hint": "Hip Hop Artist",
+    "name": "Snoop Dogg",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/CamSZIO.png",
+    "hint": "The DJ got us fallin' in love again",
+    "name": "Usher",
+    "aliases": []
+  },
+  {
+    "imageUrl": "https://i.imgur.com/lueSg4Y.png",
+    "hint": "Dynamite & Hangover",
+    "name": "Taio Cruz",
     "aliases": []
   }
 ]

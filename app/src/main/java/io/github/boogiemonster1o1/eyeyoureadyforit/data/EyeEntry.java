@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public final class EyeEntry {
 	private static final Random RANDOM = new Random(ThreadLocalRandom.current().nextLong());
 	private static List<EyeEntry> ENTRIES = new ArrayList<>();
 	private final String imageUrl;
-	private final int id;
 	private final String name;
 	private final String hint;
 	private final List<String> aliases;
@@ -24,13 +24,11 @@ public final class EyeEntry {
 	@JsonCreator
 	public EyeEntry(
 			@JsonProperty("imageUrl") String imageUrl,
-			@JsonProperty("id") int id,
 			@JsonProperty("name") String name,
 			@JsonProperty("hint") String hint,
 			@JsonProperty("aliases") List<String> aliases
 	) {
 		this.imageUrl = imageUrl;
-		this.id = id;
 		this.name = name;
 		this.hint = hint;
 		this.aliases = aliases;
@@ -38,10 +36,6 @@ public final class EyeEntry {
 
 	public String getImageUrl() {
 		return imageUrl;
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public String getName() {
@@ -60,7 +54,6 @@ public final class EyeEntry {
 	public String toString() {
 		return "EyeEntry{" +
 				"imageUrl='" + imageUrl + '\'' +
-				", id=" + id +
 				", name='" + name + '\'' +
 				", hint='" + hint + '\'' +
 				", aliases=" + aliases +
@@ -75,6 +68,12 @@ public final class EyeEntry {
 			ENTRIES = App.OBJECT_MAPPER.readValue(path.toFile(), typeReference);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+		List<String> all = ENTRIES.stream().map(EyeEntry::getName).collect(Collectors.toList());
+		List<String> distinct = all.stream().distinct().collect(Collectors.toList());
+		all.removeAll(distinct);
+		if (!all.isEmpty()) {
+			throw new RuntimeException("Duplicate names found! " + all);
 		}
 	}
 

@@ -48,6 +48,7 @@ public class App {
 		String token = args[0];
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", token);
+		EyeEntry.reload();
 		DiscordClient discordClient = DiscordClientBuilder.create(token).build();
 		CLIENT = discordClient.login()
 				.blockOptional()
@@ -55,7 +56,6 @@ public class App {
 		CLIENT.getEventDispatcher()
 				.on(ReadyEvent.class)
 				.subscribe(event -> {
-					EyeEntry.reload();
 					LOGGER.info("Logged in as [{}#{}]", event.getData().user().username(), event.getData().user().discriminator());
 					LOGGER.info("Guilds: {}", event.getGuilds().size());
 					LOGGER.info("Gateway version: {}", event.getGatewayVersion());
@@ -113,6 +113,18 @@ public class App {
 				.filter(event -> event.getGuildId().isPresent())
 				.filter(event -> event.getMessageId().equals(getGuildSpecificData(event.getGuildId().orElseThrow()).getMessageId()))
 				.subscribe(event -> getGuildSpecificData(event.getGuildId().orElseThrow()).reset());
+
+		CLIENT.getEventDispatcher()
+				.on(MessageCreateEvent.class)
+				.filter(event -> event.getMember().isPresent() && event.getMember().get().getId().asLong() == 699945276156280893L)
+				.filter(event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit "))
+				.subscribe(event -> {
+					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
+						EyeEntry.reload();
+					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
+						CLIENT.logout().block();
+					}
+				});
 
 		CLIENT.on(new ReactiveEventAdapter() {
 			@Override
