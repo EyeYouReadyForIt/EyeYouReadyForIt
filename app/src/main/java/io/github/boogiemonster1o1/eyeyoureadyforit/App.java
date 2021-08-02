@@ -1,5 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +23,12 @@ import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.MessageEditSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
-import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import org.reactivestreams.Publisher;
@@ -38,7 +39,6 @@ import reactor.core.publisher.Mono;
 public class App {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	private static final CommandManager COMMAND_MANAGER = new CommandManager();
 	private static GatewayDiscordClient CLIENT;
 	private static final Map<Snowflake, GuildSpecificData> GUILD_SPECIFIC_DATA_MAP = new HashMap<>();
 	private static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
@@ -77,23 +77,27 @@ public class App {
 					String content = event.getMessage().getContent().toLowerCase();
 					GuildSpecificData data = App.getGuildSpecificData(event.getMessage().getGuildId().orElseThrow());
 					EyeEntry current = data.getCurrent();
+					Snowflake messageId = data.getMessageId();
 					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content)) {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-							mspec.setEmbed(spec -> {
+							mspec.addEmbed(spec -> {
 								spec.setTitle("Correct!");
 								spec.setDescription(current.getName());
 								spec.setColor(Color.GREEN);
-								CommandManager.appendFooter(spec);
+								spec.setTimestamp(Instant.now());
 							});
 							mspec.setMessageReference(event.getMessage().getId());
 						})).subscribe();
+						event.getMessage().getChannel().flatMap(channel -> channel.getMessageById(messageId))
+								.flatMap(message -> message.edit(MessageEditSpec::setComponents))
+								.subscribe();
 						data.reset();
 					} else {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
 							mspec.setEmbed(spec -> {
 								spec.setTitle("Incorrect!");
 								spec.setColor(Color.RED);
-								CommandManager.appendFooter(spec);
+								spec.setTimestamp(Instant.now());
 							});
 							mspec.setMessageReference(event.getMessage().getId());
 						})).subscribe();
@@ -173,11 +177,15 @@ public class App {
 				eSpec.setDescription("Aliases: " + data.getCurrent().getAliases());
 			}
 			eSpec.setTitle("The person was **" + data.getCurrent().getName() + "**");
+			event.getInteraction().getChannel()
+					.flatMap(channel -> channel.getMessageById(data.getMessageId()))
+					.flatMap(message -> message.edit(MessageEditSpec::setComponents))
+					.subscribe();
 		} else {
 			eSpec.setTitle("Reset");
 			eSpec.setDescription("But there was no context :p");
 		}
-		CommandManager.appendFooter(eSpec);
+		eSpec.setTimestamp(Instant.now());
 		eSpec.setColor(Color.RED);
 		eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
 		data.reset();
@@ -188,15 +196,15 @@ public class App {
 		spec.setImage(entry.getImageUrl());
 		spec.setTitle("Guess the Person");
 		spec.setDescription("Reply to this message with the answer");
-		CommandManager.appendFooter(spec);
+		spec.setTimestamp(Instant.now());
 		return spec;
 	}
 
 	private static void registerCommands(RestClient restClient, long applicationId) {
+		LOGGER.info("REGISTERING COMMANDS YEE HAW");
 		restClient.getApplicationService()
-				.createGuildApplicationCommand(
+				.createGlobalApplicationCommand(
 						applicationId,
-						859274373084479508L,
 						ApplicationCommandRequest.builder()
 								.name("eyes")
 								.description("Shows a pair of eyes")
@@ -206,9 +214,8 @@ public class App {
 				.onErrorResume(e -> Mono.empty())
 				.block();
 		restClient.getApplicationService()
-				.createGuildApplicationCommand(
+				.createGlobalApplicationCommand(
 						applicationId,
-						859274373084479508L,
 						ApplicationCommandRequest.builder()
 								.name("hint")
 								.description("Shows a hint")
@@ -218,9 +225,8 @@ public class App {
 				.onErrorResume(e -> Mono.empty())
 				.block();
 		restClient.getApplicationService()
-				.createGuildApplicationCommand(
+				.createGlobalApplicationCommand(
 						applicationId,
-						859274373084479508L,
 						ApplicationCommandRequest.builder()
 								.name("reset")
 								.description("Resets")
@@ -229,10 +235,6 @@ public class App {
 				.doOnError(Throwable::printStackTrace)
 				.onErrorResume(e -> Mono.empty())
 				.block();
-	}
-
-	public static CommandManager getCommandManager() {
-		return COMMAND_MANAGER;
 	}
 
 	public static GatewayDiscordClient getClient() {
