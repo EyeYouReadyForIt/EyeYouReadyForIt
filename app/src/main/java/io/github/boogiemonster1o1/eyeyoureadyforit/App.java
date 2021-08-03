@@ -50,9 +50,6 @@ public class App {
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", token);
 		EyeEntry.reload();
-		if (true) {
-			return;
-		}
 		DiscordClient discordClient = DiscordClientBuilder.create(token).build();
 		CLIENT = discordClient.login()
 				.blockOptional()
@@ -146,6 +143,7 @@ public class App {
 						if (gsd.getMessageId() != null && gsd.getCurrent() != null) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
 						}
+//						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("testwing"));
 						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build()))).map(data -> {
 							synchronized (GuildSpecificData.LOCK) {
 								gsd.setCurrent(entry);

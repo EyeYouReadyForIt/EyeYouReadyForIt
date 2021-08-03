@@ -87,10 +87,16 @@ public final class EyeEntry {
 						String hint = set.getString("HINT");
 						Object aliasesObj = set.getArray("ALIASES").getArray();
 						List<String> aliases = Lists.newArrayList();
-						for (int i = 0; i < Array.getLength(aliases); i++) {
+						int l;
+						try {
+							l = Array.getLength(aliases);
+						} catch (RuntimeException e) {
+							l = 0;
+						}
+						for (int i = 0; i < l; i++) {
 							aliases.add(Array.get(aliasesObj, i).toString());
 						}
-						ENTRIES.add(new EyeEntry(name, imageUrl, hint, aliases));
+						ENTRIES.add(new EyeEntry(imageUrl, name, hint, aliases));
 					}
 				}
 			}
