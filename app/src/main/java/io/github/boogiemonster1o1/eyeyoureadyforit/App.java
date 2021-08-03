@@ -1,5 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,9 @@ public class App {
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", token);
 		EyeEntry.reload();
+		if (true) {
+			return;
+		}
 		DiscordClient discordClient = DiscordClientBuilder.create(token).build();
 		CLIENT = discordClient.login()
 				.blockOptional()

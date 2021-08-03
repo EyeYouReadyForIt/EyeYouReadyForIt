@@ -3,10 +3,17 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.google.common.collect.Lists;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -61,19 +68,34 @@ public final class EyeEntry {
 	}
 
 	public static void reload() {
-		ENTRIES.clear();
-		Path path = Path.of(".", "entries.json");
-		CollectionType typeReference = App.OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, EyeEntry.class);
+		Path dbDir = Path.of(".", "db");
 		try {
-			ENTRIES = App.OBJECT_MAPPER.readValue(path.toFile(), typeReference);
-		} catch (IOException e) {
+			Class.forName("org.h2.Driver");
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-		List<String> all = ENTRIES.stream().map(EyeEntry::getName).collect(Collectors.toList());
-		List<String> distinct = all.stream().distinct().collect(Collectors.toList());
-		all.removeAll(distinct);
-		if (!all.isEmpty()) {
-			throw new RuntimeException("Duplicate names found! " + all);
+
+		String s = "SELECT * FROM EYES_ENTRIES";
+
+		try (Connection conn = DriverManager.getConnection("jdbc:h2:" + dbDir.toString())) {
+			try (Statement statement = conn.createStatement()) {
+				try (ResultSet set = statement.executeQuery(s)) {
+					ENTRIES.clear();
+					while (set.next()) {
+						String name = set.getString("NAME");
+						String imageUrl = set.getString("IMAGE_URL");
+						String hint = set.getString("HINT");
+						Object aliasesObj = set.getArray("ALIASES").getArray();
+						List<String> aliases = Lists.newArrayList();
+						for (int i = 0; i < Array.getLength(aliases); i++) {
+							aliases.add(Array.get(aliasesObj, i).toString());
+						}
+						ENTRIES.add(new EyeEntry(name, imageUrl, hint, aliases));
+					}
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

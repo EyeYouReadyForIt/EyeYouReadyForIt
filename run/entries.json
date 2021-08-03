@@ -24,7 +24,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/iixaLVj.png",
-    "hint": "She's a Princess",
+    "hint": "She''s a Princess",
     "name": "Meghan Markle",
     "aliases": [
       "rachel zane",
@@ -151,7 +151,7 @@
   {
     "imageUrl": "https://i.imgur.com/X4GIKbJ.png",
     "id": 20,
-    "hint": "Didn't stage hanging off of a plane",
+    "hint": "Didn''t stage hanging off of a plane",
     "name": "Tom Cruise",
     "aliases": [
       "ethan hunt",
@@ -309,7 +309,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/gOXHUr7.png",
-    "hint": "Acted in Ocean's 8",
+    "hint": "Acted in Ocean''s 8",
     "name": "Rihanna",
     "aliases": []
   },
@@ -350,13 +350,13 @@
   },
   {
     "imageUrl": "https://i.imgur.com/s1CFgNO.png",
-    "hint": "Acted in Hugo and Ender's Game",
+    "hint": "Acted in Hugo and Ender''s Game",
     "name": "Asa Butterfield",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/GCFkehn.png",
-    "hint": "Plays Danny Ocean's ex-wife",
+    "hint": "Plays Danny Ocean''s ex-wife",
     "name": "Julia Roberts",
     "aliases": [
       "tess ocean",
@@ -410,7 +410,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/ExeEg4r.png",
-    "hint": "One of Elon Musk's companies wasn't founded by him",
+    "hint": "One of Elon Musk''s companies wasn''t founded by him",
     "name": "Nikola Tesla",
     "aliases": []
   },
@@ -452,7 +452,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/CuhzZkS.png",
-    "hint": "Prince Charles' wife",
+    "hint": "Prince Charles'' wife",
     "name": "Princess Diana",
     "aliases": [
       "princess of wales"
@@ -548,7 +548,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/NkKpab6.png",
-    "hint": "Sang the national anthem at Joe Biden's Inauguration",
+    "hint": "Sang the national anthem at Joe Biden''s Inauguration",
     "name": "Lady Gaga",
     "aliases": []
   },
@@ -622,12 +622,6 @@
     ]
   },
   {
-    "imageUrl": "https://i.imgur.com/T8rbrax.png",
-    "hint": "Rachel",
-    "name": "Jennifer Aniston",
-    "aliases": []
-  },
-  {
     "imageUrl": "https://i.imgur.com/j667eZC.png",
     "hint": "Bond. James Bond",
     "name": "Pierce Brosnan",
@@ -648,7 +642,7 @@
   {
     "imageUrl": "https://i.imgur.com/NvCSmgU.png",
     "id": 90,
-    "hint": "'get that walking carpet outta my face'",
+    "hint": "''get that walking carpet outta my face''",
     "name": "Carrie Fisher",
     "aliases": [
       "princess leia",
@@ -716,14 +710,14 @@
   {
     "imageUrl": "https://i.imgur.com/4OUJvVO.png",
     "id": 100,
-    "hint": "Can't help falling in love with you",
+    "hint": "Can''t help falling in love with you",
     "name": "Elvis Presley",
     "aliases": []
   },
   {
     "imageUrl": "https://i.imgur.com/aNyzwXt.png",
     "id": 101,
-    "hint": "Say you won't let go",
+    "hint": "Say you won''t let go",
     "name": "James Arthur",
     "aliases": []
   },
@@ -794,7 +788,7 @@
   {
     "imageUrl": "https://i.imgur.com/53sw9oj.png",
     "id": 110,
-    "hint": "My video on youtube has more views than the earth's population",
+    "hint": "My video on youtube has more views than the earth''s population",
     "name": "Luis Fonsi",
     "aliases": []
   },
@@ -865,12 +859,6 @@
     ]
   },
   {
-    "imageUrl": "https://i.imgur.com/Dkv5fcr.png",
-    "hint": "First Female Vice President",
-    "name": "Kamala Harris",
-    "aliases": []
-  },
-  {
     "imageUrl": "https://i.imgur.com/kso88gF.png",
     "hint": "Indian Chess Player",
     "name": "Vishwanathan Anand",
@@ -886,7 +874,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/ZKUO01g.png",
-    "hint": "Alekhine's Defense is named after me",
+    "hint": "Alekhine''s Defense is named after me",
     "name": "Alexander Alekhine",
     "aliases": []
   },
@@ -930,7 +918,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/t80pH8L.png",
-    "hint": "Sang How Far I'll Go from Moana",
+    "hint": "Sang How Far I''ll Go from Moana",
     "name": "Alessia Cara",
     "aliases": []
   },
@@ -950,7 +938,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/RVzIWf7.png",
-    "hint": "Starvin' till I tasted you",
+    "hint": "Starvin'' till I tasted you",
     "name": "Hailee Steinfeld",
     "aliases": []
   },
@@ -1042,7 +1030,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/xxLVeZL.png",
-    "hint": "Gave a proof to Pythagoras' Theorem",
+    "hint": "Gave a proof to Pythagoras'' Theorem",
     "name": "Bhaskara",
     "aliases": [
       "Bhaskaracharya",
@@ -1137,7 +1125,7 @@
   },
   {
     "imageUrl": "https://i.imgur.com/CamSZIO.png",
-    "hint": "The DJ got us fallin' in love again",
+    "hint": "The DJ got us fallin'' in love again",
     "name": "Usher",
     "aliases": []
   },
