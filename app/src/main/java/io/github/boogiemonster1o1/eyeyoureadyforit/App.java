@@ -138,8 +138,11 @@ public class App {
 				switch (name) {
 					case "eyes":
 						EyeEntry entry = EyeEntry.getRandom();
+						GuildSpecificData gsd = App.getGuildSpecificData(event.getInteraction().getGuildId().orElseThrow());
+						if (gsd.getMessageId() != null && gsd.getCurrent() != null) {
+							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
+						}
 						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build()))).map(data -> {
-							GuildSpecificData gsd = App.getGuildSpecificData(event.getInteraction().getGuildId().orElseThrow());
 							synchronized (GuildSpecificData.LOCK) {
 								gsd.setCurrent(entry);
 								gsd.setMessageId(Snowflake.of(data.id()));
