@@ -1,9 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
-import java.nio.file.Path;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +27,7 @@ import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import org.reactivestreams.Publisher;
@@ -41,7 +39,6 @@ public class App {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
 	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static GatewayDiscordClient CLIENT;
-	private static final Map<Snowflake, GuildSpecificData> GUILD_SPECIFIC_DATA_MAP = new HashMap<>();
 	private static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
 	private static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
@@ -73,10 +70,10 @@ public class App {
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
-				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(App.getGuildSpecificData(event.getMessage().getGuildId().orElseThrow()).getMessageId())).orElse(false))
+				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getMessageId())).orElse(false))
 				.subscribe(event -> {
 					String content = event.getMessage().getContent().toLowerCase();
-					GuildSpecificData data = App.getGuildSpecificData(event.getMessage().getGuildId().orElseThrow());
+					GuildSpecificData data = GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow());
 					EyeEntry current = data.getCurrent();
 					Snowflake messageId = data.getMessageId();
 					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content)) {
@@ -112,8 +109,8 @@ public class App {
 								.map(user -> user.getId().equals(getClient().getSelfId()))
 				)
 				.filter(event -> event.getGuildId().isPresent())
-				.filter(event -> event.getMessageId().equals(getGuildSpecificData(event.getGuildId().orElseThrow()).getMessageId()))
-				.subscribe(event -> getGuildSpecificData(event.getGuildId().orElseThrow()).reset());
+				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getMessageId()))
+				.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).reset());
 
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
@@ -135,16 +132,18 @@ public class App {
 				}
 
 				String name = event.getCommandName();
+				GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
 
 				switch (name) {
 					case "eyes":
-						EyeEntry entry = EyeEntry.getRandom();
-						GuildSpecificData gsd = App.getGuildSpecificData(event.getInteraction().getGuildId().orElseThrow());
 						if (gsd.getMessageId() != null && gsd.getCurrent() != null) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
 						}
-//						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("testwing"));
-						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build()))).map(data -> {
+						if (gsd.isTourney()) {
+							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
+						}
+						EyeEntry entry = EyeEntry.getRandom();
+						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
 							synchronized (GuildSpecificData.LOCK) {
 								gsd.setCurrent(entry);
 								gsd.setMessageId(Snowflake.of(data.id()));
@@ -152,9 +151,17 @@ public class App {
 							return data;
 						});
 					case "hint":
+						if (gsd.isTourney() && gsd.getTourneyData().shouldDisableHints()) {
+							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
+						}
 						return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
 					case "reset":
+						if (gsd.isTourney()) {
+							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
+						}
 						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(new EmbedCreateSpec(), event).asRequest()).build())));
+					case "tourney":
+						return TourneyCommand.handle(event, gsd);
 				}
 
 				return Mono.empty();
@@ -177,8 +184,12 @@ public class App {
 		CLIENT.onDisconnect().block();
 	}
 
+	public static WebhookMultipartRequest getEyesRequest(EyeEntry entry) {
+		return new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build());
+	}
+
 	private static String getHintContent(InteractionCreateEvent event) {
-		GuildSpecificData data = App.getGuildSpecificData(event.getInteraction().getGuildId().orElseThrow());
+		GuildSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
 
 		if (data.getMessageId() != null && data.getCurrent() != null) {
 			return data.getCurrent().getHint();
@@ -188,7 +199,7 @@ public class App {
 	}
 
 	private static EmbedCreateSpec addResetFooter(EmbedCreateSpec eSpec, InteractionCreateEvent event) {
-		GuildSpecificData data = App.getGuildSpecificData(event.getInteraction().getGuildId().orElseThrow());
+		GuildSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
 		if (data.getMessageId() != null && data.getCurrent() != null) {
 			if (!data.getCurrent().getAliases().isEmpty()) {
 				eSpec.setDescription("Aliases: " + data.getCurrent().getAliases());
@@ -256,9 +267,5 @@ public class App {
 
 	public static GatewayDiscordClient getClient() {
 		return CLIENT;
-	}
-
-	public static GuildSpecificData getGuildSpecificData(Snowflake guildId) {
-		return GUILD_SPECIFIC_DATA_MAP.computeIfAbsent(guildId, GuildSpecificData::new);
 	}
 }
