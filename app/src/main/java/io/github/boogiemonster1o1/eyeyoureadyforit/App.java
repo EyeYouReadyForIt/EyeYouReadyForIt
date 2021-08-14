@@ -19,12 +19,15 @@ import discord4j.core.object.MessageReference;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
+import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.RestClient;
+import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
@@ -67,6 +70,35 @@ public class App {
 			registerCommands(restClient, applicationId);
 		}
 
+		// TODO
+		restClient.getApplicationService().createGuildApplicationCommand(
+				applicationId,
+				859274373084479508L,
+				ApplicationCommandRequest
+						.builder()
+						.name("tourney")
+						.description("Starts a tourney")
+						.addOption(
+								ApplicationCommandOptionData
+										.builder()
+										.required(true)
+										.type(ApplicationCommandOptionType.INTEGER.getValue())
+										.name("rounds")
+										.description("Number of rounds")
+										.build()
+						)
+						.addOption(
+								ApplicationCommandOptionData
+										.builder()
+										.required(false)
+										.type(ApplicationCommandOptionType.INTEGER.getValue())
+										.name("hintsEnabled")
+										.description("Whether Hints are enabled")
+										.build()
+						)
+						.build()
+		).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
+
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
@@ -90,6 +122,9 @@ public class App {
 								.flatMap(message -> message.edit(MessageEditSpec::setComponents))
 								.subscribe();
 						data.reset();
+						if (data.isTourney()) {
+							TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage(), false);
+						}
 					} else {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
 							mspec.setEmbed(spec -> {
@@ -220,7 +255,7 @@ public class App {
 		return eSpec;
 	}
 
-	private static EmbedCreateSpec createEyesEmbed(EyeEntry entry, EmbedCreateSpec spec) {
+	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry, EmbedCreateSpec spec) {
 		spec.setImage(entry.getImageUrl());
 		spec.setTitle("Guess the Person");
 		spec.setDescription("Reply to this message with the answer");
