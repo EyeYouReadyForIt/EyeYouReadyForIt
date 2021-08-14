@@ -73,7 +73,7 @@ public class App {
 		// TODO
 		restClient.getApplicationService().createGuildApplicationCommand(
 				applicationId,
-				859274373084479508L,
+				849555538102583316L,
 				ApplicationCommandRequest
 						.builder()
 						.name("tourney")
@@ -84,16 +84,16 @@ public class App {
 										.required(true)
 										.type(ApplicationCommandOptionType.INTEGER.getValue())
 										.name("rounds")
-										.description("Number of rounds")
+										.description("Number of rounds. From 5 to 10")
 										.build()
 						)
 						.addOption(
 								ApplicationCommandOptionData
 										.builder()
 										.required(false)
-										.type(ApplicationCommandOptionType.INTEGER.getValue())
-										.name("hintsEnabled")
-										.description("Whether Hints are enabled")
+										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+										.name("hintsdisabled")
+										.description("Whether Hints are disable")
 										.build()
 						)
 						.build()
@@ -123,7 +123,7 @@ public class App {
 								.subscribe();
 						data.reset();
 						if (data.isTourney()) {
-							TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage(), false);
+							TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
 						}
 					} else {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
