@@ -70,35 +70,6 @@ public class App {
 			registerCommands(restClient, applicationId);
 		}
 
-		// TODO
-		restClient.getApplicationService().createGuildApplicationCommand(
-				applicationId,
-				849555538102583316L,
-				ApplicationCommandRequest
-						.builder()
-						.name("tourney")
-						.description("Starts a tourney")
-						.addOption(
-								ApplicationCommandOptionData
-										.builder()
-										.required(true)
-										.type(ApplicationCommandOptionType.INTEGER.getValue())
-										.name("rounds")
-										.description("Number of rounds. From 5 to 10")
-										.build()
-						)
-						.addOption(
-								ApplicationCommandOptionData
-										.builder()
-										.required(false)
-										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
-										.name("hintsdisabled")
-										.description("Whether Hints are disable")
-										.build()
-						)
-						.build()
-		).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
-
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
@@ -298,6 +269,33 @@ public class App {
 				.doOnError(Throwable::printStackTrace)
 				.onErrorResume(e -> Mono.empty())
 				.block();
+
+		restClient.getApplicationService().createGlobalApplicationCommand(
+				applicationId,
+				ApplicationCommandRequest
+						.builder()
+						.name("tourney")
+						.description("Starts a tourney")
+						.addOption(
+								ApplicationCommandOptionData
+										.builder()
+										.required(true)
+										.type(ApplicationCommandOptionType.INTEGER.getValue())
+										.name("rounds")
+										.description("Number of rounds. From 5 to 10")
+										.build()
+						)
+						.addOption(
+								ApplicationCommandOptionData
+										.builder()
+										.required(false)
+										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+										.name("hintsdisabled")
+										.description("Whether Hints are disable")
+										.build()
+						)
+						.build()
+		).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
 	}
 
 	public static GatewayDiscordClient getClient() {
