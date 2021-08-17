@@ -4,8 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.nio.file.Path;
-import java.sql.*;
-import java.util.*;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -74,8 +81,7 @@ public final class EyeEntry {
 						String name = set.getString("NAME");
 						String imageUrl = set.getString("IMAGE_URL");
 						String hint = set.getString("HINT");
-						Object[] aliasesSqlArray = (Object[]) set.getArray("ALIASES").getArray();
-						List<String> aliases = Arrays.stream(aliasesSqlArray).map(Object::toString).collect(Collectors.toList());
+						List<String> aliases = Arrays.stream((Object[]) set.getArray("ALIASES").getArray()).map(Object::toString).collect(Collectors.toList());
 						ENTRIES.add(new EyeEntry(imageUrl, name, hint, aliases));
 					}
 				}
