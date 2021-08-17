@@ -7,16 +7,9 @@ import com.google.common.collect.Lists;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.sql.*;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -85,17 +78,8 @@ public final class EyeEntry {
 						String name = set.getString("NAME");
 						String imageUrl = set.getString("IMAGE_URL");
 						String hint = set.getString("HINT");
-						Object aliasesObj = set.getArray("ALIASES").getArray();
-						List<String> aliases = Lists.newArrayList();
-						int l;
-						try {
-							l = Array.getLength(aliases);
-						} catch (RuntimeException e) {
-							l = 0;
-						}
-						for (int i = 0; i < l; i++) {
-							aliases.add(Array.get(aliasesObj, i).toString());
-						}
+						Object[] aliasesSqlArray = (Object[]) set.getArray("ALIASES").getArray();
+						List<String> aliases = Arrays.stream(aliasesSqlArray).map(Object::toString).collect(Collectors.toList());
 						ENTRIES.add(new EyeEntry(imageUrl, name, hint, aliases));
 					}
 				}
