@@ -120,7 +120,7 @@ public class App {
 
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
-				.filter(event -> event.getMember().isPresent() && event.getMember().get().getId().asLong() == 684428788481917044L)
+				.filter(event -> event.getMember().isPresent() && event.getMember().get().getId().asLong() == 699945276156280893L)
 				.filter(event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit "))
 				.subscribe(event -> {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
