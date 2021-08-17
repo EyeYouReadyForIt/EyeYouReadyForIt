@@ -124,6 +124,8 @@ public class App {
 				.filter(event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit "))
 				.subscribe(event -> {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
+						LOGGER.info("Reloading data...");
+						event.getMessage().getChannel().block().createMessage("**Reloading data...**").block();
 						EyeEntry.reload();
 					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
 						CLIENT.logout().block();
