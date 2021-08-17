@@ -2,11 +2,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.google.common.collect.Lists;
-import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
