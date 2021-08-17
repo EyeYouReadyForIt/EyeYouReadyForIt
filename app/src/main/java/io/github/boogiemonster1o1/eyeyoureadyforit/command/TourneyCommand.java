@@ -1,12 +1,7 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
@@ -17,6 +12,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.ModeContext;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.TourneyData;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
@@ -58,17 +54,15 @@ public final class TourneyCommand {
 					} else if (distincts.length == 1) {
 						spec.addField("Leaderboard", ":first_place: <@" + distincts[0] + "> - " + leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count(), false);
 					} else {
-						StringBuilder builder = new StringBuilder();
-						int first = getMostCommon(leaderboard);
-						builder.append(":first_place: <@").append(first).append("> - ").append(leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count());
-						builder.append("\n");
-						int second = getMostCommon(leaderboard.stream().filter(l -> l != first).collect(Collectors.toList()));
-						builder.append(":second_place: <@").append(second).append("> - ").append(leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count());
-						if (distincts.length >= 3) {
-							int third = getMostCommon(leaderboard.stream().filter(l -> l != first).filter(l -> l != second).collect(Collectors.toList()));
-							builder.append(":third_place: <@").append(third).append("> - ").append(leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count());
+						ModeContext first = getMostCommon(leaderboard);
+						ModeContext second = getMostCommon(leaderboard.stream().filter(l -> l != first.getMode()).collect(Collectors.toList()));
+						String boardMessage = String.format(":first_place: <@%s> - %s\n" +
+								":second_place: <@%s> - %s", first.getMode(), first.getCount(), second.getMode(), second.getCount());
+						if(distincts.length >= 3) {
+							ModeContext third = getMostCommon(leaderboard.stream().filter(l -> l != first.getMode()).filter(l -> l != second.getMode()).collect(Collectors.toList()));
+							boardMessage += String.format("\n:third_place: <@%s> - %s", third.getMode(), third.getCount());
 						}
-						spec.addField("Leaderboard", builder.toString(), false);
+						spec.addField("Leaderboard", boardMessage, false);
 					}
 				})).subscribe(mess -> {
 					gsd.reset();
@@ -101,9 +95,27 @@ public final class TourneyCommand {
 		}, 30, TimeUnit.SECONDS);
 	}
 
-	private static int getMostCommon(List<? extends Number> intList) {
-		return intList.stream()
-				.map(Number::intValue)
-				.reduce(BinaryOperator.maxBy(Comparator.comparingInt(o -> Collections.frequency(intList, o)))).orElseThrow();
+	private static ModeContext getMostCommon(List<? extends Number> participants) {
+		if(participants.stream().distinct().count() == 1) return new ModeContext(participants.get(0).longValue(), Collections.frequency(participants, participants.get(0)));
+
+		List<Long> list = new ArrayList<>();
+		list = participants.stream().map(Number::longValue).collect(Collectors.toList());
+
+		long mode = 0;
+		int modeCount = 0;
+		HashMap<Long, Integer> hashMap = new HashMap<>();
+
+		for(long i : list) {
+			hashMap.put(i, hashMap.getOrDefault(i, 0) + 1);
+		}
+
+		for(Map.Entry<Long, Integer> entry : hashMap.entrySet()) {
+			if(entry.getValue() > modeCount) {
+				mode = entry.getKey();
+				modeCount = entry.getValue();
+			}
+		}
+
+		return new ModeContext(mode, modeCount);
 	}
 }
