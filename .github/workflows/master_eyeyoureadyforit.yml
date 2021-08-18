@@ -34,7 +34,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: java-app
-        path: '${{ github.workspace }}/run/*'
+        path: '${{ github.workspace }}/run'
 
   deploy:
     runs-on: ubuntu-latest
