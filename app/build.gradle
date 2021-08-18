@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 repositories {
@@ -14,8 +15,6 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    implementation 'com.mojang:brigadier:1.0.17'
-    implementation 'com.google.guava:guava:30.1-jre'
     implementation 'com.discord4j:discord4j-core:3.1.7'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'com.h2database:h2:1.4.200'
@@ -27,6 +26,14 @@ application {
 }
 
 jar {
+    manifest {
+        attributes (
+                'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
+        )
+    }
+}
+
+shadowJar {
     manifest {
         attributes (
                 'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
