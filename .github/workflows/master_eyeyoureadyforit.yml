@@ -56,4 +56,4 @@ jobs:
         app-name: 'eyeyoureadyforit'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_127099156679440a8e68119881bf34bd }}
-        package: '*.jar'
+        package: '*'
