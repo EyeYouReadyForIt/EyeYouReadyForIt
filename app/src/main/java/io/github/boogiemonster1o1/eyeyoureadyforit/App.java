@@ -49,7 +49,7 @@ public class App {
 		String token = System.getenv("EYRFI_TOKEN");
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", token);
-		EyeEntry.reload(System.getenv("EYRFI_DIR") != null ? System.getenv("EYRFI_DIR") : ".");
+		EyeEntry.reload(args[0] != null ? args[0] : ".");
 		DiscordClient discordClient = DiscordClientBuilder.create(token).build();
 		CLIENT = discordClient.login()
 				.blockOptional()
@@ -126,7 +126,7 @@ public class App {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
 						LOGGER.info("Reloading data...");
 						event.getMessage().getChannel().block().createMessage("**Reloading data...**").block();
-						EyeEntry.reload(System.getenv("EYRFI_DIR") != null ? System.getenv("EYRFI_DIR") : ".");
+						EyeEntry.reload(args[0] != null ? args[0] : ".");
 					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
 						CLIENT.logout().block();
 					}
