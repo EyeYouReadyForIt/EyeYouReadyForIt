@@ -25,13 +25,13 @@ jobs:
       uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
 
     - name: Build with Gradle
-      run: ./gradlew shadowJar
+      run: ./gradlew shadowJar && cp ${{ github.workspace }}/app/build/libs/*-all.jar ${{ github.workspace }}/run
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
         name: java-app
-        path: '${{ github.workspace }}/app/build/libs/*-all.jar'
+        path: '${{ github.workspace }}/run/*'
 
   deploy:
     runs-on: ubuntu-latest
