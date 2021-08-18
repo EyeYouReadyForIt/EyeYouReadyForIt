@@ -46,7 +46,7 @@ public class App {
 	private static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
 	public static void main(String[] args) {
-		String token = args[0];
+		String token = System.getenv("EYRFI_TOKEN");
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", token);
 		EyeEntry.reload();
