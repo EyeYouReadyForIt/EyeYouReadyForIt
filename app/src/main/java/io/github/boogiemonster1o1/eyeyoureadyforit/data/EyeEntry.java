@@ -63,8 +63,8 @@ public final class EyeEntry {
 				'}';
 	}
 
-	public static void reload() {
-		Path dbDir = Path.of(".", "db");
+	public static void reload(String path) {
+		Path dbDir = Path.of(path, "db");
 		try {
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
