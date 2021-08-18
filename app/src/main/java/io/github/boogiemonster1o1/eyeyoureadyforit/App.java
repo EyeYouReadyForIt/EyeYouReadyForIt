@@ -79,7 +79,7 @@ public class App {
 					GuildSpecificData data = GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow());
 					EyeEntry current = data.getCurrent();
 					Snowflake messageId = data.getMessageId();
-					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content)) {
+					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName())) {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
 							mspec.addEmbed(spec -> {
 								spec.setTitle("Correct!");
@@ -190,6 +190,16 @@ public class App {
 			}
 		}).blockLast();
 		CLIENT.onDisconnect().block();
+	}
+
+	private static boolean isFirstName(String allegedFirst, String name) {
+		if (name.indexOf(' ') == -1) {
+			return false;
+		}
+
+		String sub = allegedFirst.substring(0, name.indexOf(' '));
+
+		return sub.equalsIgnoreCase(allegedFirst);
 	}
 
 	public static WebhookMultipartRequest getEyesRequest(EyeEntry entry) {
