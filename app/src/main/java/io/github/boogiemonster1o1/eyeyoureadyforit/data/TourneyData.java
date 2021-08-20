@@ -7,7 +7,7 @@ public class TourneyData {
 	private final int maxRounds;
 	private final long[] leaderboard;
 	private final boolean disableHints;
-	private boolean disableFirstNames;
+	private final boolean disableFirstNames;
 
 	public TourneyData(int maxRounds, boolean disableHints, boolean disableFirstNames) {
 		this.maxRounds = maxRounds;
