@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public final class EyeEntry {
 	private static final Random RANDOM = new Random(ThreadLocalRandom.current().nextLong());
-	private static List<EyeEntry> ENTRIES = new ArrayList<>();
+	private static final List<EyeEntry> ENTRIES = new ArrayList<>();
 	private final String imageUrl;
 	private final String name;
 	private final String hint;
