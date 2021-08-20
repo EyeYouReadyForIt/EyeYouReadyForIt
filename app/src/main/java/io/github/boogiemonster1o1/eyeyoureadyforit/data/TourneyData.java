@@ -7,11 +7,13 @@ public class TourneyData {
 	private final int maxRounds;
 	private final long[] leaderboard;
 	private final boolean disableHints;
+	private boolean disableFirstNames;
 
-	public TourneyData(int maxRounds, boolean disableHints) {
+	public TourneyData(int maxRounds, boolean disableHints, boolean disableFirstNames) {
 		this.maxRounds = maxRounds;
 		this.leaderboard = new long[maxRounds];
 		this.disableHints = disableHints;
+		this.disableFirstNames = disableFirstNames;
 		Arrays.fill(leaderboard, 0L);
 	}
 
@@ -33,5 +35,9 @@ public class TourneyData {
 
 	public boolean shouldDisableHints() {
 		return disableHints;
+	}
+
+	public boolean shouldDisableFirstNames() {
+		return disableFirstNames;
 	}
 }

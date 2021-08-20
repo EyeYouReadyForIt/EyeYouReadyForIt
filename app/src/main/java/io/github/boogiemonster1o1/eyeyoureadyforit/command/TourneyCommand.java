@@ -28,7 +28,8 @@ public final class TourneyCommand {
 			event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Choose a valid number equal to or above 3**"));
 		}
 		boolean disableHints = event.getOption("hintsdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
-		TourneyData tourneyData = new TourneyData(rounds, disableHints);
+		boolean disableFirstNames = event.getOption("firstnamesdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
+		TourneyData tourneyData = new TourneyData(rounds, disableHints, disableFirstNames);
 		gsd.setTourneyData(tourneyData);
 
 		next(gsd, 0L, event.getInteraction().getChannel(), true);

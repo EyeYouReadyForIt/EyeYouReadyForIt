@@ -79,7 +79,7 @@ public class App {
 					GuildSpecificData data = GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow());
 					EyeEntry current = data.getCurrent();
 					Snowflake messageId = data.getMessageId();
-					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName())) {
+					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName(), data)) {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
 							mspec.addEmbed(spec -> {
 								spec.setTitle("Correct!");
@@ -125,7 +125,7 @@ public class App {
 				.subscribe(event -> {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
 						LOGGER.info("Reloading data...");
-						event.getMessage().getChannel().block().createMessage("**Reloading data...**").block();
+						event.getMessage().getChannel().flatMap(channel -> channel.createMessage("**Reloading data...**")).subscribe();
 						EyeEntry.reload();
 					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
 						CLIENT.logout().block();
@@ -192,8 +192,10 @@ public class App {
 		CLIENT.onDisconnect().block();
 	}
 
-	private static boolean isFirstName(String allegedFirst, String name) {
-		if (name.indexOf(' ') == -1) {
+	private static boolean isFirstName(String allegedFirst, String name, GuildSpecificData data) {
+		if (data.isTourney() && data.getTourneyData().shouldDisableFirstNames()) {
+			return false;
+		} else if (name.indexOf(' ') == -1) {
 			return false;
 		}
 
@@ -303,7 +305,16 @@ public class App {
 										.required(false)
 										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
 										.name("hintsdisabled")
-										.description("Whether Hints are disable")
+										.description("Whether Hints are disabled")
+										.build()
+						)
+						.addOption(
+								ApplicationCommandOptionData
+										.builder()
+										.required(false)
+										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+										.name("firstnamesdisabled")
+										.description("Whether first names are disabled")
 										.build()
 						)
 						.build()
