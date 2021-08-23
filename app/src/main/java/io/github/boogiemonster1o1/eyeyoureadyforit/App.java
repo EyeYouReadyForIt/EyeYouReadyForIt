@@ -40,10 +40,10 @@ import reactor.core.publisher.Mono;
 
 public class App {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
-	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static GatewayDiscordClient CLIENT;
-	private static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
-	private static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
+	public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
+	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
+	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
 	public static void main(String[] args) {
 		String token = args[0];

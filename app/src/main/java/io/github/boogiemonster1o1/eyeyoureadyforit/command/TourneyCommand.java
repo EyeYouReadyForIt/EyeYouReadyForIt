@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
+import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
@@ -76,8 +77,13 @@ public final class TourneyCommand {
 		}
 		EyeEntry entry = EyeEntry.getRandom();
 		channelMono.flatMap(channel -> channel.createMessage("Round #" + (data.getRound() + 1))).subscribe();
-		channelMono.flatMap(channel -> channel.createEmbed(spec -> {
-			App.createEyesEmbed(entry, spec);
+		channelMono.flatMap(channel -> channel.createMessage(spec -> {
+			spec.addEmbed(embed -> App.createEyesEmbed(entry, embed));
+			if (gsd.getTourneyData().shouldDisableHints()) {
+				spec.setComponents(ActionRow.of(App.DISABLED_HINT_BUTTON));
+			} else {
+				spec.setComponents(ActionRow.of(App.HINT_BUTTON));
+			}
 		})).subscribe(message1 -> {
 			synchronized (GuildSpecificData.LOCK) {
 				gsd.setCurrent(entry);
