@@ -45,12 +45,16 @@ public class App {
 	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
 	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
+	private static final String TOKEN = System.getenv("EYRFI_TOKEN") != null ? System.getenv("EYRFI_TOKEN") : System.getProperty("eyrfi.token");
+	private static final String URL = System.getenv("EYRFI_DB_URL") != null ? System.getenv("EYRFI_DB_URL") : System.getProperty("eyrfi.dbURL");
+	private static final String USERNAME = System.getenv("EYRFI_DB_USER") != null ? System.getenv("EYRFI_DB_USER") : System.getProperty("eyrfi.dbUser");
+	private static final String PASSWORD = System.getenv("EYRFI_DB_PASSWORD") != null ? System.getenv("EYRFI_DB_PASSWORD") : System.getProperty("eyrfi.dbPassword");
+
 	public static void main(String[] args) {
-		String token = args[0];
 		LOGGER.info("Starting Eye You Ready For It");
-		LOGGER.info("Using token {}", token);
-		EyeEntry.reload();
-		DiscordClient discordClient = DiscordClientBuilder.create(token).build();
+		LOGGER.info("Using token {}", TOKEN);
+		EyeEntry.reload(URL, USERNAME, PASSWORD);
+		DiscordClient discordClient = DiscordClientBuilder.create(TOKEN).build();
 		CLIENT = discordClient.login()
 				.blockOptional()
 				.orElseThrow();
@@ -98,7 +102,7 @@ public class App {
 						}
 					} else {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-							mspec.setEmbed(spec -> {
+							mspec.addEmbed(spec -> {
 								spec.setTitle("Incorrect!");
 								spec.setColor(Color.RED);
 								spec.setTimestamp(Instant.now());
@@ -126,7 +130,7 @@ public class App {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
 						LOGGER.info("Reloading data...");
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage("**Reloading data...**")).subscribe();
-						EyeEntry.reload();
+						EyeEntry.reload(URL, USERNAME, PASSWORD);
 					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
 						CLIENT.logout().block();
 					}
