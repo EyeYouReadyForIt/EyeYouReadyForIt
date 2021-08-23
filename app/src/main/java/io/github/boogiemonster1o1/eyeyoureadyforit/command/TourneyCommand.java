@@ -10,6 +10,7 @@ import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.MessageEditSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
@@ -77,14 +78,15 @@ public final class TourneyCommand {
 		}
 		EyeEntry entry = EyeEntry.getRandom();
 		channelMono.flatMap(channel -> channel.createMessage("Round #" + (data.getRound() + 1))).subscribe();
-		channelMono.flatMap(channel -> channel.createMessage(spec -> {
+		Mono<Message> messageMono = channelMono.flatMap(channel -> channel.createMessage(spec -> {
 			spec.addEmbed(embed -> App.createEyesEmbed(entry, embed));
 			if (gsd.getTourneyData().shouldDisableHints()) {
 				spec.setComponents(ActionRow.of(App.DISABLED_HINT_BUTTON));
 			} else {
 				spec.setComponents(ActionRow.of(App.HINT_BUTTON));
 			}
-		})).subscribe(message1 -> {
+		}));
+		messageMono.subscribe(message1 -> {
 			synchronized (GuildSpecificData.LOCK) {
 				gsd.setCurrent(entry);
 				gsd.setMessageId(message1.getId());
@@ -98,6 +100,7 @@ public final class TourneyCommand {
 			if (data.getLeaderboard()[round] == 0L) {
 				Mono<Message> mess = channelMono.flatMap(channel -> channel.createMessage(spec -> spec.setContent("Nobody guessed in time...")));
 				mess.subscribe(mess1 -> next(gsd, 0L, mess1.getChannel(), false));
+				messageMono.flatMap(message -> message.edit(MessageEditSpec::setComponents)).subscribe();
 			}
 		}, 30, TimeUnit.SECONDS);
 	}
