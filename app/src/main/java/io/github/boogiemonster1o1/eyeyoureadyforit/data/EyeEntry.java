@@ -64,10 +64,9 @@ public final class EyeEntry {
 	}
 
 	public static void reload(String connectionString, String user, String password) {
-		Path dbDir = Path.of(".", "db");
 		String s = "SELECT * FROM eyes_entries";
 
-		try (Connection conn = DriverManager.getConnection("jdbc:" + connectionString, user, password)) {
+		try (Connection conn = DriverManager.getConnection(connectionString, user, password)) {
 			try (Statement statement = conn.createStatement()) {
 				try (ResultSet set = statement.executeQuery(s)) {
 					ENTRIES.clear();

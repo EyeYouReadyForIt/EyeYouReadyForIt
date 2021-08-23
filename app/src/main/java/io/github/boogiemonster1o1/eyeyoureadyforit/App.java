@@ -1,9 +1,8 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
 import java.time.Instant;
+import java.util.Optional;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -45,10 +44,10 @@ public class App {
 	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
 	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
-	private static final String TOKEN = System.getenv("EYRFI_TOKEN") != null ? System.getenv("EYRFI_TOKEN") : System.getProperty("eyrfi.token");
-	private static final String URL = System.getenv("EYRFI_DB_URL") != null ? System.getenv("EYRFI_DB_URL") : System.getProperty("eyrfi.dbURL");
-	private static final String USERNAME = System.getenv("EYRFI_DB_USER") != null ? System.getenv("EYRFI_DB_USER") : System.getProperty("eyrfi.dbUser");
-	private static final String PASSWORD = System.getenv("EYRFI_DB_PASSWORD") != null ? System.getenv("EYRFI_DB_PASSWORD") : System.getProperty("eyrfi.dbPassword");
+	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(System.getenv("EYRFI_TOKEN"));
+	private static final String URL =  Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(System.getenv("EYRFI_DB_URL"));
+	private static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(System.getenv("EYRFI_DB_USER"));
+	private static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(System.getenv("EYRFI_DB_PASSWORD"));
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting Eye You Ready For It");
