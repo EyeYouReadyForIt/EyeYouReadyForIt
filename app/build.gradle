@@ -1,13 +1,11 @@
 plugins {
     id 'java'
     id 'application'
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://libraries.minecraft.net/'
-    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -16,7 +14,7 @@ targetCompatibility = JavaVersion.VERSION_11
 dependencies {
     implementation 'com.discord4j:discord4j-core:3.1.7'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
-    implementation 'com.h2database:h2:1.4.200'
+    implementation 'org.postgresql:postgresql:42.2.23.jre7'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
@@ -25,6 +23,14 @@ application {
 }
 
 jar {
+    manifest {
+        attributes (
+                'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
+        )
+    }
+}
+
+shadowJar {
     manifest {
         attributes (
                 'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'

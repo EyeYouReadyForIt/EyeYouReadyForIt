@@ -63,25 +63,18 @@ public final class EyeEntry {
 				'}';
 	}
 
-	public static void reload() {
-		Path dbDir = Path.of(".", "db");
-		try {
-			Class.forName("org.h2.Driver");
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+	public static void reload(String connectionString, String user, String password) {
+		String s = "SELECT * FROM eyes_entries";
 
-		String s = "SELECT * FROM EYES_ENTRIES";
-
-		try (Connection conn = DriverManager.getConnection("jdbc:h2:" + dbDir.toString())) {
+		try (Connection conn = DriverManager.getConnection(connectionString, user, password)) {
 			try (Statement statement = conn.createStatement()) {
 				try (ResultSet set = statement.executeQuery(s)) {
 					ENTRIES.clear();
 					while (set.next()) {
-						String name = set.getString("NAME");
-						String imageUrl = set.getString("IMAGE_URL");
-						String hint = set.getString("HINT");
-						List<String> aliases = Arrays.stream((Object[]) set.getArray("ALIASES").getArray()).map(Object::toString).collect(Collectors.toList());
+						String name = set.getString("name");
+						String imageUrl = set.getString("image_url");
+						String hint = set.getString("hint");
+						List<String> aliases = Arrays.stream((Object[]) set.getArray("aliases").getArray()).map(Object::toString).collect(Collectors.toList());
 						ENTRIES.add(new EyeEntry(imageUrl, name, hint, aliases));
 					}
 				}

@@ -1,9 +1,8 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
 import java.time.Instant;
+import java.util.Optional;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -45,12 +44,16 @@ public class App {
 	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
 	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
+	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
+	private static final String URL = Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
+	private static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
+	private static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
+
 	public static void main(String[] args) {
-		String token = args[0];
 		LOGGER.info("Starting Eye You Ready For It");
-		LOGGER.info("Using token {}", token);
-		EyeEntry.reload();
-		DiscordClient discordClient = DiscordClientBuilder.create(token).build();
+		LOGGER.info("Using token {}", TOKEN);
+		EyeEntry.reload(URL, USERNAME, PASSWORD);
+		DiscordClient discordClient = DiscordClientBuilder.create(TOKEN).build();
 		CLIENT = discordClient.login()
 				.blockOptional()
 				.orElseThrow();
@@ -98,7 +101,7 @@ public class App {
 						}
 					} else {
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-							mspec.setEmbed(spec -> {
+							mspec.addEmbed(spec -> {
 								spec.setTitle("Incorrect!");
 								spec.setColor(Color.RED);
 								spec.setTimestamp(Instant.now());
@@ -126,7 +129,7 @@ public class App {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
 						LOGGER.info("Reloading data...");
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage("**Reloading data...**")).subscribe();
-						EyeEntry.reload();
+						EyeEntry.reload(URL, USERNAME, PASSWORD);
 					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
 						CLIENT.logout().block();
 					}
