@@ -12,6 +12,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageEditSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.Util.TourneyStatisticsTracker;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ModeContext;
@@ -41,6 +42,7 @@ public final class TourneyCommand {
 
 	public static void next(GuildSpecificData gsd, long answerer, Mono<MessageChannel> channelMono, boolean justStarted) {
 		TourneyData data = gsd.getTourneyData();
+		TourneyStatisticsTracker tracker = TourneyStatisticsTracker.get(gsd.getGuildId());
 		int round;
 		if (justStarted) {
 			channelMono.flatMap(channel -> channel.createMessage("Starting Tourney")).subscribe();
@@ -68,6 +70,8 @@ public final class TourneyCommand {
 						spec.addField("Leaderboard", boardMessage, false);
 					}
 				})).subscribe(mess -> {
+					tracker.commit(App.URL, App.USERNAME, App.PASSWORD);
+					TourneyStatisticsTracker.reset(gsd.getGuildId());
 					gsd.reset();
 					gsd.setTourneyData(null);
 				});
@@ -99,6 +103,7 @@ public final class TourneyCommand {
 			}
 			if (data.getLeaderboard()[round] == 0L) {
 				Mono<Message> mess = channelMono.flatMap(channel -> channel.createMessage(spec -> spec.setContent("Nobody guessed in time...")));
+				tracker.addMissed();
 				mess.subscribe(mess1 -> next(gsd, 0L, mess1.getChannel(), false));
 				messageMono.flatMap(message -> message.edit(MessageEditSpec::setComponents)).subscribe();
 			}
@@ -108,7 +113,7 @@ public final class TourneyCommand {
 	private static ModeContext getMostCommon(List<? extends Number> participants) {
 		if(participants.stream().distinct().count() == 1) return new ModeContext(participants.get(0).longValue(), Collections.frequency(participants, participants.get(0)));
 
-		List<Long> list = new ArrayList<>();
+		List<Long> list;
 		list = participants.stream().map(Number::longValue).collect(Collectors.toList());
 
 		long mode = 0;

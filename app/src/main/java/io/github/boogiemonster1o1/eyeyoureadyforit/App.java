@@ -8,6 +8,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
@@ -29,6 +30,8 @@ import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
+import io.github.boogiemonster1o1.eyeyoureadyforit.Util.StatisticsManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.Util.TourneyStatisticsTracker;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
@@ -45,9 +48,9 @@ public class App {
 	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
 	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
-	private static final String URL = Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
-	private static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
-	private static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
+	public static final String URL = Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
+	public static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
+	public static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting Eye You Ready For It");
@@ -74,6 +77,10 @@ public class App {
 		}
 
 		CLIENT.getEventDispatcher()
+				.on(GuildCreateEvent.class)
+				.subscribe(event -> StatisticsManager.initDb(event.getGuild().getId(), App.URL, App.USERNAME, App.PASSWORD));
+
+		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
 				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getMessageId())).orElse(false))
@@ -97,6 +104,7 @@ public class App {
 								.subscribe();
 						data.reset();
 						if (data.isTourney()) {
+							TourneyStatisticsTracker.get(data.getGuildId()).addCorrect(event.getMember().get().getId());
 							TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
 						}
 					} else {
@@ -108,6 +116,9 @@ public class App {
 							});
 							mspec.setMessageReference(event.getMessage().getId());
 						})).subscribe();
+						if (data.isTourney()) {
+							TourneyStatisticsTracker.get(data.getGuildId()).addWrong(event.getMember().get().getId());
+						}
 					}
 				});
 
@@ -165,6 +176,7 @@ public class App {
 						if (gsd.isTourney() && gsd.getTourneyData().shouldDisableHints()) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
 						}
+						if (gsd.isTourney()) TourneyStatisticsTracker.get(gsd.getGuildId()).addHint(event.getInteraction().getUser().getId());
 						return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
 					case "reset":
 						if (gsd.isTourney()) {
