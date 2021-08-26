@@ -11,16 +11,14 @@ import java.util.Map;
 public class TourneyStatisticsTracker {
     //shitcode of the highest order
 
-    private HashMap<Snowflake, Statistic> statsMap;
+    private HashMap<Snowflake, Statistic> statsMap = new HashMap<>();
     private static final Map<Snowflake, TourneyStatisticsTracker> TOURNEY_STATISTICS_TRACKER_MAP = new HashMap<>();
     private int correct;
     private int wrong;
     private int missed;
     private Snowflake guildId;
 
-    public TourneyStatisticsTracker(Snowflake guildId) {
-        this.guildId = guildId;
-    }
+    public TourneyStatisticsTracker(Snowflake guildId) { this.guildId = guildId; }
 
     public static TourneyStatisticsTracker get(Snowflake guildId) {
         return TOURNEY_STATISTICS_TRACKER_MAP.computeIfAbsent(guildId, TourneyStatisticsTracker::new);

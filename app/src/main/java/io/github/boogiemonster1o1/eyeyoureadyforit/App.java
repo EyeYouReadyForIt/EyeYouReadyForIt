@@ -47,8 +47,8 @@ public class App {
 	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
 	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
-	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
 	public static final String URL = Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
+	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
 	public static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
 	public static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
 
@@ -193,6 +193,9 @@ public class App {
 			@Override
 			public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
 				if (event.getCustomId().equals("hint_button")) {
+					if(GuildSpecificData.get(event.getInteraction().getGuildId().get()).isTourney()) {
+						TourneyStatisticsTracker.get(event.getInteraction().getGuildId().get()).addHint(event.getInteraction().getUser().getId());
+					}
 					return event.reply(spec -> {
 						spec.setEphemeral(true);
 						spec.setContent(getHintContent(event));
