@@ -112,10 +112,8 @@ public final class TourneyCommand {
 
 	private static ModeContext getMostCommon(List<? extends Number> participants) {
 		if(participants.stream().distinct().count() == 1) return new ModeContext(participants.get(0).longValue(), Collections.frequency(participants, participants.get(0)));
-
-		List<Long> list;
-		list = participants.stream().map(Number::longValue).collect(Collectors.toList());
-
+		
+    List<Long> list = participants.stream().map(Number::longValue).collect(Collectors.toList());
 		long mode = 0;
 		int modeCount = 0;
 		HashMap<Long, Integer> hashMap = new HashMap<>();
