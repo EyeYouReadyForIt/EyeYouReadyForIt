@@ -19,13 +19,10 @@ public class Statistic {
     }
 
     public int getCorrectAnswers() { return correctAnswers; }
-    public void setCorrectAnswers(int correctAnswers) { this.correctAnswers = correctAnswers; }
 
     public int getWrongAnswers() { return wrongAnswers; }
-    public void setWrongAnswers(int wrongAnswers) { this.wrongAnswers = wrongAnswers; }
 
     public int getHintUses() { return hintUses; }
-    public void setHintUses(int hintUses) { this.hintUses = hintUses; }
 
     public Statistic add(Statistic toAdd) {
         return new Statistic(

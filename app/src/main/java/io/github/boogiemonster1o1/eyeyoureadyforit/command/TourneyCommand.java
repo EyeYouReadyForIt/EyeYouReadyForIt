@@ -12,7 +12,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageEditSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.Util.TourneyStatisticsTracker;
+import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ModeContext;

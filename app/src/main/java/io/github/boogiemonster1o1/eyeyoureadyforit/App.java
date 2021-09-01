@@ -1,7 +1,10 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
@@ -30,8 +33,8 @@ import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
-import io.github.boogiemonster1o1.eyeyoureadyforit.Util.StatisticsManager;
-import io.github.boogiemonster1o1.eyeyoureadyforit.Util.TourneyStatisticsTracker;
+import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
@@ -52,6 +55,8 @@ public class App {
 	public static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
 	public static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
 
+	public static Set<Snowflake> currentGuilds = new HashSet<>();
+
 	public static void main(String[] args) {
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", TOKEN);
@@ -60,6 +65,7 @@ public class App {
 		CLIENT = discordClient.login()
 				.blockOptional()
 				.orElseThrow();
+
 		CLIENT.getEventDispatcher()
 				.on(ReadyEvent.class)
 				.subscribe(event -> {
@@ -68,6 +74,8 @@ public class App {
 					LOGGER.info("Gateway version: {}", event.getGatewayVersion());
 					LOGGER.info("Session ID: {}", event.getSessionId());
 					LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
+
+					currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
 				});
 
 		RestClient restClient = CLIENT.getRestClient();
@@ -78,6 +86,7 @@ public class App {
 
 		CLIENT.getEventDispatcher()
 				.on(GuildCreateEvent.class)
+				.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
 				.subscribe(event -> StatisticsManager.initDb(event.getGuild().getId(), App.URL, App.USERNAME, App.PASSWORD));
 
 		CLIENT.getEventDispatcher()

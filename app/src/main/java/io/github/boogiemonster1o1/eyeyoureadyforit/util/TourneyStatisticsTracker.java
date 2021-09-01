@@ -1,7 +1,6 @@
-package io.github.boogiemonster1o1.eyeyoureadyforit.Util;
+package io.github.boogiemonster1o1.eyeyoureadyforit.util;
 
 import discord4j.common.util.Snowflake;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.Statistic;
 
 import java.sql.*;
