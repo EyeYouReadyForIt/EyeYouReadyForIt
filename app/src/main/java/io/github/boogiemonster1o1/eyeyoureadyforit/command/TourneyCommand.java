@@ -70,7 +70,7 @@ public final class TourneyCommand {
 						spec.addField("Leaderboard", boardMessage, false);
 					}
 				})).subscribe(mess -> {
-					tracker.commit(App.URL, App.USERNAME, App.PASSWORD);
+					tracker.commit();
 					TourneyStatisticsTracker.reset(gsd.getGuildId());
 					gsd.reset();
 					gsd.setTourneyData(null);

@@ -50,17 +50,14 @@ public class App {
 	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
 	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
-	public static final String URL = Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
 	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
-	public static final String USERNAME = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
-	public static final String PASSWORD = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
 
 	public static Set<Snowflake> currentGuilds = new HashSet<>();
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting Eye You Ready For It");
 		LOGGER.info("Using token {}", TOKEN);
-		EyeEntry.reload(URL, USERNAME, PASSWORD);
+		EyeEntry.reload();
 		DiscordClient discordClient = DiscordClientBuilder.create(TOKEN).build();
 		CLIENT = discordClient.login()
 				.blockOptional()
@@ -87,7 +84,7 @@ public class App {
 		CLIENT.getEventDispatcher()
 				.on(GuildCreateEvent.class)
 				.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
-				.subscribe(event -> StatisticsManager.initDb(event.getGuild().getId(), App.URL, App.USERNAME, App.PASSWORD));
+				.subscribe(event -> StatisticsManager.initDb(event.getGuild().getId()));
 
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
@@ -149,7 +146,7 @@ public class App {
 					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
 						LOGGER.info("Reloading data...");
 						event.getMessage().getChannel().flatMap(channel -> channel.createMessage("**Reloading data...**")).subscribe();
-						EyeEntry.reload(URL, USERNAME, PASSWORD);
+						EyeEntry.reload();
 					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
 						CLIENT.logout().block();
 					}

@@ -1,21 +1,19 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.util;
 
 import discord4j.common.util.Snowflake;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.DataDao;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.Statistic;
 
-import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TourneyStatisticsTracker {
     //shitcode of the highest order
 
-    private HashMap<Snowflake, Statistic> statsMap = new HashMap<>();
+    private final HashMap<Snowflake, Statistic> statsMap = new HashMap<>();
     private static final Map<Snowflake, TourneyStatisticsTracker> TOURNEY_STATISTICS_TRACKER_MAP = new HashMap<>();
-    private int correct;
-    private int wrong;
     private int missed;
-    private Snowflake guildId;
+    private final Snowflake guildId;
 
     public TourneyStatisticsTracker(Snowflake guildId) { this.guildId = guildId; }
 
@@ -28,47 +26,35 @@ public class TourneyStatisticsTracker {
     }
 
     public void addCorrect(Snowflake user) {
-        this.statsMap.put(user, this.statsMap.getOrDefault(user, new Statistic(0, 0, 0)).add(new Statistic(1, 0, 0)));
-        this.correct++;
+        statsMap.put(user, statsMap.getOrDefault(user, new Statistic()).add(new Statistic(1, 0, 0)));
     }
 
     public void addWrong(Snowflake user) {
-        this.statsMap.put(user, this.statsMap.getOrDefault(user, new Statistic(0, 0, 0)).add(new Statistic(0, 1, 0)));
-        this.wrong++;
+        statsMap.put(user, statsMap.getOrDefault(user, new Statistic()).add(new Statistic(0, 1, 0)));
     }
 
     public void addHint(Snowflake user) {
-        this.statsMap.put(user, this.statsMap.getOrDefault(user, new Statistic(0, 0, 0)).add(new Statistic(0, 0, 1)));
+        statsMap.put(user, statsMap.getOrDefault(user, new Statistic()).add(new Statistic(0, 0, 1)));
     }
 
     public void addMissed() {
         this.missed++;
     }
 
-    public void commit(String connectionString, String user, String password) {
-        try {
-            Connection con = DriverManager.getConnection(connectionString, user, password);
-            PreparedStatement setData = con.prepareStatement(String.format("INSERT INTO guild_data.data_%s AS d (id, correct, wrong, hints) VALUES (?, 0, 0, 0)\n" +
-                    "ON CONFLICT (id) DO UPDATE SET correct = d.correct + ?, wrong = d.wrong + ?, hints = d.hints + ? ", this.guildId.asString()));
-
-            for(Map.Entry<Snowflake, Statistic> entry : statsMap.entrySet()) {
-                setData.setLong(1, entry.getKey().asLong());
-                setData.setInt(2, entry.getValue().getCorrectAnswers());
-                setData.setInt(3, entry.getValue().getWrongAnswers());
-                setData.setInt(4, entry.getValue().getHintUses());
-                setData.executeUpdate();
+    public void commit() {
+        DataSource.get().withExtension(DataDao.class, dao -> {
+            for(Map.Entry<Snowflake, Statistic> entry : statsMap.entrySet()){
+                dao.addTourneyUserStats(
+                        guildId.asString(),
+                        entry.getKey().asLong(),
+                        entry.getValue().getCorrectAnswers(),
+                        entry.getValue().getWrongAnswers(),
+                        entry.getValue().getHintUses()
+                );
             }
 
-            PreparedStatement setGuildData = con.prepareStatement(String.format("UPDATE guild_data.data_%s SET missed = missed + ?, games = games + 1 WHERE id = 0", this.guildId.asString()));
-            setGuildData.setInt(1, missed);
-            setGuildData.executeUpdate();
-
-            setData.close();
-            setGuildData.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            dao.addTourneyGuildStats(guildId.asString(), missed);
+            return null;
+        });
     }
-
 }

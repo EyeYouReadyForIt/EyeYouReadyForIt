@@ -18,6 +18,12 @@ public class Statistic {
         this.hintUses = hintUses;
     }
 
+    public Statistic() {
+        this.correctAnswers = 0;
+        this.wrongAnswers = 0;
+        this.hintUses = 0;
+    }
+
     public int getCorrectAnswers() { return correctAnswers; }
 
     public int getWrongAnswers() { return wrongAnswers; }
