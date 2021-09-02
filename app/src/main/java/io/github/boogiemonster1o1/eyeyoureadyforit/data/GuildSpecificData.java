@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import discord4j.common.util.Snowflake;
-import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 
 public final class GuildSpecificData {
 	public static final Object LOCK = new Object(){};

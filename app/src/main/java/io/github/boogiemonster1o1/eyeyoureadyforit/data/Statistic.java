@@ -1,12 +1,10 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import java.util.Objects;
-
 public class Statistic {
 
-    private int correctAnswers;
-    private int wrongAnswers;
-    private int hintUses;
+    private final int correctAnswers;
+    private final int wrongAnswers;
+    private final int hintUses;
 
     public Statistic(int correctAnswers, int wrongAnswers, int hintUses) {
 
@@ -44,18 +42,5 @@ public class Statistic {
                 this.wrongAnswers - toSubtract.getWrongAnswers(),
                 this.hintUses - toSubtract.getHintUses()
         );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Statistic statistic = (Statistic) o;
-        return correctAnswers == statistic.correctAnswers && wrongAnswers == statistic.wrongAnswers && hintUses == statistic.hintUses;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(correctAnswers, wrongAnswers, hintUses);
     }
 }

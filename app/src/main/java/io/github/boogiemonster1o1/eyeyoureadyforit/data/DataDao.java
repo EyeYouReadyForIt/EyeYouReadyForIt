@@ -1,6 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.Define;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
