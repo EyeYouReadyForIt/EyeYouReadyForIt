@@ -7,7 +7,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.Statistic;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TourneyStatisticsTracker {
+public final class TourneyStatisticsTracker {
     //shitcode of the highest order
 
     private final HashMap<Snowflake, Statistic> statsMap = new HashMap<>();

@@ -1,6 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-public class Statistic {
+public final class Statistic {
 
     private final int correctAnswers;
     private final int wrongAnswers;

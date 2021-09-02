@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
 
 public class DataSource {
 
-    private static HikariConfig config = new HikariConfig();
     private static final Jdbi jdbi;
+    private static HikariConfig config = new HikariConfig();
+
     static {
         config.setJdbcUrl(Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url"))));
         config.setUsername(Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username"))));
@@ -25,12 +26,12 @@ public class DataSource {
                 .installPlugin(new SqlObjectPlugin())
                 .installPlugin(new PostgresPlugin())
                 .registerRowMapper(EyeEntry.class, (rs, ctx) -> new EyeEntry(
-                        rs.getString("image_url"),
                         rs.getString("name"),
+                        rs.getString("image_url"),
                         rs.getString("hint"),
                         Arrays.stream((Object[]) rs.getArray("aliases").getArray()).map(Object::toString).collect(Collectors.toList())
                 ));
     }
 
-    public static Jdbi get() { return jdbi; };
+    public static Jdbi get() { return jdbi; }
 }

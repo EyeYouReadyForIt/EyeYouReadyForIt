@@ -1,7 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.util.DataSource;
 
@@ -16,15 +14,9 @@ public final class EyeEntry {
 	private final String hint;
 	private final List<String> aliases;
 
-	@JsonCreator
-	public EyeEntry(
-			@JsonProperty("imageUrl") String imageUrl,
-			@JsonProperty("name") String name,
-			@JsonProperty("hint") String hint,
-			@JsonProperty("aliases") List<String> aliases
-	) {
-		this.imageUrl = imageUrl;
+	public EyeEntry(String name, String imageUrl, String hint, List<String> aliases) {
 		this.name = name;
+		this.imageUrl = imageUrl;
 		this.hint = hint;
 		this.aliases = aliases;
 	}

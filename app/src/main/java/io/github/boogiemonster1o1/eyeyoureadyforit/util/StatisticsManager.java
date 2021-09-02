@@ -5,7 +5,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.DataDao;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-public class StatisticsManager {
+public final class StatisticsManager {
 
     public static Mono initDb(Snowflake guildId) {
         return Mono.fromRunnable(() -> {
