@@ -9,7 +9,8 @@ public final class Statistic {
     public Statistic(int correctAnswers, int wrongAnswers, int hintUses) {
 
         // i had to use all my self control to not make it throw 'thoo'
-        if(correctAnswers < 0 || wrongAnswers < 0 || hintUses < 0) throw new IllegalArgumentException("Statistic values cannot be negative");
+        if (correctAnswers < 0 || wrongAnswers < 0 || hintUses < 0)
+            throw new IllegalArgumentException("Statistic values cannot be negative");
 
         this.correctAnswers = correctAnswers;
         this.wrongAnswers = wrongAnswers;
@@ -22,11 +23,17 @@ public final class Statistic {
         this.hintUses = 0;
     }
 
-    public int getCorrectAnswers() { return correctAnswers; }
+    public int getCorrectAnswers() {
+        return correctAnswers;
+    }
 
-    public int getWrongAnswers() { return wrongAnswers; }
+    public int getWrongAnswers() {
+        return wrongAnswers;
+    }
 
-    public int getHintUses() { return hintUses; }
+    public int getHintUses() {
+        return hintUses;
+    }
 
     public Statistic add(Statistic toAdd) {
         return new Statistic(

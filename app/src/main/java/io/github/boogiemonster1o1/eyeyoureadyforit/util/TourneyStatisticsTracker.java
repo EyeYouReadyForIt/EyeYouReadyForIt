@@ -11,7 +11,7 @@ public final class TourneyStatisticsTracker {
     //shitcode of the highest order
 
     private final HashMap<Snowflake, Statistic> statsMap = new HashMap<>();
-    private static final Map<Snowflake, TourneyStatisticsTracker> TOURNEY_STATISTICS_TRACKER_MAP = new HashMap<>();
+    private static final Map<Snowflake, Map<Snowflake, TourneyStatisticsTracker>> TOURNEY_STATISTICS_TRACKER_MAP = new HashMap<>();
     private int missed;
     private final Snowflake guildId;
     private final Snowflake channelId;
@@ -22,11 +22,11 @@ public final class TourneyStatisticsTracker {
     }
 
     public static TourneyStatisticsTracker get(Snowflake guildId, Snowflake channelId) {
-        return TOURNEY_STATISTICS_TRACKER_MAP.computeIfAbsent(channelId, );
+        return TOURNEY_STATISTICS_TRACKER_MAP.computeIfAbsent(guildId, (gid) -> new HashMap<>()).computeIfAbsent(channelId, (cid) -> new TourneyStatisticsTracker(guildId, channelId));
     }
 
-    public static void reset(Snowflake guildId) {
-        TOURNEY_STATISTICS_TRACKER_MAP.put(guildId, new TourneyStatisticsTracker(guildId));
+    public static void reset(Snowflake guildId, Snowflake channelId) {
+        TOURNEY_STATISTICS_TRACKER_MAP.get(guildId).put(channelId, new TourneyStatisticsTracker(guildId, channelId));
     }
 
     public void addCorrect(Snowflake user) {
@@ -47,9 +47,9 @@ public final class TourneyStatisticsTracker {
 
     public void commit() {
         DataSource.get().withExtension(DataDao.class, dao -> {
-            for(Map.Entry<Snowflake, Statistic> entry : statsMap.entrySet()){
+            for (Map.Entry<Snowflake, Statistic> entry : statsMap.entrySet()) {
                 dao.addTourneyUserStats(
-                        channelId.asString(),
+                        guildId.asString(),
                         entry.getKey().asLong(),
                         entry.getValue().getCorrectAnswers(),
                         entry.getValue().getWrongAnswers(),

@@ -28,7 +28,7 @@ application {
 
 jar {
     manifest {
-        attributes (
+        attributes(
                 'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
         )
     }
@@ -36,7 +36,7 @@ jar {
 
 shadowJar {
     manifest {
-        attributes (
+        attributes(
                 'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
         )
     }

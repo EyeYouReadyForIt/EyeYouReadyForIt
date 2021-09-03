@@ -1,11 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -33,320 +27,328 @@ import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
-import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
-import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
+import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class App {
-	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
-	private static GatewayDiscordClient CLIENT;
-	public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
-	public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
-	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
+    public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
+    private static GatewayDiscordClient CLIENT;
+    public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
+    public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
+    public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
 
-	private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
+    private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
 
-	public static Set<Snowflake> currentGuilds = new HashSet<>();
+    public static Set<Snowflake> currentGuilds = new HashSet<>();
 
-	public static void main(String[] args) {
-		LOGGER.info("Starting Eye You Ready For It");
-		LOGGER.info("Using token {}", TOKEN);
-		EyeEntry.reload();
-		DiscordClient discordClient = DiscordClientBuilder.create(TOKEN).build();
-		CLIENT = discordClient.login()
-				.blockOptional()
-				.orElseThrow();
+    public static void main(String[] args) {
+        LOGGER.info("Starting Eye You Ready For It");
+        LOGGER.info("Using token {}", TOKEN);
+        EyeEntry.reload();
+        DiscordClient discordClient = DiscordClientBuilder.create(TOKEN).build();
+        CLIENT = discordClient.login()
+                .blockOptional()
+                .orElseThrow();
 
-		CLIENT.getEventDispatcher()
-				.on(ReadyEvent.class)
-				.subscribe(event -> {
-					LOGGER.info("Logged in as [{}#{}]", event.getData().user().username(), event.getData().user().discriminator());
-					LOGGER.info("Guilds: {}", event.getGuilds().size());
-					LOGGER.info("Gateway version: {}", event.getGatewayVersion());
-					LOGGER.info("Session ID: {}", event.getSessionId());
-					LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
+        CLIENT.getEventDispatcher()
+                .on(ReadyEvent.class)
+                .subscribe(event -> {
+                    LOGGER.info("Logged in as [{}#{}]", event.getData().user().username(), event.getData().user().discriminator());
+                    LOGGER.info("Guilds: {}", event.getGuilds().size());
+                    LOGGER.info("Gateway version: {}", event.getGatewayVersion());
+                    LOGGER.info("Session ID: {}", event.getSessionId());
+                    LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
 
-					currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
-				});
+                    currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
+                });
 
-		RestClient restClient = CLIENT.getRestClient();
-		long applicationId = restClient.getApplicationId().block();
-		if (args.length >= 2 && args[1].equals("reg")) {
-			registerCommands(restClient, applicationId);
-		}
+        RestClient restClient = CLIENT.getRestClient();
+        long applicationId = restClient.getApplicationId().block();
+        if (args.length >= 2 && args[1].equals("reg")) {
+            registerCommands(restClient, applicationId);
+        }
 
-		CLIENT.getEventDispatcher()
-				.on(GuildCreateEvent.class)
-				.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
-				.subscribe(event -> StatisticsManager.initDb(event.getGuild().getId()));
+        CLIENT.getEventDispatcher()
+                .on(GuildCreateEvent.class)
+                .filter(event -> !currentGuilds.contains(event.getGuild().getId()))
+                .subscribe(event -> StatisticsManager.initDb(event.getGuild().getId()));
 
-		CLIENT.getEventDispatcher()
-				.on(MessageCreateEvent.class)
-				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
-				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getChannel(event.getMessage().getChannelId()).getMessageId())).orElse(false))
-				.subscribe(event -> {
-					String content = event.getMessage().getContent().toLowerCase();
-					ChannelSpecificData data = GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getChannel(event.getMessage().getChannelId());
-					EyeEntry current = data.getCurrent();
-					Snowflake messageId = data.getMessageId();
-					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName(), data)) {
-						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-							mspec.addEmbed(spec -> {
-								spec.setTitle("Correct!");
-								spec.setDescription(current.getName());
-								spec.setColor(Color.GREEN);
-								spec.setTimestamp(Instant.now());
-							});
-							mspec.setMessageReference(event.getMessage().getId());
-						})).subscribe();
-						event.getMessage().getChannel().flatMap(channel -> channel.getMessageById(messageId))
-								.flatMap(message -> message.edit(MessageEditSpec::setComponents))
-								.subscribe();
-						data.reset();
-						if (data.isTourney()) {
-							TourneyStatisticsTracker.get(data.getChannelId()).addCorrect(event.getMember().get().getId());
-							TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
-						}
-					} else {
-						event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-							mspec.addEmbed(spec -> {
-								spec.setTitle("Incorrect!");
-								spec.setColor(Color.RED);
-								spec.setTimestamp(Instant.now());
-							});
-							mspec.setMessageReference(event.getMessage().getId());
-						})).subscribe();
-						if (data.isTourney()) {
-							TourneyStatisticsTracker.get(data.getChannelId()).addWrong(event.getMember().get().getId());
-						}
-					}
-				});
+        CLIENT.getEventDispatcher()
+                .on(MessageCreateEvent.class)
+                .filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
+                .filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getChannel(event.getMessage().getChannelId()).getMessageId())).orElse(false))
+                .subscribe(event -> {
+                    String content = event.getMessage().getContent().toLowerCase();
+                    GuildSpecificData guildData = GuildSpecificData.get(event.getGuildId().orElseThrow());
+                    ChannelSpecificData data = guildData.getChannel(event.getMessage().getChannelId());
+                    EyeEntry current = data.getCurrent();
+                    Snowflake messageId = data.getMessageId();
+                    if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName(), data)) {
+                        event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
+                            mspec.addEmbed(spec -> {
+                                spec.setTitle("Correct!");
+                                spec.setDescription(current.getName());
+                                spec.setColor(Color.GREEN);
+                                spec.setTimestamp(Instant.now());
+                            });
+                            mspec.setMessageReference(event.getMessage().getId());
+                        })).subscribe();
+                        event.getMessage().getChannel().flatMap(channel -> channel.getMessageById(messageId))
+                                .flatMap(message -> message.edit(MessageEditSpec::setComponents))
+                                .subscribe();
+                        data.reset();
+                        if (data.isTourney()) {
+                            TourneyStatisticsTracker.get(guildData.getGuildId(), data.getChannelId()).addCorrect(event.getMember().get().getId());
+                            TourneyCommand.next(guildData, data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
+                        }
+                    } else {
+                        event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
+                            mspec.addEmbed(spec -> {
+                                spec.setTitle("Incorrect!");
+                                spec.setColor(Color.RED);
+                                spec.setTimestamp(Instant.now());
+                            });
+                            mspec.setMessageReference(event.getMessage().getId());
+                        })).subscribe();
+                        if (data.isTourney()) {
+                            TourneyStatisticsTracker.get(guildData.getGuildId(), data.getChannelId()).addWrong(event.getMember().get().getId());
+                        }
+                    }
+                });
 
-		CLIENT.getEventDispatcher()
-				.on(MessageDeleteEvent.class)
-				.filterWhen(
-						event -> Mono.justOrEmpty(event.getMessage().flatMap(Message::getAuthor))
-								.map(user -> user.getId().equals(getClient().getSelfId()))
-				)
-				.filter(event -> event.getGuildId().isPresent())
-				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
-				.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).reset());
+        CLIENT.getEventDispatcher()
+                .on(MessageDeleteEvent.class)
+                .filterWhen(
+                        event -> Mono.justOrEmpty(event.getMessage().flatMap(Message::getAuthor))
+                                .map(user -> user.getId().equals(getClient().getSelfId()))
+                )
+                .filter(event -> event.getGuildId().isPresent())
+                .filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
+                .subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).reset());
 
-		CLIENT.getEventDispatcher()
-				.on(MessageCreateEvent.class)
-				.filter(event -> event.getMember().isPresent() && event.getMember().get().getId().asLong() == 699945276156280893L)
-				.filter(event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit "))
-				.subscribe(event -> {
-					if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
-						event.getMessage().getChannel().flatMap(channel -> channel.createMessage("**Reloading data...**")).subscribe();
-						EyeEntry.reload();
-					} else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
-						CLIENT.logout().block();
-					}
-				});
+        CLIENT.getEventDispatcher()
+                .on(MessageCreateEvent.class)
+                .filter(event -> event.getMember().isPresent() && event.getMember().get().getId().asLong() == 699945276156280893L)
+                .filter(event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit "))
+                .subscribe(event -> {
+                    if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
+                        event.getMessage().getChannel().flatMap(channel -> channel.createMessage("**Reloading data...**")).subscribe();
+                        EyeEntry.reload();
+                    } else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
+                        CLIENT.logout().block();
+                    }
+                });
 
-		CLIENT.on(new ReactiveEventAdapter() {
-			@Override
-			public Publisher<?> onSlashCommand(SlashCommandEvent event) {
-				if (event.getInteraction().getGuildId().isEmpty()) {
-					return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("You can only run this command in a guild"));
-				}
+        CLIENT.on(new ReactiveEventAdapter() {
+            @Override
+            public Publisher<?> onSlashCommand(SlashCommandEvent event) {
+                if (event.getInteraction().getGuildId().isEmpty()) {
+                    return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("You can only run this command in a guild"));
+                }
 
-				String name = event.getCommandName();
-				GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
-				ChannelSpecificData csd = gsd.getChannel(event.getInteraction().getChannelId());
+                String name = event.getCommandName();
+                GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
+                ChannelSpecificData csd = gsd.getChannel(event.getInteraction().getChannelId());
 
-				switch (name) {
-					case "eyes":
-						if (csd.getMessageId() != null && csd.getCurrent() != null) {
-							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
-						}
-						if (csd.isTourney()) {
-							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
-						}
-						EyeEntry entry = EyeEntry.getRandom();
-						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
-							synchronized (GuildSpecificData.LOCK) {
-								csd.setCurrent(entry);
-								csd.setMessageId(Snowflake.of(data.id()));
-							}
-							return data;
-						});
-					case "hint":
-						if (csd.isTourney() && csd.getTourneyData().shouldDisableHints()) {
-							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
-						}
-						if (gsd.isTourney()) TourneyStatisticsTracker.get(gsd.getGuildId()).addHint(event.getInteraction().getUser().getId());
-						return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
-					case "reset":
-						if (csd.isTourney()) {
-							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
-						}
-						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(new EmbedCreateSpec(), event).asRequest()).build())));
-					case "tourney":
-						return TourneyCommand.handle(event, csd);
-				}
+                switch (name) {
+                    case "eyes":
+                        if (csd.getMessageId() != null && csd.getCurrent() != null) {
+                            return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
+                        }
+                        if (csd.isTourney()) {
+                            return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
+                        }
+                        EyeEntry entry = EyeEntry.getRandom();
+                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
+                            synchronized (GuildSpecificData.LOCK) {
+                                csd.setCurrent(entry);
+                                csd.setMessageId(Snowflake.of(data.id()));
+                            }
+                            return data;
+                        });
+                    case "hint":
+                        if (csd.isTourney() && csd.getTourneyData().shouldDisableHints()) {
+                            return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
+                        }
+                        if (csd.isTourney())
+                            TourneyStatisticsTracker.get(gsd.getGuildId(), csd.getChannelId()).addHint(event.getInteraction().getUser().getId());
+                        return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
+                    case "reset":
+                        if (csd.isTourney()) {
+                            return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
+                        }
+                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(new EmbedCreateSpec(), event).asRequest()).build())));
+                    case "tourney":
+                        return TourneyCommand.handle(event, gsd, csd);
+                }
 
-				return Mono.empty();
-			}
+                return Mono.empty();
+            }
 
-			@Override
-			public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
-				if (event.getCustomId().equals("hint_button")) {
-					if(GuildSpecificData.get(event.getInteraction().getGuildId().get()).isTourney()) {
-						TourneyStatisticsTracker.get(event.getInteraction().getGuildId().get()).addHint(event.getInteraction().getUser().getId());
-					}
-					return event.reply(spec -> {
-						spec.setEphemeral(true);
-						spec.setContent(getHintContent(event));
-					});
-				} else if (event.getCustomId().equals("reset_button")) {
-					return event.reply(spec -> spec.addEmbed(eSpec -> addResetFooter(eSpec, event)));
-				}
+            @Override
+            public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
+                if (event.getCustomId().equals("hint_button")) {
+                    if (GuildSpecificData.get(event.getInteraction().getGuildId().get()).getChannel(event.getInteraction().getChannelId()).isTourney()) {
+                        TourneyStatisticsTracker.get(event.getInteraction().getGuildId().get(), event.getInteraction().getChannelId()).addHint(event.getInteraction().getUser().getId());
+                    }
+                    return event.reply(spec -> {
+                        spec.setEphemeral(true);
+                        spec.setContent(getHintContent(event));
+                    });
+                } else if (event.getCustomId().equals("reset_button")) {
+                    return event.reply(spec -> spec.addEmbed(eSpec -> addResetFooter(eSpec, event)));
+                }
 
-				return Mono.empty();
-			}
-		}).blockLast();
-		CLIENT.onDisconnect().block();
-	}
+                return Mono.empty();
+            }
+        }).blockLast();
+        CLIENT.onDisconnect().block();
+    }
 
-	private static boolean isFirstName(String allegedFirst, String name, ChannelSpecificData data) {
-		if (data.isTourney() && data.getTourneyData().shouldDisableFirstNames()) {
-			return false;
-		} else if (name.indexOf(' ') == -1) {
-			return false;
-		}
+    private static boolean isFirstName(String allegedFirst, String name, ChannelSpecificData data) {
+        if (data.isTourney() && data.getTourneyData().shouldDisableFirstNames()) {
+            return false;
+        } else if (name.indexOf(' ') == -1) {
+            return false;
+        }
 
-		String sub = allegedFirst.substring(0, name.indexOf(' '));
+        String sub = allegedFirst.substring(0, name.indexOf(' '));
 
-		return sub.equalsIgnoreCase(allegedFirst);
-	}
+        return sub.equalsIgnoreCase(allegedFirst);
+    }
 
-	public static WebhookMultipartRequest getEyesRequest(EyeEntry entry) {
-		return new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build());
-	}
+    public static WebhookMultipartRequest getEyesRequest(EyeEntry entry) {
+        return new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build());
+    }
 
-	private static String getHintContent(InteractionCreateEvent event) {
-		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
+    private static String getHintContent(InteractionCreateEvent event) {
+        ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
 
-		if (data.getMessageId() != null && data.getCurrent() != null) {
-			return data.getCurrent().getHint();
-		}
+        if (data.getMessageId() != null && data.getCurrent() != null) {
+            return data.getCurrent().getHint();
+        }
 
-		return "**There is no context available**";
-	}
+        return "**There is no context available**";
+    }
 
-	private static EmbedCreateSpec addResetFooter(EmbedCreateSpec eSpec, InteractionCreateEvent event) {
-		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
-		if (data.getMessageId() != null && data.getCurrent() != null) {
-			if (!data.getCurrent().getAliases().isEmpty()) {
-				eSpec.setDescription("Aliases: " + data.getCurrent().getAliases());
-			}
-			eSpec.setTitle("The person was **" + data.getCurrent().getName() + "**");
-			event.getInteraction().getChannel()
-					.flatMap(channel -> channel.getMessageById(data.getMessageId()))
-					.flatMap(message -> message.edit(MessageEditSpec::setComponents))
-					.subscribe();
-		} else {
-			eSpec.setTitle("Reset");
-			eSpec.setDescription("But there was no context :p");
-		}
-		eSpec.setTimestamp(Instant.now());
-		eSpec.setColor(Color.RED);
-		eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
-		data.reset();
-		return eSpec;
-	}
+    private static EmbedCreateSpec addResetFooter(EmbedCreateSpec eSpec, InteractionCreateEvent event) {
+        ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
+        if (data.getMessageId() != null && data.getCurrent() != null) {
+            if (!data.getCurrent().getAliases().isEmpty()) {
+                eSpec.setDescription("Aliases: " + data.getCurrent().getAliases());
+            }
+            eSpec.setTitle("The person was **" + data.getCurrent().getName() + "**");
+            event.getInteraction().getChannel()
+                    .flatMap(channel -> channel.getMessageById(data.getMessageId()))
+                    .flatMap(message -> message.edit(MessageEditSpec::setComponents))
+                    .subscribe();
+        } else {
+            eSpec.setTitle("Reset");
+            eSpec.setDescription("But there was no context :p");
+        }
+        eSpec.setTimestamp(Instant.now());
+        eSpec.setColor(Color.RED);
+        eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
+        data.reset();
+        return eSpec;
+    }
 
-	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry, EmbedCreateSpec spec) {
-		spec.setImage(entry.getImageUrl());
-		spec.setTitle("Guess the Person");
-		spec.setDescription("Reply to this message with the answer");
-		spec.setTimestamp(Instant.now());
-		return spec;
-	}
+    public static EmbedCreateSpec createEyesEmbed(EyeEntry entry, EmbedCreateSpec spec) {
+        spec.setImage(entry.getImageUrl());
+        spec.setTitle("Guess the Person");
+        spec.setDescription("Reply to this message with the answer");
+        spec.setTimestamp(Instant.now());
+        return spec;
+    }
 
-	private static void registerCommands(RestClient restClient, long applicationId) {
-		LOGGER.info("REGISTERING COMMANDS YEE HAW");
-		restClient.getApplicationService()
-				.createGlobalApplicationCommand(
-						applicationId,
-						ApplicationCommandRequest.builder()
-								.name("eyes")
-								.description("Shows a pair of eyes")
-								.build()
-				)
-				.doOnError(Throwable::printStackTrace)
-				.onErrorResume(e -> Mono.empty())
-				.block();
-		restClient.getApplicationService()
-				.createGlobalApplicationCommand(
-						applicationId,
-						ApplicationCommandRequest.builder()
-								.name("hint")
-								.description("Shows a hint")
-								.build()
-				)
-				.doOnError(Throwable::printStackTrace)
-				.onErrorResume(e -> Mono.empty())
-				.block();
-		restClient.getApplicationService()
-				.createGlobalApplicationCommand(
-						applicationId,
-						ApplicationCommandRequest.builder()
-								.name("reset")
-								.description("Resets")
-								.build()
-				)
-				.doOnError(Throwable::printStackTrace)
-				.onErrorResume(e -> Mono.empty())
-				.block();
+    private static void registerCommands(RestClient restClient, long applicationId) {
+        LOGGER.info("REGISTERING COMMANDS YEE HAW");
+        restClient.getApplicationService()
+                .createGlobalApplicationCommand(
+                        applicationId,
+                        ApplicationCommandRequest.builder()
+                                .name("eyes")
+                                .description("Shows a pair of eyes")
+                                .build()
+                )
+                .doOnError(Throwable::printStackTrace)
+                .onErrorResume(e -> Mono.empty())
+                .block();
+        restClient.getApplicationService()
+                .createGlobalApplicationCommand(
+                        applicationId,
+                        ApplicationCommandRequest.builder()
+                                .name("hint")
+                                .description("Shows a hint")
+                                .build()
+                )
+                .doOnError(Throwable::printStackTrace)
+                .onErrorResume(e -> Mono.empty())
+                .block();
+        restClient.getApplicationService()
+                .createGlobalApplicationCommand(
+                        applicationId,
+                        ApplicationCommandRequest.builder()
+                                .name("reset")
+                                .description("Resets")
+                                .build()
+                )
+                .doOnError(Throwable::printStackTrace)
+                .onErrorResume(e -> Mono.empty())
+                .block();
 
-		restClient.getApplicationService().createGlobalApplicationCommand(
-				applicationId,
-				ApplicationCommandRequest
-						.builder()
-						.name("tourney")
-						.description("Starts a tourney")
-						.addOption(
-								ApplicationCommandOptionData
-										.builder()
-										.required(true)
-										.type(ApplicationCommandOptionType.INTEGER.getValue())
-										.name("rounds")
-										.description("Number of rounds. From 5 to 10")
-										.build()
-						)
-						.addOption(
-								ApplicationCommandOptionData
-										.builder()
-										.required(false)
-										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
-										.name("hintsdisabled")
-										.description("Whether Hints are disabled")
-										.build()
-						)
-						.addOption(
-								ApplicationCommandOptionData
-										.builder()
-										.required(false)
-										.type(ApplicationCommandOptionType.BOOLEAN.getValue())
-										.name("firstnamesdisabled")
-										.description("Whether first names are disabled")
-										.build()
-						)
-						.build()
-		).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
-	}
+        restClient.getApplicationService().createGlobalApplicationCommand(
+                applicationId,
+                ApplicationCommandRequest
+                        .builder()
+                        .name("tourney")
+                        .description("Starts a tourney")
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .required(true)
+                                        .type(ApplicationCommandOptionType.INTEGER.getValue())
+                                        .name("rounds")
+                                        .description("Number of rounds. From 5 to 10")
+                                        .build()
+                        )
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .required(false)
+                                        .type(ApplicationCommandOptionType.BOOLEAN.getValue())
+                                        .name("hintsdisabled")
+                                        .description("Whether Hints are disabled")
+                                        .build()
+                        )
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .required(false)
+                                        .type(ApplicationCommandOptionType.BOOLEAN.getValue())
+                                        .name("firstnamesdisabled")
+                                        .description("Whether first names are disabled")
+                                        .build()
+                        )
+                        .build()
+        ).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
+    }
 
-	public static GatewayDiscordClient getClient() {
-		return CLIENT;
-	}
+    public static GatewayDiscordClient getClient() {
+        return CLIENT;
+    }
 }

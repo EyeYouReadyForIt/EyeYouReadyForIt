@@ -14,12 +14,12 @@ public interface DataDao {
 
     @SqlUpdate(
             "CREATE TABLE IF NOT EXISTS guild_data.data_<table> (\n" +
-            "id BIGINT PRIMARY KEY,\n" +
-            "correct INTEGER,\n" +
-            "wrong INTEGER,\n" +
-            "hints INTEGER,\n" +
-            "missed INTEGER,\n" +
-            "games INTEGER);")
+                    "id BIGINT PRIMARY KEY,\n" +
+                    "correct INTEGER,\n" +
+                    "wrong INTEGER,\n" +
+                    "hints INTEGER,\n" +
+                    "missed INTEGER,\n" +
+                    "games INTEGER);")
     void createTable(@Define("table") String guildId);
 
     @SqlUpdate("INSERT INTO guild_data.data_<table> (id, missed, games) VALUES (0, 0, 0) ON CONFLICT DO NOTHING")

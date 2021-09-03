@@ -33,5 +33,7 @@ public class DataSource {
                 ));
     }
 
-    public static Jdbi get() { return jdbi; }
+    public static Jdbi get() {
+        return jdbi;
+    }
 }

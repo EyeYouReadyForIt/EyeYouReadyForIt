@@ -1,7 +1,9 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.stream.LongStream;
 
 @SuppressWarnings("unused")
