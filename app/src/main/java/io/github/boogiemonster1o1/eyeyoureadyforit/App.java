@@ -27,6 +27,7 @@ import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.StatsCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
@@ -194,6 +195,8 @@ public class App {
                         return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(new EmbedCreateSpec(), event).asRequest()).build())));
                     case "tourney":
                         return TourneyCommand.handle(event, gsd, csd);
+                    case "stats":
+                        return StatsCommand.handle(event);
                 }
 
                 return Mono.empty();

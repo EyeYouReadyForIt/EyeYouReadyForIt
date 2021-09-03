@@ -1,6 +1,12 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-public final class Statistic {
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public final class Statistic implements RowMapper<Statistic> {
 
     private final int correctAnswers;
     private final int wrongAnswers;
@@ -49,5 +55,10 @@ public final class Statistic {
                 this.wrongAnswers - toSubtract.getWrongAnswers(),
                 this.hintUses - toSubtract.getHintUses()
         );
+    }
+
+    @Override
+    public Statistic map(ResultSet rs, StatementContext ctx) throws SQLException {
+        return new Statistic(rs.getInt("correct"), rs.getInt("wrong"), rs.getInt("hints"));
     }
 }

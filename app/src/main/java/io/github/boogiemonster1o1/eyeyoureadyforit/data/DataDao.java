@@ -1,5 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
+import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.Define;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -11,6 +12,10 @@ public interface DataDao {
 
     @SqlQuery("SELECT * FROM eyes_entries")
     ArrayList<EyeEntry> getEyes();
+
+    @SqlQuery("SELECT * FROM guild_data.data_<table> WHERE id = :id")
+    @RegisterRowMapper(Statistic.class)
+    Statistic getUserStats(@Define("table") String guildId, @Bind("id") long userId);
 
     @SqlUpdate(
             "CREATE TABLE IF NOT EXISTS guild_data.data_<table> (\n" +
