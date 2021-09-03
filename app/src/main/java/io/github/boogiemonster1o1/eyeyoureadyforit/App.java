@@ -17,6 +17,7 @@ import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.MessageReference;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -90,6 +91,9 @@ public class App {
 								spec.setDescription(current.getName());
 								spec.setColor(Color.GREEN);
 								spec.setTimestamp(Instant.now());
+								if (data.usedHint(event.getMember().map(Member::getId).orElseThrow())) {
+									spec.setFooter("Hint Used", null);
+								}
 							});
 							mspec.setMessageReference(event.getMessage().getId());
 						})).subscribe();
@@ -167,7 +171,8 @@ public class App {
 						if (csd.isTourney() && csd.getTourneyData().shouldDisableHints()) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
 						}
-						return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
+						csd.addHintUser(event.getInteraction().getUser().getId());
+						return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(csd, event)).build())));
 					case "reset":
 						if (csd.isTourney()) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
@@ -182,10 +187,12 @@ public class App {
 
 			@Override
 			public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
+				ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
 				if (event.getCustomId().equals("hint_button")) {
+					data.addHintUser(event.getInteraction().getUser().getId());
 					return event.reply(spec -> {
 						spec.setEphemeral(true);
-						spec.setContent(getHintContent(event));
+						spec.setContent(getHintContent(data, event));
 					});
 				} else if (event.getCustomId().equals("reset_button")) {
 					return event.reply(spec -> spec.addEmbed(eSpec -> addResetFooter(eSpec, event)));
@@ -213,9 +220,7 @@ public class App {
 		return new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build());
 	}
 
-	private static String getHintContent(InteractionCreateEvent event) {
-		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
-
+	private static String getHintContent(ChannelSpecificData data, InteractionCreateEvent event) {
 		if (data.getMessageId() != null && data.getCurrent() != null) {
 			return data.getCurrent().getHint();
 		}
