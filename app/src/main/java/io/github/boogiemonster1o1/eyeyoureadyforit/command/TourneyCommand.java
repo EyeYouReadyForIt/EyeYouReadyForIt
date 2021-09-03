@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -86,10 +87,13 @@ public final class TourneyCommand {
 				spec.setComponents(ActionRow.of(App.HINT_BUTTON));
 			}
 		}));
+		var id = new Object() {
+			Snowflake snowflake = null;
+		};
 		messageMono.subscribe(message1 -> {
 			synchronized (GuildSpecificData.LOCK) {
 				gsd.setCurrent(entry);
-				gsd.setMessageId(message1.getId());
+				gsd.setMessageId(id.snowflake = message1.getId());
 			}
 		});
 
@@ -100,7 +104,10 @@ public final class TourneyCommand {
 			if (data.getLeaderboard()[round] == 0L) {
 				Mono<Message> mess = channelMono.flatMap(channel -> channel.createMessage(spec -> spec.setContent("Nobody guessed in time...")));
 				mess.subscribe(mess1 -> next(gsd, 0L, mess1.getChannel(), false));
-//				messageMono.flatMap(message -> message.edit(MessageEditSpec::setComponents)).subscribe();
+				Mono.justOrEmpty(id.snowflake)
+						.flatMap(sf -> channelMono.flatMap(channel -> channel.getMessageById(sf)))
+						.flatMap(m -> m.edit(MessageEditSpec::setComponents))
+						.subscribe();
 			}
 		}, 30, TimeUnit.SECONDS);
 	}
