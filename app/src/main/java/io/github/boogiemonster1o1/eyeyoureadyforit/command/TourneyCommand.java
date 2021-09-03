@@ -100,7 +100,7 @@ public final class TourneyCommand {
 			if (data.getLeaderboard()[round] == 0L) {
 				Mono<Message> mess = channelMono.flatMap(channel -> channel.createMessage(spec -> spec.setContent("Nobody guessed in time...")));
 				mess.subscribe(mess1 -> next(gsd, 0L, mess1.getChannel(), false));
-				messageMono.flatMap(message -> message.edit(MessageEditSpec::setComponents)).subscribe();
+//				messageMono.flatMap(message -> message.edit(MessageEditSpec::setComponents)).subscribe();
 			}
 		}, 30, TimeUnit.SECONDS);
 	}
