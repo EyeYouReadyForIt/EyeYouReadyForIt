@@ -14,11 +14,15 @@ public final class TourneyStatisticsTracker {
     private static final Map<Snowflake, TourneyStatisticsTracker> TOURNEY_STATISTICS_TRACKER_MAP = new HashMap<>();
     private int missed;
     private final Snowflake guildId;
+    private final Snowflake channelId;
 
-    public TourneyStatisticsTracker(Snowflake guildId) { this.guildId = guildId; }
+    public TourneyStatisticsTracker(Snowflake guildId, Snowflake channelId) {
+        this.guildId = guildId;
+        this.channelId = channelId;
+    }
 
-    public static TourneyStatisticsTracker get(Snowflake guildId) {
-        return TOURNEY_STATISTICS_TRACKER_MAP.computeIfAbsent(guildId, TourneyStatisticsTracker::new);
+    public static TourneyStatisticsTracker get(Snowflake guildId, Snowflake channelId) {
+        return TOURNEY_STATISTICS_TRACKER_MAP.computeIfAbsent(channelId, );
     }
 
     public static void reset(Snowflake guildId) {
@@ -45,7 +49,7 @@ public final class TourneyStatisticsTracker {
         DataSource.get().withExtension(DataDao.class, dao -> {
             for(Map.Entry<Snowflake, Statistic> entry : statsMap.entrySet()){
                 dao.addTourneyUserStats(
-                        guildId.asString(),
+                        channelId.asString(),
                         entry.getKey().asLong(),
                         entry.getValue().getCorrectAnswers(),
                         entry.getValue().getWrongAnswers(),

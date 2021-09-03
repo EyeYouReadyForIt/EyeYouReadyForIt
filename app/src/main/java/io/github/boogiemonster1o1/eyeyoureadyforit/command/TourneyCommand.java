@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -13,6 +14,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageEditSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ModeContext;
@@ -22,8 +24,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 public final class TourneyCommand {
-	public static Publisher<?> handle(SlashCommandEvent event, GuildSpecificData gsd) {
-		if (gsd.isTourney()) {
+	public static Publisher<?> handle(SlashCommandEvent event, ChannelSpecificData csd) {
+		if (csd.isTourney()) {
 			event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a tourney**"));
 		}
 		int rounds = (int) event.getOption("rounds").orElseThrow().getValue().orElseThrow().asLong();
@@ -33,16 +35,17 @@ public final class TourneyCommand {
 		boolean disableHints = event.getOption("hintsdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
 		boolean disableFirstNames = event.getOption("firstnamesdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
 		TourneyData tourneyData = new TourneyData(rounds, disableHints, disableFirstNames);
-		gsd.setTourneyData(tourneyData);
+		csd.setTourneyData(tourneyData);
 
-		next(gsd, 0L, event.getInteraction().getChannel(), true);
+		next(csd, 0L, event.getInteraction().getChannel(), true);
 
 		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
 	}
 
-	public static void next(GuildSpecificData gsd, long answerer, Mono<MessageChannel> channelMono, boolean justStarted) {
-		TourneyData data = gsd.getTourneyData();
-		TourneyStatisticsTracker tracker = TourneyStatisticsTracker.get(gsd.getGuildId());
+
+	public static void next(ChannelSpecificData csd, long answerer, Mono<MessageChannel> channelMono, boolean justStarted) {
+		TourneyData data = csd.getTourneyData();
+		TourneyStatisticsTracker tracker = TourneyStatisticsTracker.get(csd.getChannelId());
 		int round;
 		if (justStarted) {
 			channelMono.flatMap(channel -> channel.createMessage("Starting Tourney")).subscribe();
@@ -71,29 +74,32 @@ public final class TourneyCommand {
 					}
 				})).subscribe(mess -> {
 					tracker.commit();
-					TourneyStatisticsTracker.reset(gsd.getGuildId());
-					gsd.reset();
-					gsd.setTourneyData(null);
+					TourneyStatisticsTracker.reset(csd.getChannelId());
+					csd.reset();
+					csd.setTourneyData(null);
 				});
 				return;
 			}
-			gsd.reset();
+			csd.reset();
 			data.setRound(round = data.getRound() + 1);
 		}
 		EyeEntry entry = EyeEntry.getRandom();
 		channelMono.flatMap(channel -> channel.createMessage("Round #" + (data.getRound() + 1))).subscribe();
 		Mono<Message> messageMono = channelMono.flatMap(channel -> channel.createMessage(spec -> {
 			spec.addEmbed(embed -> App.createEyesEmbed(entry, embed));
-			if (gsd.getTourneyData().shouldDisableHints()) {
+			if (csd.getTourneyData().shouldDisableHints()) {
 				spec.setComponents(ActionRow.of(App.DISABLED_HINT_BUTTON));
 			} else {
 				spec.setComponents(ActionRow.of(App.HINT_BUTTON));
 			}
 		}));
+		var id = new Object() {
+			Snowflake snowflake = null;
+		};
 		messageMono.subscribe(message1 -> {
 			synchronized (GuildSpecificData.LOCK) {
-				gsd.setCurrent(entry);
-				gsd.setMessageId(message1.getId());
+				csd.setCurrent(entry);
+				csd.setMessageId(id.snowflake = message1.getId());
 			}
 		});
 
@@ -104,8 +110,11 @@ public final class TourneyCommand {
 			if (data.getLeaderboard()[round] == 0L) {
 				Mono<Message> mess = channelMono.flatMap(channel -> channel.createMessage(spec -> spec.setContent("Nobody guessed in time...")));
 				tracker.addMissed();
-				mess.subscribe(mess1 -> next(gsd, 0L, mess1.getChannel(), false));
-				messageMono.flatMap(message -> message.edit(MessageEditSpec::setComponents)).subscribe();
+				mess.subscribe(mess1 -> next(csd, 0L, mess1.getChannel(), false));
+				Mono.justOrEmpty(id.snowflake)
+						.flatMap(sf -> channelMono.flatMap(channel -> channel.getMessageById(sf)))
+						.flatMap(m -> m.edit(MessageEditSpec::setComponents))
+						.subscribe();
 			}
 		}, 30, TimeUnit.SECONDS);
 	}

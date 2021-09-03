@@ -36,6 +36,7 @@ import discord4j.rest.util.WebhookMultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import org.reactivestreams.Publisher;
@@ -89,10 +90,10 @@ public class App {
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
-				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getMessageId())).orElse(false))
+				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getChannel(event.getMessage().getChannelId()).getMessageId())).orElse(false))
 				.subscribe(event -> {
 					String content = event.getMessage().getContent().toLowerCase();
-					GuildSpecificData data = GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow());
+					ChannelSpecificData data = GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getChannel(event.getMessage().getChannelId());
 					EyeEntry current = data.getCurrent();
 					Snowflake messageId = data.getMessageId();
 					if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName(), data)) {
@@ -110,7 +111,7 @@ public class App {
 								.subscribe();
 						data.reset();
 						if (data.isTourney()) {
-							TourneyStatisticsTracker.get(data.getGuildId()).addCorrect(event.getMember().get().getId());
+							TourneyStatisticsTracker.get(data.getChannelId()).addCorrect(event.getMember().get().getId());
 							TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
 						}
 					} else {
@@ -123,7 +124,7 @@ public class App {
 							mspec.setMessageReference(event.getMessage().getId());
 						})).subscribe();
 						if (data.isTourney()) {
-							TourneyStatisticsTracker.get(data.getGuildId()).addWrong(event.getMember().get().getId());
+							TourneyStatisticsTracker.get(data.getChannelId()).addWrong(event.getMember().get().getId());
 						}
 					}
 				});
@@ -135,8 +136,8 @@ public class App {
 								.map(user -> user.getId().equals(getClient().getSelfId()))
 				)
 				.filter(event -> event.getGuildId().isPresent())
-				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getMessageId()))
-				.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).reset());
+				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
+				.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).reset());
 
 		CLIENT.getEventDispatcher()
 				.on(MessageCreateEvent.class)
@@ -160,36 +161,37 @@ public class App {
 
 				String name = event.getCommandName();
 				GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
+				ChannelSpecificData csd = gsd.getChannel(event.getInteraction().getChannelId());
 
 				switch (name) {
 					case "eyes":
-						if (gsd.getMessageId() != null && gsd.getCurrent() != null) {
+						if (csd.getMessageId() != null && csd.getCurrent() != null) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
 						}
-						if (gsd.isTourney()) {
+						if (csd.isTourney()) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
 						}
 						EyeEntry entry = EyeEntry.getRandom();
 						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
 							synchronized (GuildSpecificData.LOCK) {
-								gsd.setCurrent(entry);
-								gsd.setMessageId(Snowflake.of(data.id()));
+								csd.setCurrent(entry);
+								csd.setMessageId(Snowflake.of(data.id()));
 							}
 							return data;
 						});
 					case "hint":
-						if (gsd.isTourney() && gsd.getTourneyData().shouldDisableHints()) {
+						if (csd.isTourney() && csd.getTourneyData().shouldDisableHints()) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
 						}
 						if (gsd.isTourney()) TourneyStatisticsTracker.get(gsd.getGuildId()).addHint(event.getInteraction().getUser().getId());
 						return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
 					case "reset":
-						if (gsd.isTourney()) {
+						if (csd.isTourney()) {
 							return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
 						}
 						return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(new EmbedCreateSpec(), event).asRequest()).build())));
 					case "tourney":
-						return TourneyCommand.handle(event, gsd);
+						return TourneyCommand.handle(event, csd);
 				}
 
 				return Mono.empty();
@@ -215,7 +217,7 @@ public class App {
 		CLIENT.onDisconnect().block();
 	}
 
-	private static boolean isFirstName(String allegedFirst, String name, GuildSpecificData data) {
+	private static boolean isFirstName(String allegedFirst, String name, ChannelSpecificData data) {
 		if (data.isTourney() && data.getTourneyData().shouldDisableFirstNames()) {
 			return false;
 		} else if (name.indexOf(' ') == -1) {
@@ -232,7 +234,7 @@ public class App {
 	}
 
 	private static String getHintContent(InteractionCreateEvent event) {
-		GuildSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
+		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
 
 		if (data.getMessageId() != null && data.getCurrent() != null) {
 			return data.getCurrent().getHint();
@@ -242,7 +244,7 @@ public class App {
 	}
 
 	private static EmbedCreateSpec addResetFooter(EmbedCreateSpec eSpec, InteractionCreateEvent event) {
-		GuildSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
+		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
 		if (data.getMessageId() != null && data.getCurrent() != null) {
 			if (!data.getCurrent().getAliases().isEmpty()) {
 				eSpec.setDescription("Aliases: " + data.getCurrent().getAliases());
