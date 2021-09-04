@@ -2,7 +2,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.util;
 
 import discord4j.common.util.Snowflake;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.DataDao;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.Statistic;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.UserStatistic;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Map;
 public final class TourneyStatisticsTracker {
     //shitcode of the highest order
 
-    private final HashMap<Snowflake, Statistic> statsMap = new HashMap<>();
+    private final HashMap<Snowflake, UserStatistic> statsMap = new HashMap<>();
     private static final Map<Snowflake, Map<Snowflake, TourneyStatisticsTracker>> TOURNEY_STATISTICS_TRACKER_MAP = new HashMap<>();
     private int missed;
     private final Snowflake guildId;
@@ -30,15 +30,15 @@ public final class TourneyStatisticsTracker {
     }
 
     public void addCorrect(Snowflake user) {
-        statsMap.put(user, statsMap.getOrDefault(user, new Statistic()).add(new Statistic(1, 0, 0)));
+        statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(1, 0, 0)));
     }
 
     public void addWrong(Snowflake user) {
-        statsMap.put(user, statsMap.getOrDefault(user, new Statistic()).add(new Statistic(0, 1, 0)));
+        statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 1, 0)));
     }
 
     public void addHint(Snowflake user) {
-        statsMap.put(user, statsMap.getOrDefault(user, new Statistic()).add(new Statistic(0, 0, 1)));
+        statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 0, 1)));
     }
 
     public void addMissed() {
@@ -47,7 +47,7 @@ public final class TourneyStatisticsTracker {
 
     public void commit() {
         DataSource.get().withExtension(DataDao.class, dao -> {
-            for (Map.Entry<Snowflake, Statistic> entry : statsMap.entrySet()) {
+            for (Map.Entry<Snowflake, UserStatistic> entry : statsMap.entrySet()) {
                 dao.addTourneyUserStats(
                         guildId.asString(),
                         entry.getKey().asLong(),

@@ -14,8 +14,11 @@ public interface DataDao {
     ArrayList<EyeEntry> getEyes();
 
     @SqlQuery("SELECT * FROM guild_data.data_<table> WHERE id = :id")
-    @RegisterRowMapper(Statistic.class)
-    Statistic getUserStats(@Define("table") String guildId, @Bind("id") long userId);
+    @RegisterRowMapper(UserStatistic.class)
+    UserStatistic getUserStats(@Define("table") String guildId, @Bind("id") long userId);
+
+    @SqlQuery("SELECT * FROM guild_data.data_<table> WHERE id = 0")
+    GuildStatistic getGuildStats(@Define("table") String guildId);
 
     @SqlUpdate(
             "CREATE TABLE IF NOT EXISTS guild_data.data_<table> (\n" +

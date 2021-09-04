@@ -79,7 +79,7 @@ public class App {
 
         RestClient restClient = CLIENT.getRestClient();
         long applicationId = restClient.getApplicationId().block();
-        if (args.length >= 2 && args[1].equals("reg")) {
+        if (args.length >= 1 && args[0].equals("reg")) {
             registerCommands(restClient, applicationId);
         }
 
@@ -143,7 +143,7 @@ public class App {
 
         CLIENT.getEventDispatcher()
                 .on(MessageCreateEvent.class)
-                .filter(event -> event.getMember().isPresent() && event.getMember().get().getId().asLong() == 699945276156280893L)
+                .filter(event -> event.getMember().isPresent() && event.getGuildId().get().asLong() == 859274373084479508L)
                 .filter(event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit "))
                 .subscribe(event -> {
                     if (event.getMessage().getContent().equals("!eyeyoureadyforit reload")) {
@@ -151,6 +151,43 @@ public class App {
                         EyeEntry.reload();
                     } else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
                         CLIENT.logout().block();
+                    }
+                    else if (event.getMessage().getContent().equals("!eyeyoureadyforit register")) {
+                        event.getMessage().getChannel().flatMap(reference -> reference.createMessage("h")).subscribe();
+                        restClient.getApplicationService().createGuildApplicationCommand(
+                                applicationId,
+                                859274373084479508L,
+                                ApplicationCommandRequest
+                                        .builder()
+                                        .name("stats2")
+                                        .description("Looks up user and server statistics")
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+                                        .name("users")
+                                        .description("Looks up statistics for a selected user")
+                                        .addOption(ApplicationCommandOptionData
+                                                .builder()
+                                                .required(false)
+                                                .type(ApplicationCommandOptionType.USER.getValue())
+                                                .name("user")
+                                                .description("User to look up, defaults to command user")
+                                                .build()
+                                        )
+                                        .build()
+
+                        )
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+                                        .name("server")
+                                        .description("Looks up statistics for the current server")
+                                        .build()
+
+                        )
+                                        .build()).subscribe(e -> event.getMessage().getChannel().flatMap(h -> h.createMessage("done")).subscribe());
                     }
                 });
 
@@ -196,6 +233,7 @@ public class App {
                     case "tourney":
                         return TourneyCommand.handle(event, gsd, csd);
                     case "stats":
+                    case "stats2":
                         return StatsCommand.handle(event);
                 }
 
@@ -349,6 +387,8 @@ public class App {
                         )
                         .build()
         ).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
+
+
     }
 
     public static GatewayDiscordClient getClient() {

@@ -3,6 +3,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.util;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildStatistic;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
@@ -30,6 +31,10 @@ public class DataSource {
                         rs.getString("image_url"),
                         rs.getString("hint"),
                         Arrays.stream((Object[]) rs.getArray("aliases").getArray()).map(Object::toString).collect(Collectors.toList())
+                ))
+                .registerRowMapper(GuildStatistic.class, (rs, ctx) -> new GuildStatistic(
+                        rs.getInt("missed"),
+                        rs.getInt("games")
                 ));
     }
 
