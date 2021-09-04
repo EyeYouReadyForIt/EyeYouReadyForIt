@@ -3,12 +3,10 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.Color;
-import discord4j.rest.util.Image;
 import discord4j.rest.util.WebhookMultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildStatistic;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.UserStatistic;
@@ -17,13 +15,15 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.List;
 
 public class StatsCommand {
 
     public static Publisher handle(SlashCommandEvent event) {
 
-        if(event.getOption("server").isPresent()) return event.reply(event.getInteraction().getGuild().subscribe(guild -> guild.getName()));
+        List<ApplicationCommandInteractionOption> list = event.getOptions();
 
+        if(event.getOption("server").isPresent()) return handleGuildStatsCommand(event);
         return handleUserStatsCommand(event);
 
     }
@@ -31,7 +31,7 @@ public class StatsCommand {
     private static Mono handleUserStatsCommand(SlashCommandEvent event) {
         // looking at this makes me want to cry
 
-        Mono<User> userMono = Mono.justOrEmpty(event.getOption("user")
+        Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").get().getOption("user")
                 .flatMap(ApplicationCommandInteractionOption::getValue)
         ).flatMap(ApplicationCommandInteractionOptionValue::asUser)
                 .switchIfEmpty(Mono.just(event.getInteraction().getUser()));
@@ -77,7 +77,7 @@ public class StatsCommand {
                             .setColor(Color.of(0, 93, 186))
                             .addField("Tourneys Played", Integer.toString(statistic.getGames()), true)
                             .addField("Eyes Missed", Integer.toString(statistic.getMissed()), true)
-                            .setFooter(String.format("Guild ID: %s", guild.getId()), null)
+                            .setFooter(String.format("Guild ID: %s", guild.getId().asString()), null)
                             .setTimestamp(Instant.now());
 
                     return event.acknowledge().then(

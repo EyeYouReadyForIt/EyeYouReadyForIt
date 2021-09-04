@@ -152,43 +152,6 @@ public class App {
                     } else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
                         CLIENT.logout().block();
                     }
-                    else if (event.getMessage().getContent().equals("!eyeyoureadyforit register")) {
-                        event.getMessage().getChannel().flatMap(reference -> reference.createMessage("h")).subscribe();
-                        restClient.getApplicationService().createGuildApplicationCommand(
-                                applicationId,
-                                859274373084479508L,
-                                ApplicationCommandRequest
-                                        .builder()
-                                        .name("stats2")
-                                        .description("Looks up user and server statistics")
-                        .addOption(
-                                ApplicationCommandOptionData
-                                        .builder()
-                                        .type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
-                                        .name("users")
-                                        .description("Looks up statistics for a selected user")
-                                        .addOption(ApplicationCommandOptionData
-                                                .builder()
-                                                .required(false)
-                                                .type(ApplicationCommandOptionType.USER.getValue())
-                                                .name("user")
-                                                .description("User to look up, defaults to command user")
-                                                .build()
-                                        )
-                                        .build()
-
-                        )
-                        .addOption(
-                                ApplicationCommandOptionData
-                                        .builder()
-                                        .type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
-                                        .name("server")
-                                        .description("Looks up statistics for the current server")
-                                        .build()
-
-                        )
-                                        .build()).subscribe(e -> event.getMessage().getChannel().flatMap(h -> h.createMessage("done")).subscribe());
-                    }
                 });
 
         CLIENT.on(new ReactiveEventAdapter() {
@@ -233,7 +196,6 @@ public class App {
                     case "tourney":
                         return TourneyCommand.handle(event, gsd, csd);
                     case "stats":
-                    case "stats2":
                         return StatsCommand.handle(event);
                 }
 
@@ -316,8 +278,9 @@ public class App {
         return spec;
     }
 
-    private static void registerCommands(RestClient restClient, long applicationId) {
+    private static Mono registerCommands(RestClient restClient, long applicationId) {
         LOGGER.info("REGISTERING COMMANDS YEE HAW");
+
         restClient.getApplicationService()
                 .createGlobalApplicationCommand(
                         applicationId,
@@ -329,6 +292,7 @@ public class App {
                 .doOnError(Throwable::printStackTrace)
                 .onErrorResume(e -> Mono.empty())
                 .block();
+
         restClient.getApplicationService()
                 .createGlobalApplicationCommand(
                         applicationId,
@@ -340,6 +304,7 @@ public class App {
                 .doOnError(Throwable::printStackTrace)
                 .onErrorResume(e -> Mono.empty())
                 .block();
+
         restClient.getApplicationService()
                 .createGlobalApplicationCommand(
                         applicationId,
@@ -388,6 +353,44 @@ public class App {
                         .build()
         ).doOnError(Throwable::printStackTrace).onErrorResume(e -> Mono.empty()).block();
 
+        restClient.getApplicationService().createGlobalApplicationCommand(
+                applicationId,
+                ApplicationCommandRequest
+                        .builder()
+                        .name("stats")
+                        .description("Looks up user and server statistics")
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+                                        .name("users")
+                                        .description("Looks up statistics for a selected user")
+                                        .addOption(ApplicationCommandOptionData
+                                                .builder()
+                                                .required(false)
+                                                .type(ApplicationCommandOptionType.USER.getValue())
+                                                .name("user")
+                                                .description("User to look up, defaults to command user")
+                                                .build()
+                                        )
+                                        .build()
+
+                        )
+                        .addOption(
+                                ApplicationCommandOptionData
+                                        .builder()
+                                        .type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+                                        .name("server")
+                                        .description("Looks up statistics for the current server")
+                                        .build()
+
+                        )
+                        .build())
+                .doOnError(Throwable::printStackTrace)
+                .onErrorResume(e -> Mono.empty())
+                .block();
+
+        return Mono.empty();
 
     }
 
