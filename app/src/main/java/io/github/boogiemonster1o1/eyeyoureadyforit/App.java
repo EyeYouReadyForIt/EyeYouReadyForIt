@@ -15,6 +15,7 @@ import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.MessageReference;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -46,6 +47,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class App {
+
     public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
     private static GatewayDiscordClient CLIENT;
     public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
