@@ -7,27 +7,26 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class GuildStatistic implements RowMapper<GuildStatistic> {
+	private final int missed;
+	private final int games;
 
-    private final int missed;
-    private final int games;
+	public GuildStatistic(int missed, int games) {
+		if (missed < 0 || games < 0) throw new IllegalArgumentException("Statistic values cannot be negative");
 
-    public GuildStatistic(int missed, int games) {
-        if (missed < 0 || games < 0) throw new IllegalArgumentException("Statistic values cannot be negative");
+		this.missed = missed;
+		this.games = games;
+	}
 
-        this.missed = missed;
-        this.games = games;
-    }
+	public int getMissed() {
+		return missed;
+	}
 
-    public int getMissed() {
-        return missed;
-    }
+	public int getGames() {
+		return games;
+	}
 
-    public int getGames() {
-        return games;
-    }
-
-    @Override
-    public GuildStatistic map(ResultSet rs, StatementContext ctx) throws SQLException {
-        return new GuildStatistic(rs.getInt("missed"), rs.getInt("games"));
-    }
+	@Override
+	public GuildStatistic map(ResultSet rs, StatementContext ctx) throws SQLException {
+		return new GuildStatistic(rs.getInt("missed"), rs.getInt("games"));
+	}
 }

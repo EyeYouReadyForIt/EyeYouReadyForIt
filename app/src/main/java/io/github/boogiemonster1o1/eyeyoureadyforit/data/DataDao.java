@@ -9,7 +9,6 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import java.util.ArrayList;
 
 public interface DataDao {
-
     @SqlQuery("SELECT * FROM eyes_entries")
     ArrayList<EyeEntry> getEyes();
 
@@ -45,5 +44,4 @@ public interface DataDao {
 
     @SqlUpdate("UPDATE guild_data.data_<table> SET missed = missed + :missed, games = games + 1 WHERE id = 0")
     void addTourneyGuildStats(@Define("table") String guildId, @Bind("missed") int missed);
-
 }
