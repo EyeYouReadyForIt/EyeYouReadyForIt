@@ -22,7 +22,7 @@ public class StatsCommand {
 
     public static Publisher handle(SlashCommandEvent event) {
 
-        if(event.getOption("server").isPresent()) return handleGuildStatsCommand(event);
+        if(event.getOption("server").isPresent()) return event.reply(event.getInteraction().getGuild().subscribe(guild -> guild.getName()));
 
         return handleUserStatsCommand(event);
 
@@ -69,26 +69,26 @@ public class StatsCommand {
     }
 
     private static Mono handleGuildStatsCommand(SlashCommandEvent event) {
-        return StatisticsManager.getGuildStats(event.getInteraction().getGuildId().orElseThrow())
+        return event.getInteraction().getGuild().flatMap(guild -> StatisticsManager.getGuildStats(guild.getId())
                 .defaultIfEmpty(new GuildStatistic(0, 0))
                 .flatMap(statistic -> {
                     EmbedCreateSpec embedSpec = new EmbedCreateSpec()
-                            .setTitle(String.format("Server Statistics: %s", event.getInteraction().getGuild().map(Guild::getName).block()))
+                            .setTitle(String.format("Server Statistics: %s", guild.getName()))
                             .setColor(Color.of(0, 93, 186))
                             .addField("Tourneys Played", Integer.toString(statistic.getGames()), true)
                             .addField("Eyes Missed", Integer.toString(statistic.getMissed()), true)
-                            .setFooter(String.format("Guild ID: %s", event.getInteraction().getGuildId().orElseThrow().asString()), null)
+                            .setFooter(String.format("Guild ID: %s", guild.getId()), null)
                             .setTimestamp(Instant.now());
 
                     return event.acknowledge().then(
                             event.getInteractionResponse().createFollowupMessage(
                                     new WebhookMultipartRequest(WebhookExecuteRequest
-                                                    .builder()
-                                                    .addEmbed(embedSpec.asRequest())
-                                                    .build()
+                                            .builder()
+                                            .addEmbed(embedSpec.asRequest())
+                                            .build()
                                     )
                             )
                     );
-                });
+                }));
     }
 }
