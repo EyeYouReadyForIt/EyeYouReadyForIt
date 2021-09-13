@@ -56,9 +56,10 @@ public final class TourneyCommand {
                     if (distincts.length == 0) {
                         spec.addField("Leaderboard", "No participants :/", false);
                     } else if (distincts.length == 1) {
-                        spec.addField("Leaderboard", ":first_place: <@" + distincts[0] + "> - " + leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count(), false);
+                        spec.addField("Leaderboard", String.format(":first_place: <@%s> - %s", distincts[0], leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count()), false);
                     } else {
                         ModeContext first = getMostCommon(leaderboard);
+                        tracker.setWon(Snowflake.of(first.getMode()));
                         ModeContext second = getMostCommon(leaderboard.stream().filter(l -> l != first.getMode()).collect(Collectors.toList()));
                         String boardMessage = String.format(":first_place: <@%s> - %s\n" +
                                 ":second_place: <@%s> - %s", first.getMode(), first.getCount(), second.getMode(), second.getCount());

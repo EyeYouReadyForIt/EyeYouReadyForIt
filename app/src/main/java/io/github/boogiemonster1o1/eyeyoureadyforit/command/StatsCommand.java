@@ -52,6 +52,8 @@ public class StatsCommand {
                                 .addField("Correct Answers", Integer.toString(statistic.getCorrectAnswers()), true)
                                 .addField("Wrong Answers", Integer.toString(statistic.getWrongAnswers()), true)
                                 .addField("Hints Used", Integer.toString(statistic.getHintUses()), true)
+								.addField("Tourneys Won", Integer.toString(statistic.getGamesWon()), true)
+								.addField("Server Rank", Integer.toString(statistic.getRank()), true)
                                 .setFooter(String.format("User ID: %s", user.getId().asString()), null)
                                 .setTimestamp(Instant.now());
 

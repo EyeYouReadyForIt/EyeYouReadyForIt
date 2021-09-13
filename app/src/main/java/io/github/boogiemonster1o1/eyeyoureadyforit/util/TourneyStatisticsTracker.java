@@ -31,15 +31,19 @@ public final class TourneyStatisticsTracker {
 	}
 
 	public void addCorrect(Snowflake user) {
-		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(1, 0, 0)));
+		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(1, 0, 0, 0, 0)));
 	}
 
 	public void addWrong(Snowflake user) {
-		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 1, 0)));
+		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 1, 0, 0, 0)));
 	}
 
 	public void addHint(Snowflake user) {
-		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 0, 1)));
+		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 0, 1, 0, 0)));
+	}
+
+	public void setWon(Snowflake user) {
+		statsMap.put(user, statsMap.getOrDefault(user, new UserStatistic()).add(new UserStatistic(0, 0, 0, 1, 0)));
 	}
 
 	public void addMissed() {
@@ -54,7 +58,8 @@ public final class TourneyStatisticsTracker {
 						entry.getKey().asLong(),
 						entry.getValue().getCorrectAnswers(),
 						entry.getValue().getWrongAnswers(),
-						entry.getValue().getHintUses()
+						entry.getValue().getHintUses(),
+						entry.getValue().getGamesWon()
 				);
 			}
 
