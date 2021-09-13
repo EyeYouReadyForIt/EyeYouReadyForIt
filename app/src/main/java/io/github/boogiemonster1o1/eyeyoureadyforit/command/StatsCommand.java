@@ -8,89 +8,117 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
+import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildStatistic;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.Leaderboard;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.UserStatistic;
 import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class StatsCommand {
 
-    public static Publisher handle(SlashCommandEvent event) {
+	public static Mono<?> handle(SlashCommandEvent event) {
 
-        List<ApplicationCommandInteractionOption> list = event.getOptions();
+		if (event.getOption("server").isPresent()) return handleGuildStatsCommand(event);
+		return handleUserStatsCommand(event);
 
-        if(event.getOption("server").isPresent()) return handleGuildStatsCommand(event);
-        return handleUserStatsCommand(event);
+	}
 
-    }
+	private static Mono<?> handleUserStatsCommand(SlashCommandEvent event) {
+		// looking at this makes me want to cry
 
-    private static Mono handleUserStatsCommand(SlashCommandEvent event) {
-        // looking at this makes me want to cry
-
-        Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").get().getOption("user")
-                .flatMap(ApplicationCommandInteractionOption::getValue)
-        ).flatMap(ApplicationCommandInteractionOptionValue::asUser)
-                .switchIfEmpty(Mono.just(event.getInteraction().getUser()));
+		Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").get().getOption("user")
+				.flatMap(ApplicationCommandInteractionOption::getValue)
+		).flatMap(ApplicationCommandInteractionOptionValue::asUser)
+				.switchIfEmpty(Mono.just(event.getInteraction().getUser()));
 
 
-        return userMono.flatMap(user -> {
-            if(user.isBot()) return event.replyEphemeral("**Statistics are not available for bots!**");
 
-            return StatisticsManager.getUserStats(
-                    event.getInteraction().getGuildId().orElseThrow(),
-                    user.getId())
-                    .defaultIfEmpty(new UserStatistic())
-                    .flatMap(statistic -> {
-                        EmbedCreateSpec embedSpec = new EmbedCreateSpec()
-                                .setTitle(String.format("User Statistics: %s#%s", user.getUsername(), user.getDiscriminator()))
-                                .setThumbnail(user.getAvatarUrl())
-                                .setColor(Color.of(0, 93, 186))
-                                .addField("Correct Answers", Integer.toString(statistic.getCorrectAnswers()), true)
-                                .addField("Wrong Answers", Integer.toString(statistic.getWrongAnswers()), true)
-                                .addField("Hints Used", Integer.toString(statistic.getHintUses()), true)
-								.addField("Tourneys Won", Integer.toString(statistic.getGamesWon()), true)
-								.addField("Server Rank", Integer.toString(statistic.getRank()), true)
-                                .setFooter(String.format("User ID: %s", user.getId().asString()), null)
-                                .setTimestamp(Instant.now());
+		return userMono.flatMap(user -> {
+			if (user.isBot()) return event.replyEphemeral("**Statistics are not available for bots!**");
 
-                        return event.acknowledge().then(
-                                event.getInteractionResponse().createFollowupMessage(
-                                        new WebhookMultipartRequest(WebhookExecuteRequest
-                                                .builder()
-                                                .addEmbed(embedSpec.asRequest())
-                                                .build()
-                                        )
-                                )
-                        );
-                    });
-        });
-    }
+			return StatisticsManager.getUserStats(
+					event.getInteraction().getGuildId().orElseThrow(),
+					user.getId())
+					.defaultIfEmpty(new UserStatistic())
+					.flatMap(statistic -> {
+						EmbedCreateSpec embedSpec = new EmbedCreateSpec()
+								.setTitle(String.format("User Statistics: %s#%s", user.getUsername(), user.getDiscriminator()))
+								.setThumbnail(user.getAvatarUrl())
+								.setColor(Color.of(0, 93, 186))
+								.addField("Correct Answers", App.FORMATTER.format(statistic.getCorrectAnswers()), true)
+								.addField("Wrong Answers", App.FORMATTER.format(statistic.getWrongAnswers()), true)
+								.addField("Hints Used", App.FORMATTER.format(statistic.getHintUses()), true)
+								.addField("Tourneys Won", App.FORMATTER.format(statistic.getGamesWon()), true)
+								.addField("Server Rank", App.FORMATTER.format(statistic.getRank()), true)
+								.setFooter(String.format("User ID: %s", user.getId().asString()), null)
+								.setTimestamp(Instant.now());
 
-    private static Mono handleGuildStatsCommand(SlashCommandEvent event) {
-        return event.getInteraction().getGuild().flatMap(guild -> StatisticsManager.getGuildStats(guild.getId())
-                .defaultIfEmpty(new GuildStatistic(0, 0))
-                .flatMap(statistic -> {
-                    EmbedCreateSpec embedSpec = new EmbedCreateSpec()
-                            .setTitle(String.format("Server Statistics: %s", guild.getName()))
-                            .setColor(Color.of(0, 93, 186))
-                            .addField("Tourneys Played", Integer.toString(statistic.getGames()), true)
-                            .addField("Eyes Missed", Integer.toString(statistic.getMissed()), true)
-                            .setFooter(String.format("Guild ID: %s", guild.getId().asString()), null)
-                            .setTimestamp(Instant.now());
+						return event.acknowledge().then(
+								event.getInteractionResponse().createFollowupMessage(
+										new WebhookMultipartRequest(WebhookExecuteRequest
+												.builder()
+												.addEmbed(embedSpec.asRequest())
+												.build()
+										)
+								)
+						);
+					});
+		});
+	}
 
-                    return event.acknowledge().then(
-                            event.getInteractionResponse().createFollowupMessage(
-                                    new WebhookMultipartRequest(WebhookExecuteRequest
-                                            .builder()
-                                            .addEmbed(embedSpec.asRequest())
-                                            .build()
-                                    )
-                            )
-                    );
-                }));
-    }
+	private static Mono<?> handleGuildStatsCommand(SlashCommandEvent event) {
+		return event.getInteraction().getGuild().flatMap(guild -> StatisticsManager.getGuildStats(guild.getId())
+				.defaultIfEmpty(new GuildStatistic(0, 0))
+				.flatMap(statistic -> {
+					return StatisticsManager.getLeaderboard(guild.getId()).flatMap(board -> {
+						ArrayList<Leaderboard> realBoard = (ArrayList<Leaderboard>) board.stream().filter(e -> e.getId().asLong() != 0).collect(Collectors.toList());
+						String lbString = "Nobody has won yet!";
+						String first = "\n";
+						String second = "\n";
+						String third = "\n";
+
+						// tf is this
+						// send help
+						for(Leaderboard lb : realBoard) {
+							switch(lb.getRank()) {
+								case 1:
+									first = String.format("🥇 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+									break;
+								case 2:
+									second = String.format("🥈 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+									break;
+								case 3:
+									third = String.format("🥉 - <@%s> - %s wins", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+									break;
+							}
+						}
+
+						lbString = first + second + third;
+
+						EmbedCreateSpec embedSpec = new EmbedCreateSpec()
+								.setTitle(String.format("Server Statistics: %s", guild.getName()))
+								.setColor(Color.of(0, 93, 186))
+								.addField("Tourneys Played", App.FORMATTER.format(statistic.getGames()), true)
+								.addField("Eyes Missed", App.FORMATTER.format(statistic.getMissed()), true)
+								.addField("Top 3 Players", lbString, false)
+								.setFooter(String.format("Guild ID: %s", guild.getId().asString()), null)
+								.setTimestamp(Instant.now());
+
+						return event.acknowledge().then(
+								event.getInteractionResponse().createFollowupMessage(
+										new WebhookMultipartRequest(WebhookExecuteRequest
+												.builder()
+												.addEmbed(embedSpec.asRequest())
+												.build()
+										)
+								)
+						);
+					});
+				}));
+	}
 }

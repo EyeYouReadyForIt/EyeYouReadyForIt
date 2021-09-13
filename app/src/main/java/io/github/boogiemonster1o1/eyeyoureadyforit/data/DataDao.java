@@ -12,22 +12,30 @@ public interface DataDao {
     @SqlQuery("SELECT * FROM eyes_entries")
     ArrayList<EyeEntry> getEyes();
 
-    @SqlQuery("SELECT * FROM (" +
-			"SELECT id," +
-			"correct," +
-			"wrong," +
-			"hints," +
-			"won," +
-			"RANK () OVER (ORDER BY won DESC) rank " +
-			"FROM guild_data.data_<table>" +
-			") WHERE id = :id")
+    @SqlQuery(
+    		"SELECT * FROM (" +
+				"SELECT id," +
+				"correct," +
+				"wrong," +
+				"hints," +
+				"won," +
+				"RANK () OVER (ORDER BY won DESC) rank " +
+				"FROM guild_data.data_<table>" +
+				") WHERE id = :id")
     @RegisterRowMapper(UserStatistic.class)
     UserStatistic getUserStats(@Define("table") String guildId, @Bind("id") long userId);
 
     @SqlQuery("SELECT * FROM guild_data.data_<table> WHERE id = 0")
     GuildStatistic getGuildStats(@Define("table") String guildId);
 
-
+    @SqlQuery(
+			"SELECT id, " +
+					"won," +
+					"RANK () OVER (ORDER BY won DESC) rank " +
+					"FROM guild_data.data_<table> " +
+					"LIMIT 3")
+	@RegisterRowMapper(Leaderboard.class)
+	ArrayList<Leaderboard> getLeaderboard(@Define("table") String guildId);
 
     @SqlUpdate(
             "CREATE TABLE IF NOT EXISTS guild_data.data_<table> (\n" +

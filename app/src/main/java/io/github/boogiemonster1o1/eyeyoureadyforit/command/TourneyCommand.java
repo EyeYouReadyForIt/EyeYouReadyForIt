@@ -81,7 +81,7 @@ public final class TourneyCommand {
             data.setRound(round = data.getRound() + 1);
         }
         EyeEntry entry = EyeEntry.getRandom();
-        channelMono.flatMap(channel -> channel.createMessage("Round #" + (data.getRound() + 1))).subscribe();
+        channelMono.flatMap(channel -> channel.createMessage("Round #" + App.FORMATTER.format(data.getRound() + 1))).subscribe();
         Mono<Message> messageMono = channelMono.flatMap(channel -> channel.createMessage(spec -> {
             spec.addEmbed(embed -> App.createEyesEmbed(entry, embed));
             if (csd.getTourneyData().shouldDisableHints()) {

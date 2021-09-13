@@ -39,8 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,6 +50,7 @@ import java.util.stream.Collectors;
 public class App {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
+    public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
     private static GatewayDiscordClient CLIENT;
     public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
     public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
@@ -55,7 +58,7 @@ public class App {
 
     private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
 
-    public static Set<Snowflake> currentGuilds = new HashSet<>();
+    private static Set<Snowflake> currentGuilds = new HashSet<>();
 
     public static void main(String[] args) {
         LOGGER.info("Starting Eye You Ready For It");
