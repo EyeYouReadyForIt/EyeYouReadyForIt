@@ -15,7 +15,6 @@ import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.MessageReference;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -88,7 +87,12 @@ public class App {
         CLIENT.getEventDispatcher()
                 .on(GuildCreateEvent.class)
                 .filter(event -> !currentGuilds.contains(event.getGuild().getId()))
-                .subscribe(event -> StatisticsManager.initDb(event.getGuild().getId()));
+                .subscribe(event -> {
+                    LOGGER.info("New Guild {} added", event.getGuild().getId());
+                    StatisticsManager.initDb(event.getGuild().getId())
+                            .then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getGuild().getId())))
+                            .subscribe();
+                });
 
         CLIENT.getEventDispatcher()
                 .on(MessageCreateEvent.class)
@@ -153,6 +157,10 @@ public class App {
                         EyeEntry.reload();
                     } else if (event.getMessage().getContent().equals("!eyeyoureadyforit shutdown")) {
                         CLIENT.logout().block();
+                    } else if (event.getMessage().getContent().startsWith("!eyeyoureadyforit db")) {
+                        StatisticsManager.initDb(Snowflake.of(event.getMessage().getContent().split(" ")[2]))
+                                .then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getMessage().getContent().split(" ")[2])))
+                                .subscribe();
                     }
                 });
 

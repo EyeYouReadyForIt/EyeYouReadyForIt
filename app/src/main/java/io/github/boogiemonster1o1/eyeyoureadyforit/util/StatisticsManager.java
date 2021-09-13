@@ -14,9 +14,9 @@ public final class StatisticsManager {
 			DataSource.get().withExtension(DataDao.class, dao -> {
 				dao.createTable(guildId.asString());
 				dao.addGuildDataRow(guildId.asString());
-				return Mono.empty();
+				return null;
 			});
-		}).subscribeOn(Schedulers.boundedElastic());
+		}).onErrorReturn(Mono.empty()).subscribeOn(Schedulers.boundedElastic());
 	}
 
 	public static Mono<UserStatistic> getUserStats(Snowflake guildId, Snowflake userId) {
