@@ -15,6 +15,10 @@ dependencies {
     implementation 'com.discord4j:discord4j-core:3.1.7'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'org.postgresql:postgresql:42.2.23.jre7'
+    implementation 'com.zaxxer:HikariCP:5.0.0'
+    implementation 'org.jdbi:jdbi3-bom:3.21.0'
+    implementation 'org.jdbi:jdbi3-sqlobject:3.21.0'
+    implementation 'org.jdbi:jdbi3-postgres:3.21.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 

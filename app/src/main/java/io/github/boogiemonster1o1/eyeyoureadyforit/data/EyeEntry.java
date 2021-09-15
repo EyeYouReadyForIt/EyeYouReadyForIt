@@ -1,12 +1,11 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
-import java.nio.file.Path;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,25 +15,26 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-public final class EyeEntry {
+public final class EyeEntry implements RowMapper<EyeEntry> {
 	private static final Random RANDOM = new Random(ThreadLocalRandom.current().nextLong());
-	private static final List<EyeEntry> ENTRIES = new ArrayList<>();
+	private static List<EyeEntry> ENTRIES = new ArrayList<>();
 	private final String imageUrl;
 	private final String name;
 	private final String hint;
 	private final List<String> aliases;
 
-	@JsonCreator
-	public EyeEntry(
-			@JsonProperty("imageUrl") String imageUrl,
-			@JsonProperty("name") String name,
-			@JsonProperty("hint") String hint,
-			@JsonProperty("aliases") List<String> aliases
-	) {
-		this.imageUrl = imageUrl;
+	public EyeEntry(String name, String imageUrl, String hint, List<String> aliases) {
 		this.name = name;
+		this.imageUrl = imageUrl;
 		this.hint = hint;
 		this.aliases = aliases;
+	}
+
+	public EyeEntry() {
+		this.name = null;
+		this.imageUrl = null;
+		this.hint = null;
+		this.aliases = null;
 	}
 
 	public String getImageUrl() {
@@ -63,28 +63,22 @@ public final class EyeEntry {
 				'}';
 	}
 
-	public static void reload(String connectionString, String user, String password) {
-		String s = "SELECT * FROM eyes_entries";
-
-		try (Connection conn = DriverManager.getConnection(connectionString, user, password)) {
-			try (Statement statement = conn.createStatement()) {
-				try (ResultSet set = statement.executeQuery(s)) {
-					ENTRIES.clear();
-					while (set.next()) {
-						String name = set.getString("name");
-						String imageUrl = set.getString("image_url");
-						String hint = set.getString("hint");
-						List<String> aliases = Arrays.stream((Object[]) set.getArray("aliases").getArray()).map(Object::toString).collect(Collectors.toList());
-						ENTRIES.add(new EyeEntry(imageUrl, name, hint, aliases));
-					}
-				}
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	public static void reload() {
+		ENTRIES = DataSource.get().withExtension(DataDao.class, DataDao::getEyes);
+		App.LOGGER.info("Reloading eyes...");
 	}
 
 	public static EyeEntry getRandom() {
 		return ENTRIES.get(RANDOM.nextInt(ENTRIES.size()));
+	}
+
+	@Override
+	public EyeEntry map(ResultSet rs, StatementContext ctx) throws SQLException {
+		return new EyeEntry(
+				rs.getString("name"),
+				rs.getString("image_url"),
+				rs.getString("hint"),
+				Arrays.stream((Object[]) rs.getArray("aliases").getArray()).map(Object::toString).collect(Collectors.toList())
+		);
 	}
 }
