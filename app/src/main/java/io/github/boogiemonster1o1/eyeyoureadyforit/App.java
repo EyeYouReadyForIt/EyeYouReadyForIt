@@ -32,8 +32,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
-import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
-import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,8 +121,8 @@ public class App {
                                 .subscribe();
                         data.reset();
                         if (data.isTourney()) {
-                            TourneyStatisticsTracker.get(guildData.getGuildId(), data.getChannelId()).addCorrect(event.getMember().get().getId());
-                            TourneyCommand.next(guildData, data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
+                            data.getTourneyStatisticsTracker().addCorrect(event.getMember().get().getId());
+                            TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
                         }
                     } else {
                         event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
@@ -135,7 +134,7 @@ public class App {
                             mspec.setMessageReference(event.getMessage().getId());
                         })).subscribe();
                         if (data.isTourney()) {
-                            TourneyStatisticsTracker.get(guildData.getGuildId(), data.getChannelId()).addWrong(event.getMember().get().getId());
+                            data.getTourneyStatisticsTracker().addWrong(event.getMember().get().getId());
                         }
                     }
                 });
@@ -199,7 +198,7 @@ public class App {
                             return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
                         }
                         if (csd.isTourney())
-                            TourneyStatisticsTracker.get(gsd.getGuildId(), csd.getChannelId()).addHint(event.getInteraction().getUser().getId());
+                            csd.getTourneyStatisticsTracker().addHint(event.getInteraction().getUser().getId());
                         return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
                     case "reset":
                         if (csd.isTourney()) {
@@ -219,7 +218,10 @@ public class App {
             public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
                 if (event.getCustomId().equals("hint_button")) {
                     if (GuildSpecificData.get(event.getInteraction().getGuildId().get()).getChannel(event.getInteraction().getChannelId()).isTourney()) {
-                        TourneyStatisticsTracker.get(event.getInteraction().getGuildId().get(), event.getInteraction().getChannelId()).addHint(event.getInteraction().getUser().getId());
+                    	GuildSpecificData.get(event.getInteraction().getGuildId().get())
+								.getChannel(event.getInteraction().getChannelId())
+								.getTourneyStatisticsTracker()
+								.addHint(event.getInteraction().getUser().getId());
                     }
                     return event.reply(spec -> {
                         spec.setEphemeral(true);

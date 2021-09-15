@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import discord4j.common.util.Snowflake;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.TourneyStatisticsTracker;
 
 public class ChannelSpecificData {
 	private Snowflake messageId;
 	private EyeEntry current;
 	private final Snowflake channelId;
 	private final GuildSpecificData gsd;
-	private TourneyData tourneyData = null;
+	private TourneyData tourneyData;
+	private TourneyStatisticsTracker tourneyStatisticsTracker;
 	private final List<Snowflake> hintUsers = new ArrayList<>();
 
 	public ChannelSpecificData(Snowflake channelId, GuildSpecificData gsd) {
@@ -48,6 +50,14 @@ public class ChannelSpecificData {
 
 	public TourneyData getTourneyData() {
 		return tourneyData;
+	}
+
+	public TourneyStatisticsTracker getTourneyStatisticsTracker() {
+		return tourneyStatisticsTracker;
+	}
+
+	public void setTourneyStatisticsTracker(TourneyStatisticsTracker tracker) {
+		this.tourneyStatisticsTracker = tracker;
 	}
 
 	public void setCurrent(EyeEntry current) {

@@ -1,4 +1,4 @@
-package io.github.boogiemonster1o1.eyeyoureadyforit.data;
+package io.github.boogiemonster1o1.eyeyoureadyforit.data.stats;
 
 import discord4j.common.util.Snowflake;
 import org.jdbi.v3.core.mapper.RowMapper;
@@ -25,11 +25,17 @@ public class Leaderboard implements RowMapper<Leaderboard> {
 		this.rank = 0;
 	}
 
-	public Snowflake getId() { return id; }
+	public Snowflake getId() {
+		return id;
+	}
 
-	public int getGamesWon() { return gamesWon; }
+	public int getGamesWon() {
+		return gamesWon;
+	}
 
-	public int getRank() { return rank; }
+	public int getRank() {
+		return rank;
+	}
 
 	@Override
 	public Leaderboard map(ResultSet rs, StatementContext ctx) throws SQLException {

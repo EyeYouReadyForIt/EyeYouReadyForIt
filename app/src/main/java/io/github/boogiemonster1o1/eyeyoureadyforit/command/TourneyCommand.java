@@ -10,7 +10,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageEditSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.*;
-import io.github.boogiemonster1o1.eyeyoureadyforit.util.TourneyStatisticsTracker;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.TourneyStatisticsTracker;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -30,18 +30,18 @@ public final class TourneyCommand {
         }
         boolean disableHints = event.getOption("hintsdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
         boolean disableFirstNames = event.getOption("firstnamesdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
-        TourneyData tourneyData = new TourneyData(rounds, disableHints, disableFirstNames);
-        csd.setTourneyData(tourneyData);
+        csd.setTourneyData(new TourneyData(rounds, disableHints, disableFirstNames));
+        csd.setTourneyStatisticsTracker(new TourneyStatisticsTracker(csd.getGuildSpecificData().getGuildId()));
 
-        next(gsd, csd, 0L, event.getInteraction().getChannel(), true);
+        next(csd, 0L, event.getInteraction().getChannel(), true);
 
         return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
     }
 
 
-    public static void next(GuildSpecificData gsd, ChannelSpecificData csd, long answerer, Mono<MessageChannel> channelMono, boolean justStarted) {
+    public static void next(ChannelSpecificData csd, long answerer, Mono<MessageChannel> channelMono, boolean justStarted) {
         TourneyData data = csd.getTourneyData();
-        TourneyStatisticsTracker tracker = TourneyStatisticsTracker.get(gsd.getGuildId(), csd.getChannelId());
+        TourneyStatisticsTracker tracker = csd.getTourneyStatisticsTracker();
         int round;
         if (justStarted) {
             channelMono.flatMap(channel -> channel.createMessage("Starting Tourney")).subscribe();
@@ -50,30 +50,30 @@ public final class TourneyCommand {
             data.getLeaderboard()[data.getRound()] = answerer;
             if (data.getRound() + 1 >= data.getMaxRounds()) {
                 channelMono.flatMap(channel -> channel.createEmbed(spec -> {
-                    spec.setTitle("Tourney is over :crab:");
+                    spec.setTitle("Tourney is over 🦀");
                     long[] distincts = Arrays.stream(data.getLeaderboard()).distinct().filter(l -> l != 0).toArray();
                     List<Long> leaderboard = Arrays.stream(data.getLeaderboard()).boxed().collect(Collectors.toList());
                     if (distincts.length == 0) {
                         spec.addField("Leaderboard", "No participants :/", false);
                     } else if (distincts.length == 1) {
-                        spec.addField("Leaderboard", String.format(":first_place: <@%s> - %s", distincts[0], leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count()), false);
+                        spec.addField("Leaderboard", String.format("🥇 <@%s> - %s", distincts[0], leaderboard.stream().mapToLong(l -> l).filter(l -> l != 0).count()), false);
                     } else {
                         ModeContext first = getMostCommon(leaderboard);
                         tracker.setWon(Snowflake.of(first.getMode()));
                         ModeContext second = getMostCommon(leaderboard.stream().filter(l -> l != first.getMode()).collect(Collectors.toList()));
-                        String boardMessage = String.format(":first_place: <@%s> - %s\n" +
-                                ":second_place: <@%s> - %s", first.getMode(), first.getCount(), second.getMode(), second.getCount());
+                        String boardMessage = String.format("🥇 <@%s> - %s\n" +
+                                "🥈 <@%s> - %s", first.getMode(), first.getCount(), second.getMode(), second.getCount());
                         if (distincts.length >= 3) {
                             ModeContext third = getMostCommon(leaderboard.stream().filter(l -> l != first.getMode()).filter(l -> l != second.getMode()).collect(Collectors.toList()));
-                            boardMessage += String.format("\n:third_place: <@%s> - %s", third.getMode(), third.getCount());
+                            boardMessage += String.format("\n🥉 <@%s> - %s", third.getMode(), third.getCount());
                         }
                         spec.addField("Leaderboard", boardMessage, false);
                     }
                 })).subscribe(mess -> {
                     tracker.commit();
-                    TourneyStatisticsTracker.reset(gsd.getGuildId(), csd.getChannelId());
                     csd.reset();
                     csd.setTourneyData(null);
+                    csd.setTourneyStatisticsTracker(null);
                 });
                 return;
             }
@@ -107,7 +107,7 @@ public final class TourneyCommand {
             if (data.getLeaderboard()[round] == 0L) {
                 Mono<Message> mess = channelMono.flatMap(channel -> channel.createMessage(spec -> spec.setContent("Nobody guessed in time...")));
                 tracker.addMissed();
-                mess.subscribe(mess1 -> next(gsd, csd, 0L, mess1.getChannel(), false));
+                mess.subscribe(mess1 -> next(csd, 0L, mess1.getChannel(), false));
                 Mono.justOrEmpty(id.snowflake)
                         .flatMap(sf -> channelMono.flatMap(channel -> channel.getMessageById(sf)))
                         .flatMap(m -> m.edit(MessageEditSpec::setComponents))

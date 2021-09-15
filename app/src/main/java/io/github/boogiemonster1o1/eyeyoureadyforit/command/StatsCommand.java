@@ -9,10 +9,10 @@ import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.WebhookMultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildStatistic;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.Leaderboard;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.UserStatistic;
-import io.github.boogiemonster1o1.eyeyoureadyforit.util.StatisticsManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -22,10 +22,11 @@ import java.util.stream.Collectors;
 public class StatsCommand {
 
 	public static Mono<?> handle(SlashCommandEvent event) {
+		if (event.getOption("server").isPresent()) {
+			return handleGuildStatsCommand(event);
+		}
 
-		if (event.getOption("server").isPresent()) return handleGuildStatsCommand(event);
 		return handleUserStatsCommand(event);
-
 	}
 
 	private static Mono<?> handleUserStatsCommand(SlashCommandEvent event) {
@@ -37,14 +38,15 @@ public class StatsCommand {
 				.switchIfEmpty(Mono.just(event.getInteraction().getUser()));
 
 
-
 		return userMono.flatMap(user -> {
-			if (user.isBot()) return event.replyEphemeral("**Statistics are not available for bots!**");
+			if (user.isBot()) {
+				return event.replyEphemeral("**Statistics are not available for bots!**");
+			}
 
 			return StatisticsManager.getUserStats(
 					event.getInteraction().getGuildId().orElseThrow(),
 					user.getId())
-					.defaultIfEmpty(new UserStatistic())
+					.defaultIfEmpty(new UserStatistics())
 					.flatMap(statistic -> {
 						EmbedCreateSpec embedSpec = new EmbedCreateSpec()
 								.setTitle(String.format("User Statistics: %s#%s", user.getUsername(), user.getDiscriminator()))
@@ -52,7 +54,7 @@ public class StatsCommand {
 								.setColor(Color.of(0, 93, 186))
 								.addField("Correct Answers", App.FORMATTER.format(statistic.getCorrectAnswers()), true)
 								.addField("Wrong Answers", App.FORMATTER.format(statistic.getWrongAnswers()), true)
-								.addField("Hints Used", App.FORMATTER.format(statistic.getHintUses()), true)
+								.addField("Hints Used", App.FORMATTER.format(statistic.getHintsUsed()), true)
 								.addField("Tourneys Won", App.FORMATTER.format(statistic.getGamesWon()), true)
 								.addField("Server Rank", App.FORMATTER.format(statistic.getRank()), true)
 								.setFooter(String.format("User ID: %s", user.getId().asString()), null)
@@ -73,10 +75,14 @@ public class StatsCommand {
 
 	private static Mono<?> handleGuildStatsCommand(SlashCommandEvent event) {
 		return event.getInteraction().getGuild().flatMap(guild -> StatisticsManager.getGuildStats(guild.getId())
-				.defaultIfEmpty(new GuildStatistic(0, 0))
+				.defaultIfEmpty(new GuildStatistics(0, 0))
 				.flatMap(statistic -> {
 					return StatisticsManager.getLeaderboard(guild.getId()).flatMap(board -> {
-						ArrayList<Leaderboard> realBoard = (ArrayList<Leaderboard>) board.stream().filter(e -> e.getId().asLong() != 0).collect(Collectors.toList());
+						ArrayList<Leaderboard> realBoard = (ArrayList<Leaderboard>) board
+								.stream()
+								.filter(e -> e.getId().asLong() != 0 && e.getGamesWon() != 0)
+								.collect(Collectors.toList());
+
 						String lbString = "Nobody has won yet!";
 						String first = "\n";
 						String second = "\n";
@@ -84,8 +90,8 @@ public class StatsCommand {
 
 						// tf is this
 						// send help
-						for(Leaderboard lb : realBoard) {
-							switch(lb.getRank()) {
+						for (Leaderboard lb : realBoard) {
+							switch (lb.getRank()) {
 								case 1:
 									first = String.format("🥇 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
 									break;
