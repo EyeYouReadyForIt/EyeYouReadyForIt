@@ -5,9 +5,10 @@ import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import discord4j.core.object.entity.User;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.Color;
-import discord4j.rest.util.WebhookMultipartRequest;
+import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
@@ -40,7 +41,12 @@ public class StatsCommand {
 
 		return userMono.flatMap(user -> {
 			if (user.isBot()) {
-				return event.replyEphemeral("**Statistics are not available for bots!**");
+				return event.reply(InteractionApplicationCommandCallbackSpec
+						.builder()
+						.content("**Statistics are not available for bots!**")
+						.ephemeral(true)
+						.build()
+				);
 			}
 
 			return StatisticsManager.getUserStats(
@@ -48,21 +54,23 @@ public class StatsCommand {
 					user.getId())
 					.defaultIfEmpty(new UserStatistics())
 					.flatMap(statistic -> {
-						EmbedCreateSpec embedSpec = new EmbedCreateSpec()
-								.setTitle(String.format("User Statistics: %s#%s", user.getUsername(), user.getDiscriminator()))
-								.setThumbnail(user.getAvatarUrl())
-								.setColor(Color.of(0, 93, 186))
+						EmbedCreateSpec embedSpec = EmbedCreateSpec
+								.builder()
+								.title(String.format("User Statistics: %s#%s", user.getUsername(), user.getDiscriminator()))
+								.thumbnail(user.getAvatarUrl())
+								.color(Color.of(0, 93, 186))
 								.addField("Correct Answers", App.FORMATTER.format(statistic.getCorrectAnswers()), true)
 								.addField("Wrong Answers", App.FORMATTER.format(statistic.getWrongAnswers()), true)
 								.addField("Hints Used", App.FORMATTER.format(statistic.getHintsUsed()), true)
 								.addField("Tourneys Won", App.FORMATTER.format(statistic.getGamesWon()), true)
 								.addField("Server Rank", App.FORMATTER.format(statistic.getRank()), true)
-								.setFooter(String.format("User ID: %s", user.getId().asString()), null)
-								.setTimestamp(Instant.now());
+								.footer(String.format("User ID: %s", user.getId().asString()), null)
+								.timestamp(Instant.now())
+								.build();
 
 						return event.acknowledge().then(
 								event.getInteractionResponse().createFollowupMessage(
-										new WebhookMultipartRequest(WebhookExecuteRequest
+										MultipartRequest.ofRequest(WebhookExecuteRequest
 												.builder()
 												.addEmbed(embedSpec.asRequest())
 												.build()
@@ -106,18 +114,20 @@ public class StatsCommand {
 
 						lbString = first + second + third;
 
-						EmbedCreateSpec embedSpec = new EmbedCreateSpec()
-								.setTitle(String.format("Server Statistics: %s", guild.getName()))
-								.setColor(Color.of(0, 93, 186))
+						EmbedCreateSpec embedSpec = EmbedCreateSpec
+								.builder()
+								.title(String.format("Server Statistics: %s", guild.getName()))
+								.color(Color.of(0, 93, 186))
 								.addField("Tourneys Played", App.FORMATTER.format(statistic.getGames()), true)
 								.addField("Eyes Missed", App.FORMATTER.format(statistic.getMissed()), true)
 								.addField("Top 3 Players", lbString, false)
-								.setFooter(String.format("Guild ID: %s", guild.getId().asString()), null)
-								.setTimestamp(Instant.now());
+								.footer(String.format("Guild ID: %s", guild.getId().asString()), null)
+								.timestamp(Instant.now())
+								.build();
 
 						return event.acknowledge().then(
 								event.getInteractionResponse().createFollowupMessage(
-										new WebhookMultipartRequest(WebhookExecuteRequest
+										MultipartRequest.ofRequest(WebhookExecuteRequest
 												.builder()
 												.addEmbed(embedSpec.asRequest())
 												.build()

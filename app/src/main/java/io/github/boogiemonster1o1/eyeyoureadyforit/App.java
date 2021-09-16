@@ -19,6 +19,8 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
+import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -26,7 +28,7 @@ import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
-import discord4j.rest.util.WebhookMultipartRequest;
+import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.StatsCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
@@ -40,10 +42,7 @@ import reactor.core.publisher.Mono;
 
 import java.text.NumberFormat;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class App {
@@ -83,7 +82,9 @@ public class App {
         RestClient restClient = CLIENT.getRestClient();
         long applicationId = restClient.getApplicationId().block();
         if (args.length >= 1 && args[0].equals("reg")) {
-            registerCommands(restClient, applicationId);
+            registerCommands(restClient, applicationId)
+					.then(Mono.fromRunnable(() -> LOGGER.info("Registered commands!")))
+					.subscribe();
         }
 
         CLIENT.getEventDispatcher()
@@ -107,17 +108,23 @@ public class App {
                     EyeEntry current = data.getCurrent();
                     Snowflake messageId = data.getMessageId();
                     if (current.getName().equalsIgnoreCase(content) || current.getAliases().contains(content) || isFirstName(content, current.getName(), data)) {
-                        event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-                            mspec.addEmbed(spec -> {
-                                spec.setTitle("Correct!");
-                                spec.setDescription(current.getName());
-                                spec.setColor(Color.GREEN);
-                                spec.setTimestamp(Instant.now());
-                            });
-                            mspec.setMessageReference(event.getMessage().getId());
-                        })).subscribe();
+                    	event.getMessage().getChannel().flatMap(channel ->
+                    		channel.createMessage(MessageCreateSpec
+									.builder()
+									.addEmbed(EmbedCreateSpec
+											.builder()
+											.title("Correct!")
+											.description(current.getName())
+											.color(Color.GREEN)
+											.timestamp(Instant.now())
+											.build())
+									.messageReference(event.getMessage().getId())
+									.build()
+							)
+						).subscribe();
+
                         event.getMessage().getChannel().flatMap(channel -> channel.getMessageById(messageId))
-                                .flatMap(message -> message.edit(MessageEditSpec::setComponents))
+                                .flatMap(message -> message.edit(MessageEditSpec.builder().components(new ArrayList<>()).build()))
                                 .subscribe();
                         data.reset();
                         if (data.isTourney()) {
@@ -125,14 +132,20 @@ public class App {
                             TourneyCommand.next(data, event.getMessage().getAuthor().map(User::getId).orElseThrow().asLong(), event.getMessage().getChannel(), false);
                         }
                     } else {
-                        event.getMessage().getChannel().flatMap(channel -> channel.createMessage(mspec -> {
-                            mspec.addEmbed(spec -> {
-                                spec.setTitle("Incorrect!");
-                                spec.setColor(Color.RED);
-                                spec.setTimestamp(Instant.now());
-                            });
-                            mspec.setMessageReference(event.getMessage().getId());
-                        })).subscribe();
+						event.getMessage().getChannel().flatMap(channel ->
+								channel.createMessage(MessageCreateSpec
+										.builder()
+										.addEmbed(EmbedCreateSpec
+												.builder()
+												.title("Correct!")
+												.description(current.getName())
+												.color(Color.GREEN)
+												.timestamp(Instant.now())
+												.build())
+										.messageReference(event.getMessage().getId())
+										.build()
+								)
+						).subscribe();
                         if (data.isTourney()) {
                             data.getTourneyStatisticsTracker().addWrong(event.getMember().get().getId());
                         }
@@ -185,6 +198,7 @@ public class App {
                         if (csd.isTourney()) {
                             return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
                         }
+
                         EyeEntry entry = EyeEntry.getRandom();
                         return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
                             synchronized (GuildSpecificData.LOCK) {
@@ -199,14 +213,14 @@ public class App {
                         }
                         if (csd.isTourney())
                             csd.getTourneyStatisticsTracker().addHint(event.getInteraction().getUser().getId());
-                        return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
+                        return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().content(getHintContent(event)).build())));
                     case "reset":
                         if (csd.isTourney()) {
                             return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
                         }
-                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(new EmbedCreateSpec(), event).asRequest()).build())));
+                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(EmbedCreateSpec.builder(), event).asRequest()).build())));
                     case "tourney":
-                        return TourneyCommand.handle(event, gsd, csd);
+                        return TourneyCommand.handle(event, csd);
                     case "stats":
                         return StatsCommand.handle(event);
                 }
@@ -223,12 +237,20 @@ public class App {
 								.getTourneyStatisticsTracker()
 								.addHint(event.getInteraction().getUser().getId());
                     }
-                    return event.reply(spec -> {
-                        spec.setEphemeral(true);
-                        spec.setContent(getHintContent(event));
-                    });
+
+                    return event.reply(InteractionApplicationCommandCallbackSpec
+							.builder()
+							.ephemeral(true)
+							.content(getHintContent(event))
+							.build()
+					);
+
                 } else if (event.getCustomId().equals("reset_button")) {
-                    return event.reply(spec -> spec.addEmbed(eSpec -> addResetFooter(eSpec, event)));
+                	return event.reply(InteractionApplicationCommandCallbackSpec
+							.builder()
+							.addEmbed(addResetFooter(EmbedCreateSpec.builder(), event))
+							.build()
+					);
                 }
 
                 return Mono.empty();
@@ -249,8 +271,14 @@ public class App {
         return sub.equalsIgnoreCase(allegedFirst);
     }
 
-    public static WebhookMultipartRequest getEyesRequest(EyeEntry entry) {
-        return new WebhookMultipartRequest(WebhookExecuteRequest.builder().addEmbed(createEyesEmbed(entry, new EmbedCreateSpec()).asRequest()).addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData()).build());
+    public static MultipartRequest<WebhookExecuteRequest> getEyesRequest(EyeEntry entry) {
+        return MultipartRequest.ofRequest(
+        		WebhookExecuteRequest
+						.builder()
+						.addEmbed(createEyesEmbed(entry).asRequest())
+						.addComponent(ActionRow.of(HINT_BUTTON, RESET_BUTTON).getData())
+						.build()
+		);
     }
 
     private static String getHintContent(InteractionCreateEvent event) {
@@ -263,34 +291,36 @@ public class App {
         return "**There is no context available**";
     }
 
-    private static EmbedCreateSpec addResetFooter(EmbedCreateSpec eSpec, InteractionCreateEvent event) {
+    private static EmbedCreateSpec addResetFooter(EmbedCreateSpec.Builder eSpec, InteractionCreateEvent event) {
         ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
         if (data.getMessageId() != null && data.getCurrent() != null) {
             if (!data.getCurrent().getAliases().isEmpty()) {
-                eSpec.setDescription("Aliases: " + data.getCurrent().getAliases());
+                eSpec.description("Aliases: " + data.getCurrent().getAliases());
             }
-            eSpec.setTitle("The person was **" + data.getCurrent().getName() + "**");
+            eSpec.title("The person was **" + data.getCurrent().getName() + "**");
             event.getInteraction().getChannel()
                     .flatMap(channel -> channel.getMessageById(data.getMessageId()))
-                    .flatMap(message -> message.edit(MessageEditSpec::setComponents))
+                    .flatMap(message -> message.edit(MessageEditSpec.builder().components(new ArrayList<>()).build()))
                     .subscribe();
         } else {
-            eSpec.setTitle("Reset");
-            eSpec.setDescription("But there was no context :p");
+            eSpec.title("Reset");
+            eSpec.description("But there was no context :p");
         }
-        eSpec.setTimestamp(Instant.now());
-        eSpec.setColor(Color.RED);
+        eSpec.timestamp(Instant.now());
+        eSpec.color(Color.RED);
         eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
         data.reset();
-        return eSpec;
+        return eSpec.build();
     }
 
-    public static EmbedCreateSpec createEyesEmbed(EyeEntry entry, EmbedCreateSpec spec) {
-        spec.setImage(entry.getImageUrl());
-        spec.setTitle("Guess the Person");
-        spec.setDescription("Reply to this message with the answer");
-        spec.setTimestamp(Instant.now());
-        return spec;
+    public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
+    	return EmbedCreateSpec
+				.builder()
+        		.image(entry.getImageUrl())
+        		.title("Guess the Person")
+      			.description("Reply to this message with the answer")
+				.timestamp(Instant.now())
+				.build();
     }
 
     private static Mono registerCommands(RestClient restClient, long applicationId) {
