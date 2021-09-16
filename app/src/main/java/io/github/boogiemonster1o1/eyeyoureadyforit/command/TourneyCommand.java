@@ -4,6 +4,9 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.LayoutComponent;
+import discord4j.core.object.component.MessageComponent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
@@ -47,10 +50,10 @@ public final class TourneyCommand {
             channelMono.flatMap(channel -> channel.createMessage("Starting Tourney")).subscribe();
             data.setRound(round = 0);
         } else {
-            data.getLeaderboard().set(data.getRound(), answerer);
+            data.getLeaderboard()[data.getRound()] = answerer;
             if (data.getRound() + 1 >= data.getMaxRounds()) {
                 channelMono.flatMap(channel -> {
-                    List<Long> leaderboard = data.getLeaderboard().stream().filter(l -> l != 0).collect(Collectors.toList());
+                    List<Long> leaderboard = Arrays.stream(data.getLeaderboard()).filter(l -> l != 0).boxed().collect(Collectors.toList());
                     int distincts = (int) leaderboard.stream().distinct().count();
                     String boardMessage = "No participants :/";
 
@@ -91,6 +94,7 @@ public final class TourneyCommand {
         		MessageCreateSpec
 						.builder()
 						.addEmbed(App.createEyesEmbed(entry))
+						.addComponent(!data.shouldDisableHints() ? ActionRow.of(App.HINT_BUTTON) : ActionRow.of(App.HINT_BUTTON.disabled()))
 						.build()
 		)).subscribe(message -> {
 			synchronized (GuildSpecificData.LOCK) {
@@ -103,7 +107,7 @@ public final class TourneyCommand {
             if (round >= data.getMaxRounds()) {
                 return;
             }
-            if (data.getLeaderboard().get(round) == 0L) {
+            if (data.getLeaderboard()[round] == 0) {
                 channelMono.flatMap(channel -> channel.createMessage("Nobody guessed in time..."))
 						.then(Mono.fromRunnable(tracker::addMissed))
 						.then(Mono.justOrEmpty(csd.getMessageId())

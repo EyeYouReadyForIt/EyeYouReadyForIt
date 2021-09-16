@@ -50,9 +50,8 @@ public class App {
     public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
     public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
     private static GatewayDiscordClient CLIENT;
-    public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint");
-    public static final Button DISABLED_HINT_BUTTON = Button.success("disabled_hint_button", ReactionEmoji.unicode("\uD83D\uDCA1"), "Hint").disabled();
-    public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("\uD83D\uDEAB"), "Reset");
+    public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("💡"), "Hint");
+    public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("🚫"), "Reset");
 
     private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
 
@@ -137,9 +136,9 @@ public class App {
 										.builder()
 										.addEmbed(EmbedCreateSpec
 												.builder()
-												.title("Correct!")
+												.title("Incorrect!")
 												.description(current.getName())
-												.color(Color.GREEN)
+												.color(Color.RED)
 												.timestamp(Instant.now())
 												.build())
 										.messageReference(event.getMessage().getId())

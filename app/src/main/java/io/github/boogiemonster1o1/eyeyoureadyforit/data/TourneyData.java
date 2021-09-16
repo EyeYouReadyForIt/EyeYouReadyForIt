@@ -1,20 +1,20 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class TourneyData {
 	private int round = 1;
 	private final int maxRounds;
-	private final ArrayList<Long> leaderboard;
+	private final long[] leaderboard;
 	private final boolean disableHints;
 	private final boolean disableFirstNames;
 
 	public TourneyData(int maxRounds, boolean disableHints, boolean disableFirstNames) {
 		this.maxRounds = maxRounds;
-		this.leaderboard = new ArrayList<>();
+		this.leaderboard = new long[maxRounds];
 		this.disableHints = disableHints;
 		this.disableFirstNames = disableFirstNames;
+		Arrays.fill(leaderboard, 0L);
 	}
 
 	public int getRound() {
@@ -25,7 +25,7 @@ public class TourneyData {
 		return maxRounds;
 	}
 
-	public List<Long> getLeaderboard() {
+	public long[] getLeaderboard() {
 		return leaderboard;
 	}
 
