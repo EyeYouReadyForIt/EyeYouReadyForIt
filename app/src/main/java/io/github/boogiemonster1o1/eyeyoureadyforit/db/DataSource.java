@@ -14,15 +14,12 @@ import java.util.stream.Collectors;
 
 public class DataSource {
 	private static final Jdbi JDBI;
-	public static final String DB_URL = Optional.ofNullable(System.getProperty("eyrfi.dbURL")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
-	public static final String DB_USER = Optional.ofNullable(System.getProperty("eyrfi.dbUser")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
-	public static final String DB_PASS = Optional.ofNullable(System.getProperty("eyrfi.dbPassword")).orElse(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
 	private static final HikariConfig CONFIG = new HikariConfig();
 
 	static {
-		CONFIG.setJdbcUrl(DB_URL);
-		CONFIG.setUsername(DB_USER);
-		CONFIG.setPassword(DB_PASS);
+		CONFIG.setJdbcUrl(Optional.ofNullable(System.getenv("EYRFI_DB_URL")).orElseThrow(() -> new RuntimeException("Missing db url")));
+		CONFIG.setUsername(Optional.ofNullable(System.getenv("EYRFI_DB_USER")).orElseThrow(() -> new RuntimeException("Missing db username")));
+		CONFIG.setPassword(Optional.ofNullable(System.getenv("EYRFI_DB_PASSWORD")).orElseThrow(() -> new RuntimeException("Missing db password")));
 		CONFIG.setMaximumPoolSize(6);
 
 		JDBI = Jdbi.create(new HikariDataSource(CONFIG))

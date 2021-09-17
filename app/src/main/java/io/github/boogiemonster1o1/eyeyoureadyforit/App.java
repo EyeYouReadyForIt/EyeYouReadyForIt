@@ -49,13 +49,12 @@ public class App {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
     public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
+
     private static GatewayDiscordClient CLIENT;
+    private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
+    private static Set<Snowflake> currentGuilds = new HashSet<>();
     public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("💡"), "Hint");
     public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("🚫"), "Reset");
-
-    private static final String TOKEN = Optional.ofNullable(System.getProperty("eyrfi.token")).orElse(Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token")));
-
-    private static Set<Snowflake> currentGuilds = new HashSet<>();
 
     public static void main(String[] args) {
         LOGGER.info("Starting Eye You Ready For It");
