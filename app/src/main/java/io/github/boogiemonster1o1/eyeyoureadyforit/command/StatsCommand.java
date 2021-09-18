@@ -87,7 +87,7 @@ public final class StatsCommand {
 
 	private static Mono<?> handleGuildStatsCommand(SlashCommandEvent event) {
 		return event.getInteraction().getGuild().flatMap(guild -> StatisticsManager.getGuildStats(guild.getId())
-				.defaultIfEmpty(new GuildStatistics(0, 0))
+				.defaultIfEmpty(new GuildStatistics())
 				.flatMap(statistic -> {
 					return StatisticsManager.getLeaderboard(guild.getId()).flatMap(board -> {
 						ArrayList<Leaderboard> realBoard = (ArrayList<Leaderboard>) board
