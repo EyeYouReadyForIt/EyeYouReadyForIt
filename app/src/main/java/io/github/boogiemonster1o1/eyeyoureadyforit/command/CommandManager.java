@@ -31,7 +31,7 @@ public final class CommandManager {
 			public Publisher<?> onSlashCommand(SlashCommandEvent event) {
 				return accept(event);
 			}
-		}).blockLast();
+		}).subscribe();
 	}
 
 	public static Publisher<?> accept(SlashCommandEvent event) {

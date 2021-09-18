@@ -26,7 +26,7 @@ public class ButtonManager {
 			public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
 				return accept(event);
 			}
-		}).blockLast();
+		}).subscribe();
 		BUTTONS.put(HINT_BUTTON.getCustomId().orElseThrow(), ButtonHandlerImpl.HINT);
 		BUTTONS.put(RESET_BUTTON.getCustomId().orElseThrow(), ButtonHandlerImpl.RESET);
 	}
