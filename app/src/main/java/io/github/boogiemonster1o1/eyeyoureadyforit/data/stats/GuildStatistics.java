@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
-public class GuildStatistics implements RowMapper<GuildStatistics> {
+public final class GuildStatistics implements RowMapper<GuildStatistics> {
 	private final int missed;
 	private final int games;
 

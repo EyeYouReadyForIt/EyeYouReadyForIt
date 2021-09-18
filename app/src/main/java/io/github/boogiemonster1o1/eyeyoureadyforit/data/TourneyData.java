@@ -2,7 +2,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
 import java.util.Arrays;
 
-public class TourneyData {
+public final class TourneyData {
 	private int round = 1;
 	private final int maxRounds;
 	private final long[] leaderboard;

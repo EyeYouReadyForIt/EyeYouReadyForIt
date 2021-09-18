@@ -20,7 +20,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import reactor.core.publisher.Mono;
 
-public class StatsCommand {
+public final class StatsCommand {
 
 	public static Mono<?> handle(SlashCommandEvent event) {
 		if (event.getOption("server").isPresent()) {

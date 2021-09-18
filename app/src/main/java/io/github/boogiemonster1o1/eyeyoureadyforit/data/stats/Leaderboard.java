@@ -7,8 +7,7 @@ import discord4j.common.util.Snowflake;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
-public class Leaderboard implements RowMapper<Leaderboard> {
-
+public final class Leaderboard implements RowMapper<Leaderboard> {
 	private final Snowflake id;
 	private final int gamesWon;
 	private final int rank;
