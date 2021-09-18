@@ -5,8 +5,6 @@ import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.LayoutComponent;
-import discord4j.core.object.component.MessageComponent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
@@ -93,7 +91,7 @@ public final class TourneyCommand {
         channelMono.flatMap(channel -> channel.createMessage(
         		MessageCreateSpec
 						.builder()
-						.addEmbed(App.createEyesEmbed(entry))
+						.addEmbed(EyesCommand.createEyesEmbed(entry))
 						.addComponent(!data.shouldDisableHints() ? ActionRow.of(App.HINT_BUTTON) : ActionRow.of(App.HINT_BUTTON.disabled()))
 						.build()
 		)).subscribe(message -> {

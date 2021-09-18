@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public final class StatisticsManager {
 
-	public static Mono initDb(Snowflake guildId) {
+	public static Mono<?> initDb(Snowflake guildId) {
 		return Mono.fromRunnable(() -> {
 			DataSource.get().withExtension(DataDao.class, dao -> {
 				dao.createTable(guildId.asString());
