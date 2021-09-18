@@ -17,14 +17,14 @@ import reactor.core.publisher.Mono;
 
 @SuppressWarnings("NullableProblems")
 public final class CommandManager {
-	private static final Map<String, Command> COMMAND_MAP = new ConcurrentHashMap<>();
+	private static final Map<String, CommandHandler> COMMAND_MAP = new ConcurrentHashMap<>();
 
 	public static void init() {
-		register("tourney", TourneyCommand::handle);
-		register("stats", ((event, csd) -> StatsCommand.handle(event)));
-		register("reset", ResetCommand::handle);
-		register("hint", HintCommand::handle);
-		register("eyes", EyesCommand::handle);
+		COMMAND_MAP.put("tourney", TourneyCommand::handle);
+		COMMAND_MAP.put("stats", ((event, csd) -> StatsCommand.handle(event)));
+		COMMAND_MAP.put("reset", ResetCommand::handle);
+		COMMAND_MAP.put("hint", HintCommand::handle);
+		COMMAND_MAP.put("eyes", EyesCommand::handle);
 
 		App.CLIENT.on(new ReactiveEventAdapter() {
 			@Override
@@ -34,23 +34,19 @@ public final class CommandManager {
 		}).blockLast();
 	}
 
-	private static void register(String name, Command handler) {
-		COMMAND_MAP.put(name, handler);
-	}
-
 	public static Publisher<?> accept(SlashCommandEvent event) {
 		if (event.getInteraction().getGuildId().isEmpty()) {
-			return event.reply("You can only run this command in a guild");
+			return event.reply("You can only run this commandHandler in a guild");
 		}
 
-		Command command = COMMAND_MAP.get(event.getCommandName());
+		CommandHandler commandHandler = COMMAND_MAP.get(event.getCommandName());
 		GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
 		ChannelSpecificData csd = gsd.getChannel(event.getInteraction().getChannelId());
-		if (command == null) {
+		if (commandHandler == null) {
 			return Mono.empty();
 		}
 
-		return command.handle(event, csd);
+		return commandHandler.handle(event, csd);
 	}
 
 	public static Mono<?> registerSlashCommands(RestClient restClient, long applicationId) {
