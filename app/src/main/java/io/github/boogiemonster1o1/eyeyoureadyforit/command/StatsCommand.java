@@ -14,6 +14,7 @@ import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
@@ -21,8 +22,11 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import reactor.core.publisher.Mono;
 
 public final class StatsCommand {
+	public static Mono<?> handle(SlashCommandEvent event, ChannelSpecificData csd) {
+		return handleInternal(event);
+	}
 
-	public static Mono<?> handle(SlashCommandEvent event) {
+	private static Mono<?> handleInternal(SlashCommandEvent event) {
 		if (event.getOption("server").isPresent()) {
 			return handleGuildStatsCommand(event);
 		}

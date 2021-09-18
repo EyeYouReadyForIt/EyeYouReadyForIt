@@ -21,7 +21,7 @@ public final class CommandManager {
 
 	public static void init() {
 		COMMAND_MAP.put("tourney", TourneyCommand::handle);
-		COMMAND_MAP.put("stats", ((event, csd) -> StatsCommand.handle(event)));
+		COMMAND_MAP.put("stats", StatsCommand::handle);
 		COMMAND_MAP.put("reset", ResetCommand::handle);
 		COMMAND_MAP.put("hint", HintCommand::handle);
 		COMMAND_MAP.put("eyes", EyesCommand::handle);
