@@ -1,5 +1,14 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
+import java.text.NumberFormat;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -12,21 +21,18 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.MessageReference;
-import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.Color;
+import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
-import io.github.boogiemonster1o1.eyeyoureadyforit.command.EyesCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.HintCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.ResetCommand;
-import io.github.boogiemonster1o1.eyeyoureadyforit.command.StatsCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
@@ -37,23 +43,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
-import java.text.NumberFormat;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-
 @SuppressWarnings("NullableProblems")
 public class App {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
     public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
 
-    private static GatewayDiscordClient CLIENT;
+    public static GatewayDiscordClient CLIENT;
     private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
     private static Set<Snowflake> currentGuilds = new HashSet<>();
-    public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("💡"), "Hint");
-    public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("🚫"), "Reset");
-    public static final CommandManager COMMAND_MANAGER = new CommandManager();
 
     public static void main(String[] args) {
         LOGGER.info("Starting Eye You Ready For It");
@@ -179,52 +177,12 @@ public class App {
                     }
                 });
 
-        CLIENT.on(new ReactiveEventAdapter() {
-            @Override
-            public Publisher<?> onSlashCommand(SlashCommandEvent event) {
-                if (event.getInteraction().getGuildId().isEmpty()) {
-                    return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("You can only run this command in a guild"));
-                }
-
-                return COMMAND_MANAGER.accept(event);
-            }
-
-            @Override
-            public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
-            	Snowflake guildId = event.getInteraction().getGuildId().orElseThrow();
-            	ChannelSpecificData csd = GuildSpecificData.get(guildId).getChannel(event.getInteraction().getChannelId());
-                if (event.getCustomId().equals("hint_button")) {
-                    if (csd.isTourney()) {
-                    	csd.getTourneyStatisticsTracker().addHint(event.getInteraction().getUser().getId());
-                    }
-
-                    return event.reply(InteractionApplicationCommandCallbackSpec
-							.builder()
-							.ephemeral(true)
-							.content(HintCommand.getHintContent(event))
-							.build()
-					);
-
-                } else if (event.getCustomId().equals("reset_button")) {
-                	return event.reply(InteractionApplicationCommandCallbackSpec
-							.builder()
-							.addEmbed(ResetCommand.addResetFooter(EmbedCreateSpec.builder(), event))
-							.build()
-					);
-                }
-
-                return Mono.empty();
-            }
-        }).blockLast();
+        CommandManager.init();
+		ButtonManager.init();
         CLIENT.onDisconnect().block();
     }
 
 	private static void initCommands() {
-		COMMAND_MANAGER.register("tourney", TourneyCommand::handle);
-		COMMAND_MANAGER.register("stats", ((event, csd) -> StatsCommand.handle(event)));
-		COMMAND_MANAGER.register("reset", ResetCommand::handle);
-		COMMAND_MANAGER.register("hint", HintCommand::handle);
-		COMMAND_MANAGER.register("eyes", EyesCommand::handle);
 	}
 
 	private static boolean isFirstName(String allegedFirst, String name, ChannelSpecificData data) {

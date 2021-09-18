@@ -10,6 +10,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.*;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.TourneyStatisticsTracker;
 import org.reactivestreams.Publisher;
@@ -92,7 +93,7 @@ public final class TourneyCommand {
         		MessageCreateSpec
 						.builder()
 						.addEmbed(EyesCommand.createEyesEmbed(entry))
-						.addComponent(!data.shouldDisableHints() ? ActionRow.of(App.HINT_BUTTON) : ActionRow.of(App.HINT_BUTTON.disabled()))
+						.addComponent(!data.shouldDisableHints() ? ActionRow.of(ButtonManager.HINT_BUTTON) : ActionRow.of(ButtonManager.HINT_BUTTON.disabled()))
 						.build()
 		)).subscribe(message -> {
 			synchronized (GuildSpecificData.LOCK) {

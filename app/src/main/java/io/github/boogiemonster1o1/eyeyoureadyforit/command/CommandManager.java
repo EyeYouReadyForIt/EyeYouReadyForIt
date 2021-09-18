@@ -3,6 +3,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -14,18 +15,35 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
-public class CommandManager {
-	private final Map<String, Command> commandMap = new ConcurrentHashMap<>();
+@SuppressWarnings("NullableProblems")
+public final class CommandManager {
+	private static final Map<String, Command> COMMAND_MAP = new ConcurrentHashMap<>();
 
-	public CommandManager() {
+	public static void init() {
+		register("tourney", TourneyCommand::handle);
+		register("stats", ((event, csd) -> StatsCommand.handle(event)));
+		register("reset", ResetCommand::handle);
+		register("hint", HintCommand::handle);
+		register("eyes", EyesCommand::handle);
+
+		App.CLIENT.on(new ReactiveEventAdapter() {
+			@Override
+			public Publisher<?> onSlashCommand(SlashCommandEvent event) {
+				return accept(event);
+			}
+		}).blockLast();
 	}
 
-	public void register(String name, Command handler) {
-		this.commandMap.put(name, handler);
+	private static void register(String name, Command handler) {
+		COMMAND_MAP.put(name, handler);
 	}
 
-	public Publisher<?> accept(SlashCommandEvent event) {
-		Command command = commandMap.get(event.getCommandName());
+	public static Publisher<?> accept(SlashCommandEvent event) {
+		if (event.getInteraction().getGuildId().isEmpty()) {
+			return event.reply("You can only run this command in a guild");
+		}
+
+		Command command = COMMAND_MAP.get(event.getCommandName());
 		GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
 		ChannelSpecificData csd = gsd.getChannel(event.getInteraction().getChannelId());
 		if (command == null) {

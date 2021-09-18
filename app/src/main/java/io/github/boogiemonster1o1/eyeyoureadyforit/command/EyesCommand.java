@@ -8,7 +8,7 @@ import discord4j.core.object.component.ActionRow;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.MultipartRequest;
-import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
@@ -38,7 +38,7 @@ public class EyesCommand {
 				WebhookExecuteRequest
 						.builder()
 						.addEmbed(createEyesEmbed(entry).asRequest())
-						.addComponent(ActionRow.of(App.HINT_BUTTON, App.RESET_BUTTON).getData())
+						.addComponent(ActionRow.of(ButtonManager.HINT_BUTTON, ButtonManager.RESET_BUTTON).getData())
 						.build()
 		);
 	}
