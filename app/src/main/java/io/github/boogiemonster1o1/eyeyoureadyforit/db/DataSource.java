@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class DataSource {
+public final class DataSource {
 	private static final Jdbi JDBI;
 	private static final HikariConfig CONFIG = new HikariConfig();
 

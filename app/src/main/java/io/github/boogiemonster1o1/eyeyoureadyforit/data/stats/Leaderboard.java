@@ -7,7 +7,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Leaderboard implements RowMapper<Leaderboard> {
+public final class Leaderboard implements RowMapper<Leaderboard> {
 
 	private final Snowflake id;
 	private final int gamesWon;

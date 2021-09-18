@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class StatsCommand {
+public final class StatsCommand {
 
 	public static Mono<?> handle(SlashCommandEvent event) {
 		if (event.getOption("server").isPresent()) {
