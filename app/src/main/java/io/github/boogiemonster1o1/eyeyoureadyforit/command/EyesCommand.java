@@ -44,12 +44,12 @@ public class EyesCommand {
 	}
 
 	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
-    	return EmbedCreateSpec
+		return EmbedCreateSpec
 				.builder()
-        		.image(entry.getImageUrl())
-        		.title("Guess the Person")
-      			.description("Reply to this message with the answer")
+				.image(entry.getImageUrl())
+				.title("Guess the Person")
+				.description("Reply to this message with the answer")
 				.timestamp(Instant.now())
 				.build();
-    }
+	}
 }
