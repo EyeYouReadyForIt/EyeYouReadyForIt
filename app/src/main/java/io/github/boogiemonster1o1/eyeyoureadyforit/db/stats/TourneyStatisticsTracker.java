@@ -1,12 +1,12 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db.stats;
 
-import discord4j.common.util.Snowflake;
-import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
-import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import discord4j.common.util.Snowflake;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
 
 public final class TourneyStatisticsTracker {
 	//shitcode of the highest order

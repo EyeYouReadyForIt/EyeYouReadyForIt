@@ -1,5 +1,9 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -15,10 +19,6 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import reactor.core.publisher.Mono;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public final class StatsCommand {
 
