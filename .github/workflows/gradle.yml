@@ -37,6 +37,12 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
+        
+      - name: Test
+        run: $AAAAA = "aaaaa"
+        
+      - name: Test2
+        run: echo $AAAAA
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2.2.4
