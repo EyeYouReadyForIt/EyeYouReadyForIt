@@ -1,5 +1,14 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
+import java.text.NumberFormat;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -25,11 +34,6 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
-
-import java.text.NumberFormat;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("NullableProblems")
 public class App {

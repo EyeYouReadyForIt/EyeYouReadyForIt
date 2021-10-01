@@ -1,5 +1,7 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db;
 
+import java.util.ArrayList;
+
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
@@ -9,8 +11,6 @@ import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.Define;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
-
-import java.util.ArrayList;
 
 public interface DataDao {
 	@SqlQuery("SELECT * FROM eyes_entries")

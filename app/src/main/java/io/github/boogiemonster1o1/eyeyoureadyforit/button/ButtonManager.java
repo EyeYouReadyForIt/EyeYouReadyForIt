@@ -1,19 +1,18 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.button;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.ReactiveEventAdapter;
-import discord4j.core.event.domain.interaction.ButtonInteractEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.object.component.Button;
-import discord4j.core.object.reaction.ReactionEmoji;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import org.reactivestreams.Publisher;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("NullableProblems")
 public class ButtonManager {
@@ -32,13 +31,13 @@ public class ButtonManager {
 
 		App.CLIENT.on(new ReactiveEventAdapter() {
 			@Override
-			public Publisher<?> onButtonInteract(ButtonInteractEvent event) {
+			public Publisher<?> onButtonInteraction(ButtonInteractionEvent event) {
 				return accept(event);
 			}
 		}).subscribe();
 	}
 
-	public static Publisher<?> accept(ButtonInteractEvent event) {
+	public static Publisher<?> accept(ButtonInteractionEvent event) {
 		Snowflake guildId = event.getInteraction().getGuildId().orElseThrow();
 		ChannelSpecificData csd = GuildSpecificData.get(guildId).getChannel(event.getInteraction().getChannelId());
 		ButtonHandler handler = BUTTON_MAP.get(event.getCustomId());

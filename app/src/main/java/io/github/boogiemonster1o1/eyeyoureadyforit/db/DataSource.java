@@ -1,12 +1,12 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db;
 
+import java.util.Optional;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
-
-import java.util.Optional;
 
 public final class DataSource {
 	private static final Jdbi JDBI;
