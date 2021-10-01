@@ -1,4 +1,4 @@
-package io.github.boogiemonster1o1.eyeyoureadyforit.command;
+package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,27 +17,39 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
+import discord4j.discordjson.json.ApplicationCommandOptionData;
+import discord4j.discordjson.json.ApplicationCommandRequest;
+import discord4j.rest.util.ApplicationCommandOptionType;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons.HintButton;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandler;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandlerType;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ModeContext;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.TourneyData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.TourneyStatisticsTracker;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-public final class TourneyCommand {
-	public static Publisher<?> handle(SlashCommandEvent event, ChannelSpecificData csd) {
+public final class TourneyCommand implements CommandHandler {
+	@Override
+	public Mono<?> handle(SlashCommandEvent event) {
+		ChannelSpecificData csd = GuildSpecificData
+				.get(event.getInteraction().getGuildId().orElseThrow())
+				.getChannel(event.getInteraction().getChannelId());
+
 		if (csd.isTourney()) {
-			event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a tourney**"));
+			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a tourney**"));
 		}
+
 		int rounds = (int) event.getOption("rounds").orElseThrow().getValue().orElseThrow().asLong();
 		if (rounds < 3) {
-			event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Choose a valid number equal to or above 3**"));
+			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Choose a valid number equal to or above 3**"));
 		}
+
 		boolean disableHints = event.getOption("hintsdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
 		boolean disableFirstNames = event.getOption("firstnamesdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
 		csd.setTourneyData(new TourneyData(rounds, disableHints, disableFirstNames));
@@ -46,6 +58,52 @@ public final class TourneyCommand {
 		next(csd, 0L, event.getInteraction().getChannel(), true);
 
 		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
+	}
+
+	@Override
+	public String getName() {
+		return "tourney";
+	}
+
+	@Override
+	public CommandHandlerType getType() {
+		return CommandHandlerType.GLOBAL_COMMAND;
+	}
+
+	@Override
+	public ApplicationCommandRequest asRequest() {
+		return ApplicationCommandRequest
+				.builder()
+				.name("tourney")
+				.description("Starts a tourney")
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.required(true)
+								.type(ApplicationCommandOptionType.INTEGER.getValue())
+								.name("rounds")
+								.description("Number of rounds. From 5 to 10")
+								.build()
+				)
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.required(false)
+								.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+								.name("hintsdisabled")
+								.description("Whether Hints are disabled")
+								.build()
+				)
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.required(false)
+								.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+								.name("firstnamesdisabled")
+								.description("Whether first names are disabled")
+								.build()
+				)
+				.build();
 	}
 
 
@@ -101,7 +159,7 @@ public final class TourneyCommand {
 				MessageCreateSpec
 						.builder()
 						.addEmbed(EyesCommand.createEyesEmbed(entry))
-						.addComponent(!data.shouldDisableHints() ? ActionRow.of(ButtonManager.HINT_BUTTON) : ActionRow.of(ButtonManager.HINT_BUTTON.disabled()))
+						.addComponent(!data.shouldDisableHints() ? ActionRow.of(ButtonManager.getButton(HintButton.class)) : ActionRow.of(ButtonManager.getButton(HintButton.class).disabled()))
 						.build()
 		)).subscribe(message -> {
 			synchronized (GuildSpecificData.LOCK) {
@@ -147,4 +205,5 @@ public final class TourneyCommand {
 
 		return new ModeContext(mode, modeCount);
 	}
+
 }

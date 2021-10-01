@@ -23,11 +23,10 @@ import discord4j.core.object.entity.User;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
-import discord4j.rest.RestClient;
 import discord4j.rest.util.Color;
 import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
-import io.github.boogiemonster1o1.eyeyoureadyforit.command.TourneyCommand;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.commands.TourneyCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
@@ -67,11 +66,8 @@ public class App {
 					currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
 				});
 
-		RestClient restClient = CLIENT.getRestClient();
-		//noinspection ConstantConditions
-		long applicationId = restClient.getApplicationId().block();
 		if (args.length >= 1 && args[0].equals("reg")) {
-			CommandManager.registerSlashCommands(restClient, applicationId)
+			CommandManager.registerSlashCommands()
 					.then(Mono.fromRunnable(() -> LOGGER.info("Registered commands!")))
 					.subscribe();
 		}
@@ -92,6 +88,7 @@ public class App {
 				.on(MessageCreateEvent.class)
 				.filter(event -> event.getGuildId().isPresent() && event.getMember().map(member -> !member.isBot()).orElse(false))
 				.filter(event -> event.getMessage().getMessageReference().flatMap(MessageReference::getMessageId).map(f -> f.equals(GuildSpecificData.get(event.getMessage().getGuildId().orElseThrow()).getChannel(event.getMessage().getChannelId()).getMessageId())).orElse(false))
+				.doOnError(Throwable::printStackTrace)
 				.subscribe(event -> {
 					String content = event.getMessage().getContent().toLowerCase();
 					GuildSpecificData guildData = GuildSpecificData.get(event.getGuildId().orElseThrow());

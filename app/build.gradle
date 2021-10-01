@@ -19,6 +19,7 @@ dependencies {
     implementation 'org.jdbi:jdbi3-bom:3.21.0'
     implementation 'org.jdbi:jdbi3-sqlobject:3.21.0'
     implementation 'org.jdbi:jdbi3-postgres:3.21.0'
+	implementation 'org.reflections:reflections:0.9.12'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
