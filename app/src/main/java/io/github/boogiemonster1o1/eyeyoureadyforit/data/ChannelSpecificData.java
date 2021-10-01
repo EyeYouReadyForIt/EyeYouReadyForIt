@@ -1,19 +1,19 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import discord4j.common.util.Snowflake;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.TourneyStatisticsTracker;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ChannelSpecificData {
-	private Snowflake messageId;
-	private EyeEntry current;
 	private final Snowflake channelId;
 	private final GuildSpecificData gsd;
+	private final List<Snowflake> hintUsers = new ArrayList<>();
+	private Snowflake messageId;
+	private EyeEntry current;
 	private TourneyData tourneyData;
 	private TourneyStatisticsTracker tourneyStatisticsTracker;
-	private final List<Snowflake> hintUsers = new ArrayList<>();
 
 	public ChannelSpecificData(Snowflake channelId, GuildSpecificData gsd) {
 		this.channelId = channelId;
@@ -40,16 +40,20 @@ public final class ChannelSpecificData {
 		return current;
 	}
 
+	public void setCurrent(EyeEntry current) {
+		this.current = current;
+	}
+
 	public boolean isTourney() {
 		return this.tourneyData != null;
 	}
 
-	public void setTourneyData(TourneyData tourneyData) {
-		this.tourneyData = tourneyData;
-	}
-
 	public TourneyData getTourneyData() {
 		return tourneyData;
+	}
+
+	public void setTourneyData(TourneyData tourneyData) {
+		this.tourneyData = tourneyData;
 	}
 
 	public TourneyStatisticsTracker getTourneyStatisticsTracker() {
@@ -58,10 +62,6 @@ public final class ChannelSpecificData {
 
 	public void setTourneyStatisticsTracker(TourneyStatisticsTracker tracker) {
 		this.tourneyStatisticsTracker = tracker;
-	}
-
-	public void setCurrent(EyeEntry current) {
-		this.current = current;
 	}
 
 	public void addHintUser(Snowflake snowflake) {

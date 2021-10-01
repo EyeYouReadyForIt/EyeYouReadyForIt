@@ -1,21 +1,32 @@
-package io.github.boogiemonster1o1.eyeyoureadyforit.command;
-
-import java.time.Instant;
+package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.WebhookExecuteRequest;
 import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons.HintButton;
+import io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons.ResetButton;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandler;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandlerType;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
-import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
 
-public class EyesCommand {
-	public static Publisher<?> handle(SlashCommandEvent event, ChannelSpecificData csd) {
+import java.time.Instant;
+
+public class EyesCommand implements CommandHandler {
+
+	@Override
+	public Mono<?> handle(SlashCommandEvent event) {
+		ChannelSpecificData csd = GuildSpecificData
+				.get(event.getInteraction().getGuildId().orElseThrow())
+				.getChannel(event.getInteraction().getChannelId());
+
 		if (csd.getMessageId() != null && csd.getCurrent() != null) {
 			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
 		}
@@ -33,14 +44,22 @@ public class EyesCommand {
 		});
 	}
 
-	public static MultipartRequest<WebhookExecuteRequest> getEyesRequest(EyeEntry entry) {
-		return MultipartRequest.ofRequest(
-				WebhookExecuteRequest
-						.builder()
-						.addEmbed(createEyesEmbed(entry).asRequest())
-						.addComponent(ActionRow.of(ButtonManager.HINT_BUTTON, ButtonManager.RESET_BUTTON).getData())
-						.build()
-		);
+	@Override
+	public String getName() {
+		return "eyes";
+	}
+
+	@Override
+	public CommandHandlerType getType() {
+		return CommandHandlerType.GLOBAL_COMMAND;
+	}
+
+	@Override
+	public ApplicationCommandRequest asRequest() {
+		return ApplicationCommandRequest.builder()
+				.name("eyes")
+				.description("Shows a pair of eyes")
+				.build();
 	}
 
 	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
@@ -51,5 +70,15 @@ public class EyesCommand {
 				.description("Reply to this message with the answer")
 				.timestamp(Instant.now())
 				.build();
+	}
+
+	public MultipartRequest<WebhookExecuteRequest> getEyesRequest(EyeEntry entry) {
+		return MultipartRequest.ofRequest(
+				WebhookExecuteRequest
+						.builder()
+						.addEmbed(createEyesEmbed(entry).asRequest())
+						.addComponent(ActionRow.of(ButtonManager.getButton(HintButton.class), ButtonManager.getButton(ResetButton.class)).getData())
+						.build()
+		);
 	}
 }

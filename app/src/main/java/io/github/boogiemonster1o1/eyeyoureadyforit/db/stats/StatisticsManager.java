@@ -1,7 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db.stats;
 
-import java.util.ArrayList;
-
 import discord4j.common.util.Snowflake;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
@@ -10,6 +8,8 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
+import java.util.ArrayList;
 
 public final class StatisticsManager {
 

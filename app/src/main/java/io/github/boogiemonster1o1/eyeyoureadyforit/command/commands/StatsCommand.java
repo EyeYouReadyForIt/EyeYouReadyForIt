@@ -1,8 +1,4 @@
-package io.github.boogiemonster1o1.eyeyoureadyforit.command;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
@@ -10,23 +6,29 @@ import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
 import discord4j.core.object.entity.User;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
+import discord4j.discordjson.json.ApplicationCommandOptionData;
+import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.WebhookExecuteRequest;
+import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandler;
+import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandlerType;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import reactor.core.publisher.Mono;
 
-public final class StatsCommand {
-	public static Mono<?> handle(SlashCommandEvent event, ChannelSpecificData csd) {
-		return handleInternal(event);
-	}
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-	private static Mono<?> handleInternal(SlashCommandEvent event) {
+public final class StatsCommand implements CommandHandler {
+
+	@Override
+	public Mono<?> handle(SlashCommandEvent event) {
 		if (event.getOption("server").isPresent()) {
 			return handleGuildStatsCommand(event);
 		}
@@ -34,12 +36,57 @@ public final class StatsCommand {
 		return handleUserStatsCommand(event);
 	}
 
+	@Override
+	public String getName() {
+		return "stats";
+	}
+
+	@Override
+	public CommandHandlerType getType() {
+		return CommandHandlerType.GLOBAL_COMMAND;
+	}
+
+	@Override
+	public ApplicationCommandRequest asRequest() {
+		return ApplicationCommandRequest
+				.builder()
+				.name("stats")
+				.description("Looks up user and server statistics")
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+								.name("users")
+								.description("Looks up statistics for a selected user")
+								.addOption(ApplicationCommandOptionData
+										.builder()
+										.required(false)
+										.type(ApplicationCommandOptionType.USER.getValue())
+										.name("user")
+										.description("User to look up, defaults to command user")
+										.build()
+								)
+								.build()
+
+				)
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+								.name("server")
+								.description("Looks up statistics for the current server")
+								.build()
+
+				)
+				.build();
+	}
+
 	private static Mono<?> handleUserStatsCommand(SlashCommandEvent event) {
 		// looking at this makes me want to cry
 
 		Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").get().getOption("user")
-				.flatMap(ApplicationCommandInteractionOption::getValue)
-		).flatMap(ApplicationCommandInteractionOptionValue::asUser)
+						.flatMap(ApplicationCommandInteractionOption::getValue)
+				).flatMap(ApplicationCommandInteractionOptionValue::asUser)
 				.switchIfEmpty(Mono.just(event.getInteraction().getUser()));
 
 
@@ -54,8 +101,8 @@ public final class StatsCommand {
 			}
 
 			return StatisticsManager.getUserStats(
-					event.getInteraction().getGuildId().orElseThrow(),
-					user.getId())
+							event.getInteraction().getGuildId().orElseThrow(),
+							user.getId())
 					.defaultIfEmpty(new UserStatistics())
 					.flatMap(statistic -> {
 						EmbedCreateSpec embedSpec = EmbedCreateSpec

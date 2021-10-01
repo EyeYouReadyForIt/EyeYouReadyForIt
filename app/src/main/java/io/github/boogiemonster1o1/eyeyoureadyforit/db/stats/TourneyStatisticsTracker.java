@@ -1,20 +1,20 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db.stats;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import discord4j.common.util.Snowflake;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public final class TourneyStatisticsTracker {
 	//shitcode of the highest order
 	// agreed ^ 100%
 
 	private final HashMap<Snowflake, UserStatistics> statsMap = new HashMap<>();
-	private int missed;
 	private final Snowflake guildId;
+	private int missed;
 
 	public TourneyStatisticsTracker(Snowflake guildId) {
 		this.guildId = guildId;
