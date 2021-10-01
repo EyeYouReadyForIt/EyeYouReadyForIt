@@ -17,8 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("NullableProblems")
 public class ButtonManager {
-	public static final Button HINT_BUTTON = Button.success("hint_button", ReactionEmoji.unicode("💡"), "Hint");
-	public static final Button RESET_BUTTON = Button.secondary("reset_button", ReactionEmoji.unicode("🚫"), "Reset");
 	public static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons");
 	private static final Map<String, ButtonHandler> BUTTON_MAP = new ConcurrentHashMap<>();
 
@@ -53,14 +51,10 @@ public class ButtonManager {
 	}
 
 	public static Button getButton(Class<? extends ButtonHandler> buttonClass) {
-		try {
-			for (Map.Entry<String, ButtonHandler> entry : BUTTON_MAP.entrySet()) {
-				if (entry.getValue().getClass() == buttonClass) return entry.getValue().getButton();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
+		return BUTTON_MAP.values()
+				.stream()
+				.filter(e -> e.getClass() == buttonClass)
+				.findFirst().orElseThrow()
+				.getButton();
 	}
 }
