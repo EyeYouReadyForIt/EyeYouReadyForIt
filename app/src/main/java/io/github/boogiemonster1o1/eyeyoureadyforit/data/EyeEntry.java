@@ -1,5 +1,11 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
+import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,12 +14,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
-import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
-import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.core.statement.StatementContext;
 
 public final class EyeEntry implements RowMapper<EyeEntry> {
 	private static final Random RANDOM = new Random(ThreadLocalRandom.current().nextLong());
@@ -35,6 +35,15 @@ public final class EyeEntry implements RowMapper<EyeEntry> {
 		this.imageUrl = null;
 		this.hint = null;
 		this.aliases = null;
+	}
+
+	public static void reload() {
+		ENTRIES = DataSource.get().withExtension(DataDao.class, DataDao::getEyes);
+		App.LOGGER.info("Reloading eyes...");
+	}
+
+	public static EyeEntry getRandom() {
+		return ENTRIES.get(RANDOM.nextInt(ENTRIES.size()));
 	}
 
 	public String getImageUrl() {
@@ -61,15 +70,6 @@ public final class EyeEntry implements RowMapper<EyeEntry> {
 				", hint='" + hint + '\'' +
 				", aliases=" + aliases +
 				'}';
-	}
-
-	public static void reload() {
-		ENTRIES = DataSource.get().withExtension(DataDao.class, DataDao::getEyes);
-		App.LOGGER.info("Reloading eyes...");
-	}
-
-	public static EyeEntry getRandom() {
-		return ENTRIES.get(RANDOM.nextInt(ENTRIES.size()));
 	}
 
 	@Override

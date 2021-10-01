@@ -1,7 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
-import java.time.Instant;
-
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.object.component.ActionRow;
@@ -19,7 +17,19 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+
 public class EyesCommand implements CommandHandler {
+
+	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
+		return EmbedCreateSpec
+				.builder()
+				.image(entry.getImageUrl())
+				.title("Guess the Person")
+				.description("Reply to this message with the answer")
+				.timestamp(Instant.now())
+				.build();
+	}
 
 	@Override
 	public Mono<?> handle(SlashCommandEvent event) {
@@ -43,7 +53,6 @@ public class EyesCommand implements CommandHandler {
 			return data;
 		});
 	}
-
 
 	@Override
 	public String getName() {
@@ -71,15 +80,5 @@ public class EyesCommand implements CommandHandler {
 						.addComponent(ActionRow.of(ButtonManager.getButton(HintButton.class), ButtonManager.getButton(ResetButton.class)).getData())
 						.build()
 		);
-	}
-
-	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
-		return EmbedCreateSpec
-				.builder()
-				.image(entry.getImageUrl())
-				.title("Guess the Person")
-				.description("Reply to this message with the answer")
-				.timestamp(Instant.now())
-				.build();
 	}
 }

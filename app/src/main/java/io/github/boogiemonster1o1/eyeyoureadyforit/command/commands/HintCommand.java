@@ -13,6 +13,16 @@ import reactor.core.publisher.Mono;
 
 public class HintCommand implements CommandHandler {
 
+	public static String getHintContent(InteractionCreateEvent event) {
+		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
+
+		if (data.getMessageId() != null && data.getCurrent() != null) {
+			return data.getCurrent().getHint();
+		}
+
+		return "**There is no context available**";
+	}
+
 	@Override
 	public Mono<?> handle(SlashCommandEvent event) {
 		ChannelSpecificData csd = GuildSpecificData
@@ -25,16 +35,6 @@ public class HintCommand implements CommandHandler {
 		if (csd.isTourney())
 			csd.getTourneyStatisticsTracker().addHint(event.getInteraction().getUser().getId());
 		return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().content(HintCommand.getHintContent(event)).build())));
-	}
-
-	public static String getHintContent(InteractionCreateEvent event) {
-		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
-
-		if (data.getMessageId() != null && data.getCurrent() != null) {
-			return data.getCurrent().getHint();
-		}
-
-		return "**There is no context available**";
 	}
 
 	@Override

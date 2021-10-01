@@ -3,11 +3,11 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 import java.util.Arrays;
 
 public final class TourneyData {
-	private int round = 1;
 	private final int maxRounds;
 	private final long[] leaderboard;
 	private final boolean disableHints;
 	private final boolean disableFirstNames;
+	private int round = 1;
 
 	public TourneyData(int maxRounds, boolean disableHints, boolean disableFirstNames) {
 		this.maxRounds = maxRounds;
@@ -21,16 +21,16 @@ public final class TourneyData {
 		return round;
 	}
 
+	public void setRound(int round) {
+		this.round = round;
+	}
+
 	public int getMaxRounds() {
 		return maxRounds;
 	}
 
 	public long[] getLeaderboard() {
 		return leaderboard;
-	}
-
-	public void setRound(int round) {
-		this.round = round;
 	}
 
 	public boolean shouldDisableHints() {

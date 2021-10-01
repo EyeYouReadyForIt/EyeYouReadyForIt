@@ -9,7 +9,6 @@ import org.reactivestreams.Publisher;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +20,7 @@ public final class CommandManager {
 
 	public static void init() {
 		COMMAND_MAP.clear();
-		for(Class<? extends CommandHandler> commandClass : reflections.getSubTypesOf(CommandHandler.class)) {
+		for (Class<? extends CommandHandler> commandClass : reflections.getSubTypesOf(CommandHandler.class)) {
 			try {
 				CommandHandler handler = commandClass.getConstructor().newInstance();
 				COMMAND_MAP.put(handler.getName(), handler);
@@ -57,7 +56,7 @@ public final class CommandManager {
 	public static Mono<?> registerSlashCommands() {
 		App.LOGGER.info("REGISTERING COMMANDS YEE HAW");
 
-		for(CommandHandler handler : COMMAND_MAP.values()) {
+		for (CommandHandler handler : COMMAND_MAP.values()) {
 			switch (handler.getType()) {
 				case GLOBAL_COMMAND:
 					App.CLIENT.getRestClient()

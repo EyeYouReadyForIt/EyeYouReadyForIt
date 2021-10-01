@@ -6,8 +6,11 @@ import org.reactivestreams.Publisher;
 
 public interface CommandHandler {
 	Publisher<?> handle(SlashCommandEvent event);
+
 	String getName();
+
 	CommandHandlerType getType();
+
 	ApplicationCommandRequest asRequest();
 }
 

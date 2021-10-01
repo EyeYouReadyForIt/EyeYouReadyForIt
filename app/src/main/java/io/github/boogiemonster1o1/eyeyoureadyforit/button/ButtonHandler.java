@@ -7,5 +7,6 @@ import org.reactivestreams.Publisher;
 
 public interface ButtonHandler {
 	Button getButton();
+
 	Publisher<?> interact(ButtonInteractEvent event, ChannelSpecificData csd);
 }

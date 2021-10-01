@@ -1,14 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
-import java.text.NumberFormat;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
@@ -35,14 +26,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
+import java.text.NumberFormat;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @SuppressWarnings("NullableProblems")
 public class App {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
 	public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
-
-	public static GatewayDiscordClient CLIENT;
 	private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
+	public static GatewayDiscordClient CLIENT;
 	private static Set<Snowflake> currentGuilds = new HashSet<>();
 
 	public static void main(String[] args) {
