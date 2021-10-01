@@ -26,6 +26,61 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public final class StatsCommand implements CommandHandler {
+
+	@Override
+	public Mono<?> handle(SlashCommandEvent event) {
+		if (event.getOption("server").isPresent()) {
+			return handleGuildStatsCommand(event);
+		}
+
+		return handleUserStatsCommand(event);
+	}
+
+	@Override
+	public String getName() {
+		return "stats";
+	}
+
+	@Override
+	public CommandHandlerType getType() {
+		return CommandHandlerType.GLOBAL_COMMAND;
+	}
+
+	@Override
+	public ApplicationCommandRequest asRequest() {
+		return ApplicationCommandRequest
+				.builder()
+				.name("stats")
+				.description("Looks up user and server statistics")
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+								.name("users")
+								.description("Looks up statistics for a selected user")
+								.addOption(ApplicationCommandOptionData
+										.builder()
+										.required(false)
+										.type(ApplicationCommandOptionType.USER.getValue())
+										.name("user")
+										.description("User to look up, defaults to command user")
+										.build()
+								)
+								.build()
+
+				)
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
+								.name("server")
+								.description("Looks up statistics for the current server")
+								.build()
+
+				)
+				.build();
+	}
+
 	private static Mono<?> handleUserStatsCommand(SlashCommandEvent event) {
 		// looking at this makes me want to cry
 
@@ -132,59 +187,5 @@ public final class StatsCommand implements CommandHandler {
 						);
 					});
 				}));
-	}
-
-	@Override
-	public Mono<?> handle(SlashCommandEvent event) {
-		if (event.getOption("server").isPresent()) {
-			return handleGuildStatsCommand(event);
-		}
-
-		return handleUserStatsCommand(event);
-	}
-
-	@Override
-	public String getName() {
-		return "stats";
-	}
-
-	@Override
-	public CommandHandlerType getType() {
-		return CommandHandlerType.GLOBAL_COMMAND;
-	}
-
-	@Override
-	public ApplicationCommandRequest asRequest() {
-		return ApplicationCommandRequest
-				.builder()
-				.name("stats")
-				.description("Looks up user and server statistics")
-				.addOption(
-						ApplicationCommandOptionData
-								.builder()
-								.type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
-								.name("users")
-								.description("Looks up statistics for a selected user")
-								.addOption(ApplicationCommandOptionData
-										.builder()
-										.required(false)
-										.type(ApplicationCommandOptionType.USER.getValue())
-										.name("user")
-										.description("User to look up, defaults to command user")
-										.build()
-								)
-								.build()
-
-				)
-				.addOption(
-						ApplicationCommandOptionData
-								.builder()
-								.type(ApplicationCommandOptionType.SUB_COMMAND.getValue())
-								.name("server")
-								.description("Looks up statistics for the current server")
-								.build()
-
-				)
-				.build();
 	}
 }

@@ -27,6 +27,78 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public final class TourneyCommand implements CommandHandler {
+
+	@Override
+	public Mono<?> handle(SlashCommandEvent event) {
+		ChannelSpecificData csd = GuildSpecificData
+				.get(event.getInteraction().getGuildId().orElseThrow())
+				.getChannel(event.getInteraction().getChannelId());
+
+		if (csd.isTourney()) {
+			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a tourney**"));
+		}
+
+		int rounds = (int) event.getOption("rounds").orElseThrow().getValue().orElseThrow().asLong();
+		if (rounds < 3) {
+			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Choose a valid number equal to or above 3**"));
+		}
+
+		boolean disableHints = event.getOption("hintsdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
+		boolean disableFirstNames = event.getOption("firstnamesdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
+		csd.setTourneyData(new TourneyData(rounds, disableHints, disableFirstNames));
+		csd.setTourneyStatisticsTracker(new TourneyStatisticsTracker(csd.getGuildSpecificData().getGuildId()));
+
+		next(csd, 0L, event.getInteraction().getChannel(), true);
+
+		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
+	}
+
+	@Override
+	public String getName() {
+		return "tourney";
+	}
+
+	@Override
+	public CommandHandlerType getType() {
+		return CommandHandlerType.GLOBAL_COMMAND;
+	}
+
+	@Override
+	public ApplicationCommandRequest asRequest() {
+		return ApplicationCommandRequest
+				.builder()
+				.name("tourney")
+				.description("Starts a tourney")
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.required(true)
+								.type(ApplicationCommandOptionType.INTEGER.getValue())
+								.name("rounds")
+								.description("Number of rounds. From 5 to 10")
+								.build()
+				)
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.required(false)
+								.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+								.name("hintsdisabled")
+								.description("Whether Hints are disabled")
+								.build()
+				)
+				.addOption(
+						ApplicationCommandOptionData
+								.builder()
+								.required(false)
+								.type(ApplicationCommandOptionType.BOOLEAN.getValue())
+								.name("firstnamesdisabled")
+								.description("Whether first names are disabled")
+								.build()
+				)
+				.build();
+	}
+
 	public static void next(ChannelSpecificData csd, long answerer, Mono<MessageChannel> channelMono, boolean justStarted) {
 		TourneyData data = csd.getTourneyData();
 		TourneyStatisticsTracker tracker = csd.getTourneyStatisticsTracker();
@@ -125,76 +197,4 @@ public final class TourneyCommand implements CommandHandler {
 
 		return new ModeContext(mode, modeCount);
 	}
-
-	@Override
-	public Mono<?> handle(SlashCommandEvent event) {
-		ChannelSpecificData csd = GuildSpecificData
-				.get(event.getInteraction().getGuildId().orElseThrow())
-				.getChannel(event.getInteraction().getChannelId());
-
-		if (csd.isTourney()) {
-			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a tourney**"));
-		}
-
-		int rounds = (int) event.getOption("rounds").orElseThrow().getValue().orElseThrow().asLong();
-		if (rounds < 3) {
-			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**Choose a valid number equal to or above 3**"));
-		}
-
-		boolean disableHints = event.getOption("hintsdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
-		boolean disableFirstNames = event.getOption("firstnamesdisabled").flatMap(ApplicationCommandInteractionOption::getValue).map(ApplicationCommandInteractionOptionValue::asBoolean).orElse(false);
-		csd.setTourneyData(new TourneyData(rounds, disableHints, disableFirstNames));
-		csd.setTourneyStatisticsTracker(new TourneyStatisticsTracker(csd.getGuildSpecificData().getGuildId()));
-
-		next(csd, 0L, event.getInteraction().getChannel(), true);
-
-		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
-	}
-
-	@Override
-	public String getName() {
-		return "tourney";
-	}
-
-	@Override
-	public CommandHandlerType getType() {
-		return CommandHandlerType.GLOBAL_COMMAND;
-	}
-
-	@Override
-	public ApplicationCommandRequest asRequest() {
-		return ApplicationCommandRequest
-				.builder()
-				.name("tourney")
-				.description("Starts a tourney")
-				.addOption(
-						ApplicationCommandOptionData
-								.builder()
-								.required(true)
-								.type(ApplicationCommandOptionType.INTEGER.getValue())
-								.name("rounds")
-								.description("Number of rounds. From 5 to 10")
-								.build()
-				)
-				.addOption(
-						ApplicationCommandOptionData
-								.builder()
-								.required(false)
-								.type(ApplicationCommandOptionType.BOOLEAN.getValue())
-								.name("hintsdisabled")
-								.description("Whether Hints are disabled")
-								.build()
-				)
-				.addOption(
-						ApplicationCommandOptionData
-								.builder()
-								.required(false)
-								.type(ApplicationCommandOptionType.BOOLEAN.getValue())
-								.name("firstnamesdisabled")
-								.description("Whether first names are disabled")
-								.build()
-				)
-				.build();
-	}
-
 }

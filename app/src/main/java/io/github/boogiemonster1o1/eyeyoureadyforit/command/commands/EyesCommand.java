@@ -21,16 +21,6 @@ import java.time.Instant;
 
 public class EyesCommand implements CommandHandler {
 
-	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
-		return EmbedCreateSpec
-				.builder()
-				.image(entry.getImageUrl())
-				.title("Guess the Person")
-				.description("Reply to this message with the answer")
-				.timestamp(Instant.now())
-				.build();
-	}
-
 	@Override
 	public Mono<?> handle(SlashCommandEvent event) {
 		ChannelSpecificData csd = GuildSpecificData
@@ -69,6 +59,16 @@ public class EyesCommand implements CommandHandler {
 		return ApplicationCommandRequest.builder()
 				.name("eyes")
 				.description("Shows a pair of eyes")
+				.build();
+	}
+
+	public static EmbedCreateSpec createEyesEmbed(EyeEntry entry) {
+		return EmbedCreateSpec
+				.builder()
+				.image(entry.getImageUrl())
+				.title("Guess the Person")
+				.description("Reply to this message with the answer")
+				.timestamp(Instant.now())
 				.build();
 	}
 

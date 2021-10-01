@@ -19,28 +19,6 @@ import java.util.ArrayList;
 
 public class ResetCommand implements CommandHandler {
 
-	public static EmbedCreateSpec addResetFooter(EmbedCreateSpec.Builder eSpec, InteractionCreateEvent event) {
-		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
-		if (data.getMessageId() != null && data.getCurrent() != null) {
-			if (!data.getCurrent().getAliases().isEmpty()) {
-				eSpec.description("Aliases: " + data.getCurrent().getAliases());
-			}
-			eSpec.title("The person was **" + data.getCurrent().getName() + "**");
-			event.getInteraction().getChannel()
-					.flatMap(channel -> channel.getMessageById(data.getMessageId()))
-					.flatMap(message -> message.edit(MessageEditSpec.builder().components(new ArrayList<>()).build()))
-					.subscribe();
-		} else {
-			eSpec.title("Reset");
-			eSpec.description("But there was no context :p");
-		}
-		eSpec.timestamp(Instant.now());
-		eSpec.color(Color.RED);
-		eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
-		data.reset();
-		return eSpec.build();
-	}
-
 	@Override
 	public Mono<?> handle(SlashCommandEvent event) {
 		ChannelSpecificData csd = GuildSpecificData
@@ -69,5 +47,27 @@ public class ResetCommand implements CommandHandler {
 				.name("reset")
 				.description("Resets")
 				.build();
+	}
+
+	public static EmbedCreateSpec addResetFooter(EmbedCreateSpec.Builder eSpec, InteractionCreateEvent event) {
+		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
+		if (data.getMessageId() != null && data.getCurrent() != null) {
+			if (!data.getCurrent().getAliases().isEmpty()) {
+				eSpec.description("Aliases: " + data.getCurrent().getAliases());
+			}
+			eSpec.title("The person was **" + data.getCurrent().getName() + "**");
+			event.getInteraction().getChannel()
+					.flatMap(channel -> channel.getMessageById(data.getMessageId()))
+					.flatMap(message -> message.edit(MessageEditSpec.builder().components(new ArrayList<>()).build()))
+					.subscribe();
+		} else {
+			eSpec.title("Reset");
+			eSpec.description("But there was no context :p");
+		}
+		eSpec.timestamp(Instant.now());
+		eSpec.color(Color.RED);
+		eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
+		data.reset();
+		return eSpec.build();
 	}
 }
