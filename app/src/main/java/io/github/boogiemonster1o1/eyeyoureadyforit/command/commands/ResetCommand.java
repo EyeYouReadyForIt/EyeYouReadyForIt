@@ -1,7 +1,10 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
+import java.time.Instant;
+import java.util.ArrayList;
+
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -14,21 +17,17 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-import java.util.ArrayList;
-
 public class ResetCommand implements CommandHandler {
-
 	@Override
-	public Mono<?> handle(SlashCommandEvent event) {
+	public Mono<?> handle(ChatInputInteractionEvent event) {
 		ChannelSpecificData csd = GuildSpecificData
 				.get(event.getInteraction().getGuildId().orElseThrow())
 				.getChannel(event.getInteraction().getChannelId());
 
 		if (csd.isTourney()) {
-			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
+			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
 		}
-		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(EmbedCreateSpec.builder(), event).asRequest()).build())));
+		return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(EmbedCreateSpec.builder(), event).asRequest()).build())));
 	}
 
 	@Override

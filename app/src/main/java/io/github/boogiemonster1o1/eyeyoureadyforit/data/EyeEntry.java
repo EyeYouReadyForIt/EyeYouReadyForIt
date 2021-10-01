@@ -1,11 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
-import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
-import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
-import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.core.statement.StatementContext;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,6 +8,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
+import io.github.boogiemonster1o1.eyeyoureadyforit.App;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 
 public final class EyeEntry implements RowMapper<EyeEntry> {
 	private static final Random RANDOM = new Random(ThreadLocalRandom.current().nextLong());

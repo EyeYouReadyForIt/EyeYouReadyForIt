@@ -1,6 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons;
 
-import discord4j.core.event.domain.interaction.ButtonInteractEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -17,7 +17,7 @@ public class ResetButton implements ButtonHandler {
 	}
 
 	@Override
-	public Mono<?> interact(ButtonInteractEvent event, ChannelSpecificData csd) {
+	public Mono<?> interact(ButtonInteractionEvent event, ChannelSpecificData csd) {
 		return event.reply(InteractionApplicationCommandCallbackSpec
 				.builder()
 				.addEmbed(ResetCommand.addResetFooter(EmbedCreateSpec.builder(), event))

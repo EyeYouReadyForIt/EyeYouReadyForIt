@@ -1,11 +1,11 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.data.stats;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import discord4j.common.util.Snowflake;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public final class Leaderboard implements RowMapper<Leaderboard> {
 	private final Snowflake id;

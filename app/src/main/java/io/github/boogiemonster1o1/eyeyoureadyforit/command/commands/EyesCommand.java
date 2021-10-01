@@ -1,7 +1,9 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
+import java.time.Instant;
+
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.SlashCommandEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -17,21 +19,18 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-
 public class EyesCommand implements CommandHandler {
-
 	@Override
-	public Mono<?> handle(SlashCommandEvent event) {
+	public Mono<?> handle(ChatInputInteractionEvent event) {
 		ChannelSpecificData csd = GuildSpecificData
 				.get(event.getInteraction().getGuildId().orElseThrow())
 				.getChannel(event.getInteraction().getChannelId());
 
 		if (csd.getMessageId() != null && csd.getCurrent() != null) {
-			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
+			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
 		}
 		if (csd.isTourney()) {
-			return event.acknowledgeEphemeral().then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
+			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**You can not use this command during a tourney**"));
 		}
 
 		EyeEntry entry = EyeEntry.getRandom();
