@@ -2,7 +2,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.db.stats;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import discord4j.common.util.Snowflake;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;

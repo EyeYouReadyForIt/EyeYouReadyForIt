@@ -2,7 +2,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.button;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;

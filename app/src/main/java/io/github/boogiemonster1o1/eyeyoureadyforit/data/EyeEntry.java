@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;

@@ -1,7 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db;
 
 import java.util.Optional;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jdbi.v3.core.Jdbi;

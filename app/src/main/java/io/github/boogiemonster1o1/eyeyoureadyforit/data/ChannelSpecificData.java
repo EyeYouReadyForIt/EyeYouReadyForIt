@@ -2,7 +2,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import discord4j.common.util.Snowflake;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.TourneyStatisticsTracker;
 

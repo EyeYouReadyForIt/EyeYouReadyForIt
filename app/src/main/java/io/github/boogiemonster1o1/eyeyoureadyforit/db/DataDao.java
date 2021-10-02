@@ -1,7 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.db;
 
 import java.util.ArrayList;
-
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;

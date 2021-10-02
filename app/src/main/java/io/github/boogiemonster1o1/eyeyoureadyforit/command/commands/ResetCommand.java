@@ -2,7 +2,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import java.time.Instant;
 import java.util.ArrayList;
-
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.spec.EmbedCreateSpec;

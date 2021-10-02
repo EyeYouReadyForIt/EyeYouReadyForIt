@@ -2,7 +2,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
