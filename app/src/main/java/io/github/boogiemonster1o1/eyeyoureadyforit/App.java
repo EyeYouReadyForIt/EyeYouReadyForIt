@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
-@SuppressWarnings("NullableProblems")
 public class App {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
