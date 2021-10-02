@@ -2,7 +2,6 @@ plugins {
 	id "java"
 	id "application"
 	id "com.github.johnrengelman.shadow" version "7.0.0"
-	id "com.diffplug.spotless" version "5.16.0"
 }
 
 repositories {
@@ -22,16 +21,6 @@ dependencies {
 	implementation "org.jdbi:jdbi3-postgres:3.21.0"
 	implementation "org.reflections:reflections:0.9.12"
 	testImplementation "org.junit.jupiter:junit-jupiter:5.7.1"
-}
-
-spotless {
-	encoding "UTF-8"
-	enforceCheck(false)
-
-	java {
-		importOrder("java", "javax", "")
-		removeUnusedImports()
-	}
 }
 
 application {
