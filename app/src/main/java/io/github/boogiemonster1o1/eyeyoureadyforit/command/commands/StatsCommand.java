@@ -3,7 +3,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;

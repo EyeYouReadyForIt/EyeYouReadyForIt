@@ -2,7 +2,6 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.data;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import discord4j.common.util.Snowflake;
 
 public final class GuildSpecificData {
