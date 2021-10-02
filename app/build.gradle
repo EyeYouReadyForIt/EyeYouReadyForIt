@@ -1,7 +1,8 @@
 plugins {
-	id 'java'
-	id 'application'
+	id "java"
+	id "application"
 	id "com.github.johnrengelman.shadow" version "7.0.0"
+	id "com.diffplug.spotless" version "5.16.0"
 }
 
 repositories {
@@ -12,25 +13,35 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-	implementation 'com.discord4j:discord4j-core:3.2.0'
-	implementation 'ch.qos.logback:logback-classic:1.2.3'
-	implementation 'org.postgresql:postgresql:42.2.23.jre7'
-	implementation 'com.zaxxer:HikariCP:5.0.0'
-	implementation 'org.jdbi:jdbi3-bom:3.21.0'
-	implementation 'org.jdbi:jdbi3-sqlobject:3.21.0'
-	implementation 'org.jdbi:jdbi3-postgres:3.21.0'
-	implementation 'org.reflections:reflections:0.9.12'
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+	implementation "com.discord4j:discord4j-core:3.2.0"
+	implementation "ch.qos.logback:logback-classic:1.2.3"
+	implementation "org.postgresql:postgresql:42.2.23.jre7"
+	implementation "com.zaxxer:HikariCP:5.0.0"
+	implementation "org.jdbi:jdbi3-bom:3.21.0"
+	implementation "org.jdbi:jdbi3-sqlobject:3.21.0"
+	implementation "org.jdbi:jdbi3-postgres:3.21.0"
+	implementation "org.reflections:reflections:0.9.12"
+	testImplementation "org.junit.jupiter:junit-jupiter:5.7.1"
+}
+
+spotless {
+	encoding "UTF-8"
+	enforceCheck(false)
+
+	java {
+		importOrder("java", "javax", "")
+		removeUnusedImports()
+	}
 }
 
 application {
-	mainClass = 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
+	mainClass = "io.github.boogiemonster1o1.eyeyoureadyforit.App"
 }
 
 jar {
 	manifest {
 		attributes(
-				'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
+				"Main-Class": "io.github.boogiemonster1o1.eyeyoureadyforit.App"
 		)
 	}
 }
@@ -38,11 +49,11 @@ jar {
 shadowJar {
 	manifest {
 		attributes(
-				'Main-Class': 'io.github.boogiemonster1o1.eyeyoureadyforit.App'
+				"Main-Class": "io.github.boogiemonster1o1.eyeyoureadyforit.App"
 		)
 	}
 }
 
-tasks.named('test') {
+tasks.named("test") {
 	useJUnitPlatform()
 }
