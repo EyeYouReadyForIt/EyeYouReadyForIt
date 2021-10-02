@@ -15,12 +15,12 @@ To run:
   | hint                | VARCHAR(255)   |
   | aliases             | VARCHAR[]      |
 
-- Either set the following Environment Variables or System Properties when running the bot:
-  | Environment Variable | System Property  | Value                             |
-  |----------------------|------------------|-----------------------------------| 
-  | EYRFI_TOKEN          | eyrfi.token      | Bot token                         |
-  | EYRFI_DB_URL         | eyrfi.dbURL      | Connection String for PostgreSQL  | 
-  | EYRFI_DB_USER        | eyrfi.dbUser     | Username for PostgreSQL           | 
-  | EYFRI_DB_PASSWORD    | eyrfi.dbPassword | Password for PostgreSQL           |
+- Set the following Environment Variables:
+  | Environment Variable| Value                             |
+  |---------------------|-----------------------------------| 
+  | EYRFI_TOKEN         | Bot token                         |
+  | EYRFI_DB_URL        | Connection String for PostgreSQL  | 
+  | EYRFI_DB_USER       | Username for PostgreSQL           | 
+  | EYFRI_DB_PASSWORD   | Password for PostgreSQL           |
 
 - Run the bot like any other Java program.
