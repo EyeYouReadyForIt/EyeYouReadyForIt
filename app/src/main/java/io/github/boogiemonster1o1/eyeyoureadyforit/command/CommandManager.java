@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 
 @SuppressWarnings("NullableProblems")
 public final class CommandManager {
-	public static final Map<String, CommandHandler> COMMAND_MAP = new ConcurrentHashMap<>();
-	public static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.command.commands");
+	private static final Map<String, CommandHandler> COMMAND_MAP = new ConcurrentHashMap<>();
+	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.command.commands");
 
 	public static void init() {
 		COMMAND_MAP.clear();

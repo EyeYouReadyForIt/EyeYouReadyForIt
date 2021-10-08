@@ -15,10 +15,11 @@ import reactor.core.publisher.Mono;
 
 @SuppressWarnings("NullableProblems")
 public class ButtonManager {
-	public static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons");
+	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons");
 	private static final Map<String, ButtonHandler> BUTTON_MAP = new ConcurrentHashMap<>();
 
 	public static void init() {
+		BUTTON_MAP.clear();
 		for (Class<? extends ButtonHandler> buttonClass : reflections.getSubTypesOf(ButtonHandler.class)) {
 			try {
 				ButtonHandler handler = buttonClass.getConstructor().newInstance();
@@ -36,7 +37,7 @@ public class ButtonManager {
 		}).subscribe();
 	}
 
-	public static Publisher<?> accept(ButtonInteractionEvent event) {
+	public static Mono<?> accept(ButtonInteractionEvent event) {
 		Snowflake guildId = event.getInteraction().getGuildId().orElseThrow();
 		ChannelSpecificData csd = GuildSpecificData.get(guildId).getChannel(event.getInteraction().getChannelId());
 		ButtonHandler handler = BUTTON_MAP.get(event.getCustomId());

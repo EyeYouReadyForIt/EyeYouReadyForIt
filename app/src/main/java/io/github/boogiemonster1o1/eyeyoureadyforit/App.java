@@ -30,6 +30,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
+import io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.MessageHookManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
@@ -166,6 +167,7 @@ public class App {
 
 		CommandManager.init();
 		ButtonManager.init();
+		MessageHookManager.init();
 		CLIENT.onDisconnect().block();
 	}
 
