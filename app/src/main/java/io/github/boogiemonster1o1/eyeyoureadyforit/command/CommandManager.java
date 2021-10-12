@@ -2,10 +2,9 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
+import io.github.boogiemonster1o1.eyeyoureadyforit.utils.ErrorHelper;
 import org.reactivestreams.Publisher;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
@@ -26,22 +25,24 @@ public final class CommandManager {
 			}
 		}
 
-		App.CLIENT.on(new ReactiveEventAdapter() {
-			@Override
-			public Publisher<?> onChatInputInteraction(ChatInputInteractionEvent event) {
-				return accept(event);
-			}
-		}).subscribe();
+		App.getClient()
+				.getEventDispatcher()
+				.on(ChatInputInteractionEvent.class)
+				.flatMap(event -> accept(event))
+				.onErrorContinue((error, event) -> {
+					error.printStackTrace();
+					ErrorHelper.sendErrorEmbed(error, (ChatInputInteractionEvent) event);
+				})
+				.subscribe();
 	}
 
 	public static Publisher<?> accept(ChatInputInteractionEvent event) {
 		if (event.getInteraction().getGuildId().isEmpty()) {
-			return event.reply("You can only run this commandHandler in a guild");
+			return event.reply("You can only run this command in a guild");
 		}
 
 		CommandHandler commandHandler = COMMAND_MAP.get(event.getCommandName());
 
-		GuildSpecificData gsd = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow());
 		if (commandHandler == null) {
 			return Mono.empty();
 		}

@@ -26,7 +26,7 @@ public class ResetCommand implements CommandHandler {
 		if (csd.isTourney()) {
 			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
 		}
-		return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(EmbedCreateSpec.builder(), event).asRequest()).build())));
+		return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().addEmbed(addResetFooter(event).asRequest()).build())));
 	}
 
 	@Override
@@ -47,7 +47,8 @@ public class ResetCommand implements CommandHandler {
 				.build();
 	}
 
-	public static EmbedCreateSpec addResetFooter(EmbedCreateSpec.Builder eSpec, InteractionCreateEvent event) {
+	public static EmbedCreateSpec addResetFooter(InteractionCreateEvent event) {
+		EmbedCreateSpec.Builder eSpec = EmbedCreateSpec.builder();
 		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
 		if (data.getMessageId() != null && data.getCurrent() != null) {
 			if (!data.getCurrent().getAliases().isEmpty()) {
@@ -58,13 +59,13 @@ public class ResetCommand implements CommandHandler {
 					.flatMap(channel -> channel.getMessageById(data.getMessageId()))
 					.flatMap(message -> message.edit(MessageEditSpec.builder().components(new ArrayList<>()).build()))
 					.subscribe();
+			eSpec.timestamp(Instant.now());
+			eSpec.color(Color.RED);
+			eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
 		} else {
-			eSpec.title("Reset");
 			eSpec.description("But there was no context :p");
+			eSpec.color(Color.RED);
 		}
-		eSpec.timestamp(Instant.now());
-		eSpec.color(Color.RED);
-		eSpec.addField("Run by", event.getInteraction().getUser().getMention(), false);
 		data.reset();
 		return eSpec.build();
 	}

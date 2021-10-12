@@ -20,7 +20,7 @@ public class ResetButton implements ButtonHandler {
 	public Mono<?> interact(ButtonInteractionEvent event, ChannelSpecificData csd) {
 		return event.reply(InteractionApplicationCommandCallbackSpec
 				.builder()
-				.addEmbed(ResetCommand.addResetFooter(EmbedCreateSpec.builder(), event))
+				.addEmbed(ResetCommand.addResetFooter(event))
 				.build()
 		);
 	}

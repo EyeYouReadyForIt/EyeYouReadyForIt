@@ -2,8 +2,11 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.object.Embed;
+import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.WebhookExecuteRequest;
+import discord4j.rest.util.Color;
 import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandler;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandlerType;
@@ -23,7 +26,7 @@ public class HintCommand implements CommandHandler {
 		}
 		if (csd.isTourney())
 			csd.getTourneyStatisticsTracker().addHint(event.getInteraction().getUser().getId());
-		return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().content(HintCommand.getHintContent(event)).build())));
+		return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage(MultipartRequest.ofRequest(WebhookExecuteRequest.builder().addEmbed(HintCommand.getHintContent(event).asRequest()).build())));
 	}
 
 	@Override
@@ -44,13 +47,18 @@ public class HintCommand implements CommandHandler {
 				.build();
 	}
 
-	public static String getHintContent(InteractionCreateEvent event) {
+	public static EmbedCreateSpec getHintContent(InteractionCreateEvent event) {
 		ChannelSpecificData data = GuildSpecificData.get(event.getInteraction().getGuildId().orElseThrow()).getChannel(event.getInteraction().getChannelId());
 
 		if (data.getMessageId() != null && data.getCurrent() != null) {
-			return data.getCurrent().getHint();
+			return EmbedCreateSpec
+					.builder()
+					.title("Hint")
+					.description(data.getCurrent().getHint())
+					.color(Color.GREEN)
+					.build();
 		}
 
-		return "**There is no context available**";
+		return EmbedCreateSpec.builder().description("**But there was no context :p**").color(Color.RED).build();
 	}
 }

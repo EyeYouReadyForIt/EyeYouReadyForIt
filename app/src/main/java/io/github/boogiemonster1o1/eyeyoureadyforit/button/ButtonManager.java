@@ -3,13 +3,12 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.button;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.object.component.Button;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
-import org.reactivestreams.Publisher;
+import io.github.boogiemonster1o1.eyeyoureadyforit.utils.ErrorHelper;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
 
@@ -20,21 +19,25 @@ public class ButtonManager {
 
 	public static void init() {
 		BUTTON_MAP.clear();
-		for (Class<? extends ButtonHandler> buttonClass : reflections.getSubTypesOf(ButtonHandler.class)) {
-			try {
-				ButtonHandler handler = buttonClass.getConstructor().newInstance();
-				BUTTON_MAP.put(handler.getButton().getCustomId().orElseThrow(), handler);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		reflections.getSubTypesOf(ButtonHandler.class)
+						.stream()
+						.forEach(aClass -> {
+							try {
+								ButtonHandler handler = aClass.getConstructor().newInstance();
+								BUTTON_MAP.put(handler.getButton().getCustomId().orElseThrow(), handler);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
 
-		App.CLIENT.on(new ReactiveEventAdapter() {
-			@Override
-			public Publisher<?> onButtonInteraction(ButtonInteractionEvent event) {
-				return accept(event);
-			}
-		}).subscribe();
+		App.getClient().getEventDispatcher()
+				.on(ButtonInteractionEvent.class)
+				.flatMap(event -> accept(event))
+				.onErrorContinue((error, event) -> {
+					error.printStackTrace();
+					ErrorHelper.sendErrorEmbed(error, (ButtonInteractionEvent) event);
+				})
+				.subscribe();
 	}
 
 	public static Mono<?> accept(ButtonInteractionEvent event) {

@@ -24,7 +24,7 @@ public class HintButton implements ButtonHandler {
 		return event.reply(InteractionApplicationCommandCallbackSpec
 				.builder()
 				.ephemeral(true)
-				.content(HintCommand.getHintContent(event))
+				.addEmbed(HintCommand.getHintContent(event))
 				.build()
 		);
 	}
