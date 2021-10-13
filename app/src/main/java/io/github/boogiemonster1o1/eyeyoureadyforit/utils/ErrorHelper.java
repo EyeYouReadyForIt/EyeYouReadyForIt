@@ -1,20 +1,28 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.utils;
 
+import java.time.Instant;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.rest.util.Color;
-import java.time.Instant;
 
-public class ErrorHelper {
+public final class ErrorHelper {
 	public static void sendErrorEmbed(Throwable exception, MessageCreateEvent event) {
+		if(event == null) {
+			return;
+		}
+
 		event.getMessage().getChannel().flatMap(channel ->
 				channel.createMessage(createEmbed(exception))
 		).subscribe();
 	}
 
 	public static void sendErrorEmbed(Throwable exception, InteractionCreateEvent event) {
+		if(event == null) {
+			return;
+		}
+
 		event.reply(InteractionApplicationCommandCallbackSpec
 						.builder()
 						.addEmbed(createEmbed(exception))

@@ -1,17 +1,17 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.hooks;
 
+import java.util.function.Predicate;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.MessageHook;
 import reactor.core.publisher.Mono;
-import java.util.function.Predicate;
 
-public class AdminCommands implements MessageHook {
+public final class AdminCommands implements MessageHook {
 	@Override
 	public void handle(MessageCreateEvent event) {
-		switch(event.getMessage().getContent().split("\\s+")[1]) {
+		switch (event.getMessage().getContent().split("\\s+")[1]) {
 			case "shutdown":
 				event
 						.getMessage()
@@ -59,6 +59,6 @@ public class AdminCommands implements MessageHook {
 	@Override
 	public Predicate<MessageCreateEvent> getCondition() {
 		return event -> event.getMessage().getContent().startsWith("!eyeyoureadyforit")
-				&& event.getGuildId().get().asLong() == 859274373084479508L;
+				&& event.getGuildId().orElseThrow().asLong() == 859274373084479508L;
 	}
 }

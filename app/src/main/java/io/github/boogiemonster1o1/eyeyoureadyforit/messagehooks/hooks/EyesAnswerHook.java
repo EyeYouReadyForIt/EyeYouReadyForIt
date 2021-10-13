@@ -1,5 +1,8 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.hooks;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.function.Predicate;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.MessageReference;
@@ -13,11 +16,8 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.MessageHook;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.function.Predicate;
 
-public class EyesAnswerHook implements MessageHook {
+public final class EyesAnswerHook implements MessageHook {
 	@Override
 	public void handle(MessageCreateEvent event) {
 		String content = event.getMessage().getContent().toLowerCase();
@@ -76,7 +76,7 @@ public class EyesAnswerHook implements MessageHook {
 				.getMessageReference()
 				.flatMap(MessageReference::getMessageId)
 				.map(id -> id.equals(GuildSpecificData.get(event.getMessage()
-						.getGuildId().orElseThrow())
+								.getGuildId().orElseThrow())
 						.getChannel(event.getMessage().getChannelId())
 						.getMessageId())
 				)

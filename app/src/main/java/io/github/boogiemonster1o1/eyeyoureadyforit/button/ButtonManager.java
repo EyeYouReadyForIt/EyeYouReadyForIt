@@ -13,22 +13,22 @@ import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
 
 @SuppressWarnings("NullableProblems")
-public class ButtonManager {
+public final class ButtonManager {
 	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons");
 	private static final Map<String, ButtonHandler> BUTTON_MAP = new ConcurrentHashMap<>();
 
 	public static void init() {
 		BUTTON_MAP.clear();
 		reflections.getSubTypesOf(ButtonHandler.class)
-						.stream()
-						.forEach(aClass -> {
-							try {
-								ButtonHandler handler = aClass.getConstructor().newInstance();
-								BUTTON_MAP.put(handler.getButton().getCustomId().orElseThrow(), handler);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						});
+				.stream()
+				.forEach(aClass -> {
+					try {
+						ButtonHandler handler = aClass.getConstructor().newInstance();
+						BUTTON_MAP.put(handler.getButton().getCustomId().orElseThrow(), handler);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
 
 		App.getClient().getEventDispatcher()
 				.on(ButtonInteractionEvent.class)
@@ -40,7 +40,7 @@ public class ButtonManager {
 				.subscribe();
 	}
 
-	public static Mono<?> accept(ButtonInteractionEvent event) {
+	private static Mono<?> accept(ButtonInteractionEvent event) {
 		Snowflake guildId = event.getInteraction().getGuildId().orElseThrow();
 		ChannelSpecificData csd = GuildSpecificData.get(guildId).getChannel(event.getInteraction().getChannelId());
 		ButtonHandler handler = BUTTON_MAP.get(event.getCustomId());

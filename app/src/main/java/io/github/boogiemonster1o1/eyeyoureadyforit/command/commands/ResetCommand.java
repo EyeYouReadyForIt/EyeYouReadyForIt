@@ -16,7 +16,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import reactor.core.publisher.Mono;
 
-public class ResetCommand implements CommandHandler {
+public final class ResetCommand implements CommandHandler {
 	@Override
 	public Mono<?> handle(ChatInputInteractionEvent event) {
 		ChannelSpecificData csd = GuildSpecificData

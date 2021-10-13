@@ -18,7 +18,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import reactor.core.publisher.Mono;
 
-public class EyesCommand implements CommandHandler {
+public final class EyesCommand implements CommandHandler {
 	@Override
 	public Mono<?> handle(ChatInputInteractionEvent event) {
 		ChannelSpecificData csd = GuildSpecificData
@@ -33,7 +33,7 @@ public class EyesCommand implements CommandHandler {
 		}
 
 		EyeEntry entry = EyeEntry.getRandom();
-		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
+		return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(getEyesRequest(entry))).map(data -> {
 			synchronized (GuildSpecificData.LOCK) {
 				csd.setCurrent(entry);
 				csd.setMessageId(Snowflake.of(data.id()));

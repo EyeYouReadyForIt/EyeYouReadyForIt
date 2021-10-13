@@ -9,7 +9,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.command.commands.HintCommand;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import reactor.core.publisher.Mono;
 
-public class HintButton implements ButtonHandler {
+public final class HintButton implements ButtonHandler {
 	@Override
 	public Button getButton() {
 		return Button.success("hint_button", ReactionEmoji.unicode("💡"), "Hint");

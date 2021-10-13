@@ -56,7 +56,7 @@ public final class TourneyCommand implements CommandHandler {
 
 		next(csd, 0L, event.getInteraction().getChannel(), true);
 
-		return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
+		return event.deferReply().then(event.getInteractionResponse().createFollowupMessage("Let the games begin"));
 	}
 
 	@Override

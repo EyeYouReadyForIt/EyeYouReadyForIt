@@ -14,6 +14,7 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
@@ -31,7 +32,7 @@ public class App {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
 	public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
 	private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
-	public static GatewayDiscordClient CLIENT;
+	private static GatewayDiscordClient CLIENT;
 	private static Set<Snowflake> currentGuilds = new HashSet<>();
 
 	public static void main(String[] args) {
@@ -73,9 +74,11 @@ public class App {
 
 		CLIENT.getEventDispatcher()
 				.on(MessageDeleteEvent.class)
-				.filterWhen(
-						event -> Mono.justOrEmpty(event.getMessage().flatMap(Message::getAuthor))
-								.map(user -> user.getId().equals(getClient().getSelfId()))
+				.filter(event -> event
+						.getMessage()
+						.flatMap(Message::getAuthor)
+						.map(User::getId)
+						.equals(getClient().getSelfId())
 				)
 				.filter(event -> event.getGuildId().isPresent())
 				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))

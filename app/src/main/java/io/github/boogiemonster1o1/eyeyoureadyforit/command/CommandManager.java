@@ -36,7 +36,7 @@ public final class CommandManager {
 				.subscribe();
 	}
 
-	public static Publisher<?> accept(ChatInputInteractionEvent event) {
+	private static Publisher<?> accept(ChatInputInteractionEvent event) {
 		if (event.getInteraction().getGuildId().isEmpty()) {
 			return event.reply("You can only run this command in a guild");
 		}
@@ -56,10 +56,10 @@ public final class CommandManager {
 		for (CommandHandler handler : COMMAND_MAP.values()) {
 			switch (handler.getType()) {
 				case GLOBAL_COMMAND:
-					App.CLIENT.getRestClient()
+					App.getClient().getRestClient()
 							.getApplicationService()
 							.createGlobalApplicationCommand(
-									App.CLIENT.getRestClient().getApplicationId().block(),
+									App.getClient().getRestClient().getApplicationId().block(),
 									handler.asRequest()
 							)
 							.doOnError(Throwable::printStackTrace)
@@ -68,10 +68,10 @@ public final class CommandManager {
 					break;
 
 				case ADMIN_COMMAND:
-					App.CLIENT.getRestClient()
+					App.getClient().getRestClient()
 							.getApplicationService()
 							.createGuildApplicationCommand(
-									App.CLIENT.getRestClient().getApplicationId().block(),
+									App.getClient().getRestClient().getApplicationId().block(),
 									859274373084479508L,
 									handler.asRequest()
 							)
