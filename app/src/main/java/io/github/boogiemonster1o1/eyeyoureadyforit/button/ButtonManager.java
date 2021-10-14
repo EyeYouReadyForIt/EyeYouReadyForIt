@@ -12,19 +12,17 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.utils.ErrorHelper;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
 
-@SuppressWarnings("NullableProblems")
 public final class ButtonManager {
 	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons");
-	private static final Map<String, ButtonHandler> BUTTON_MAP = new ConcurrentHashMap<>();
+	private static final Map<String, ButtonHandler> BUTTONS = new ConcurrentHashMap<>();
 
 	public static void init() {
-		BUTTON_MAP.clear();
+		BUTTONS.clear();
 		reflections.getSubTypesOf(ButtonHandler.class)
-				.stream()
 				.forEach(aClass -> {
 					try {
 						ButtonHandler handler = aClass.getConstructor().newInstance();
-						BUTTON_MAP.put(handler.getButton().getCustomId().orElseThrow(), handler);
+						BUTTONS.put(handler.getButton().getCustomId().orElseThrow(), handler);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -32,7 +30,7 @@ public final class ButtonManager {
 
 		App.getClient().getEventDispatcher()
 				.on(ButtonInteractionEvent.class)
-				.flatMap(event -> accept(event))
+				.flatMap(ButtonManager::accept)
 				.onErrorContinue((error, event) -> {
 					error.printStackTrace();
 					ErrorHelper.sendErrorEmbed(error, (ButtonInteractionEvent) event);
@@ -43,7 +41,7 @@ public final class ButtonManager {
 	private static Mono<?> accept(ButtonInteractionEvent event) {
 		Snowflake guildId = event.getInteraction().getGuildId().orElseThrow();
 		ChannelSpecificData csd = GuildSpecificData.get(guildId).getChannel(event.getInteraction().getChannelId());
-		ButtonHandler handler = BUTTON_MAP.get(event.getCustomId());
+		ButtonHandler handler = BUTTONS.get(event.getCustomId());
 
 		if (handler == null) {
 			return Mono.empty();
@@ -53,7 +51,7 @@ public final class ButtonManager {
 	}
 
 	public static Button getButton(Class<? extends ButtonHandler> buttonClass) {
-		return BUTTON_MAP.values()
+		return BUTTONS.values()
 				.stream()
 				.filter(e -> e.getClass() == buttonClass)
 				.findFirst().orElseThrow()

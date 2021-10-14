@@ -9,26 +9,26 @@ import org.reactivestreams.Publisher;
 import org.reflections.Reflections;
 import reactor.core.publisher.Mono;
 
-@SuppressWarnings("NullableProblems")
 public final class CommandManager {
-	private static final Map<String, CommandHandler> COMMAND_MAP = new ConcurrentHashMap<>();
+	private static final Map<String, CommandHandler> COMMANDS = new ConcurrentHashMap<>();
 	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.command.commands");
 
 	public static void init() {
-		COMMAND_MAP.clear();
-		for (Class<? extends CommandHandler> commandClass : reflections.getSubTypesOf(CommandHandler.class)) {
-			try {
-				CommandHandler handler = commandClass.getConstructor().newInstance();
-				COMMAND_MAP.put(handler.getName(), handler);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		COMMANDS.clear();
+		reflections.getSubTypesOf(CommandHandler.class)
+				.forEach(aClass -> {
+					try {
+						CommandHandler handler = aClass.getConstructor().newInstance();
+						COMMANDS.put(handler.getName(), handler);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
 
 		App.getClient()
 				.getEventDispatcher()
 				.on(ChatInputInteractionEvent.class)
-				.flatMap(event -> accept(event))
+				.flatMap(CommandManager::accept)
 				.onErrorContinue((error, event) -> {
 					error.printStackTrace();
 					ErrorHelper.sendErrorEmbed(error, (ChatInputInteractionEvent) event);
@@ -41,7 +41,7 @@ public final class CommandManager {
 			return event.reply("You can only run this command in a guild");
 		}
 
-		CommandHandler commandHandler = COMMAND_MAP.get(event.getCommandName());
+		CommandHandler commandHandler = COMMANDS.get(event.getCommandName());
 
 		if (commandHandler == null) {
 			return Mono.empty();
@@ -53,7 +53,7 @@ public final class CommandManager {
 	public static Mono<?> registerSlashCommands() {
 		App.LOGGER.info("REGISTERING COMMANDS YEE HAW");
 
-		for (CommandHandler handler : COMMAND_MAP.values()) {
+		for (CommandHandler handler : COMMANDS.values()) {
 			switch (handler.getType()) {
 				case GLOBAL_COMMAND:
 					App.getClient().getRestClient()

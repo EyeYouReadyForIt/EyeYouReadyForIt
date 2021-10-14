@@ -15,6 +15,7 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.spec.MessageCreateSpec;
 import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;

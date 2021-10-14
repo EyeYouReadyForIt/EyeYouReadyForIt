@@ -10,16 +10,15 @@ import reactor.core.publisher.Mono;
 
 public final class MessageHookManager {
 	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.hooks");
-	private static final Set<MessageHook> MESSAGE_HOOK_SET = new HashSet<>();
+	private static final Set<MessageHook> MESSAGE_HOOKS = new HashSet<>();
 
 
 	public static void init() {
-		MESSAGE_HOOK_SET.clear();
+		MESSAGE_HOOKS.clear();
 		reflections.getSubTypesOf(MessageHook.class)
-				.stream()
 				.forEach(aClass -> {
 					try {
-						MESSAGE_HOOK_SET.add(aClass.getConstructor().newInstance());
+						MESSAGE_HOOKS.add(aClass.getConstructor().newInstance());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -42,7 +41,7 @@ public final class MessageHookManager {
 	}
 
 	private static Mono<?> accept(MessageCreateEvent event) {
-		for (MessageHook hook : MESSAGE_HOOK_SET) {
+		for (MessageHook hook : MESSAGE_HOOKS) {
 			if (hook.getCondition().test(event)) {
 				hook.handle(event);
 			}
