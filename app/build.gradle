@@ -48,3 +48,7 @@ shadowJar {
 tasks.named("test") {
 	useJUnitPlatform()
 }
+
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+}

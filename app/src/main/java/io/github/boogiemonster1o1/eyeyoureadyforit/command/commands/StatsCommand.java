@@ -83,8 +83,8 @@ public final class StatsCommand implements CommandHandler {
 		// looking at this makes me want to cry
 
 		Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").get().getOption("user")
-				.flatMap(ApplicationCommandInteractionOption::getValue)
-		).flatMap(ApplicationCommandInteractionOptionValue::asUser)
+						.flatMap(ApplicationCommandInteractionOption::getValue)
+				).flatMap(ApplicationCommandInteractionOptionValue::asUser)
 				.switchIfEmpty(Mono.just(event.getInteraction().getUser()));
 
 
@@ -99,8 +99,8 @@ public final class StatsCommand implements CommandHandler {
 			}
 
 			return StatisticsManager.getUserStats(
-					event.getInteraction().getGuildId().orElseThrow(),
-					user.getId())
+							event.getInteraction().getGuildId().orElseThrow(),
+							user.getId())
 					.defaultIfEmpty(new UserStatistics())
 					.flatMap(statistic -> {
 						EmbedCreateSpec embedSpec = EmbedCreateSpec
@@ -117,7 +117,7 @@ public final class StatsCommand implements CommandHandler {
 								.timestamp(Instant.now())
 								.build();
 
-						return event.acknowledge().then(
+						return event.deferReply().then(
 								event.getInteractionResponse().createFollowupMessage(
 										MultipartRequest.ofRequest(WebhookExecuteRequest
 												.builder()
@@ -141,27 +141,29 @@ public final class StatsCommand implements CommandHandler {
 								.collect(Collectors.toList());
 
 						String lbString = "Nobody has won yet!";
-						String first = "\n";
-						String second = "\n";
-						String third = "\n";
+						String first = "";
+						String second = "";
+						String third = "";
 
 						// tf is this
 						// send help
-						for (Leaderboard lb : realBoard) {
-							switch (lb.getRank()) {
-								case 1:
-									first = String.format("🥇 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
-									break;
-								case 2:
-									second = String.format("🥈 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
-									break;
-								case 3:
-									third = String.format("🥉 - <@%s> - %s wins", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
-									break;
+						if(!realBoard.isEmpty()) {
+							for (Leaderboard lb : realBoard) {
+								switch (lb.getRank()) {
+									case 1:
+										first = String.format("🥇 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+										break;
+									case 2:
+										second = String.format("🥈 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+										break;
+									case 3:
+										third = String.format("🥉 - <@%s> - %s wins", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+										break;
+								}
 							}
-						}
 
-						lbString = first + second + third;
+							lbString = first + second + third;
+						}
 
 						EmbedCreateSpec embedSpec = EmbedCreateSpec
 								.builder()
@@ -174,7 +176,7 @@ public final class StatsCommand implements CommandHandler {
 								.timestamp(Instant.now())
 								.build();
 
-						return event.acknowledge().then(
+						return event.deferReply().then(
 								event.getInteractionResponse().createFollowupMessage(
 										MultipartRequest.ofRequest(WebhookExecuteRequest
 												.builder()
