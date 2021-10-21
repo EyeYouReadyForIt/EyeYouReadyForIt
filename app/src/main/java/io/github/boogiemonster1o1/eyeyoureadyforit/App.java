@@ -1,7 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit;
 
 import java.text.NumberFormat;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -9,7 +8,6 @@ import java.util.stream.Collectors;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
-import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
@@ -33,7 +31,6 @@ public class App {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
 	public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
 	private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
-	private static Set<Snowflake> currentGuilds = new HashSet<>();
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting Eye You Ready For It");
@@ -57,7 +54,18 @@ public class App {
 								LOGGER.info("Session ID: {}", event.getSessionId());
 								LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
 
-								currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
+								Set<Snowflake> currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
+
+								client.getEventDispatcher()
+										.on(GuildCreateEvent.class)
+										.filter(eventI -> !currentGuilds.contains(eventI.getGuild().getId()))
+										.subscribe(eventI -> {
+											LOGGER.info("New Guild {} added", eventI.getGuild().getId());
+											currentGuilds.add(eventI.getGuild().getId());
+											StatisticsManager.initDb(eventI.getGuild().getId())
+													.then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", eventI.getGuild().getId())))
+													.subscribe();
+										});
 							});
 
 					if (args.length >= 1 && args[0].equals("reg")) {
@@ -67,22 +75,13 @@ public class App {
 					}
 
 					client.getEventDispatcher()
-							.on(GuildCreateEvent.class)
-							.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
-							.subscribe(event -> {
-								LOGGER.info("New Guild {} added", event.getGuild().getId());
-								StatisticsManager.initDb(event.getGuild().getId())
-										.then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getGuild().getId())))
-										.subscribe();
-							});
-
-					client.getEventDispatcher()
 							.on(MessageDeleteEvent.class)
 							.filter(event -> event
 									.getMessage()
 									.flatMap(Message::getAuthor)
 									.map(User::getId)
-									.equals(client.getSelfId())
+									.map(e -> client.getSelfId().equals(e))
+									.orElse(Boolean.FALSE)
 							)
 							.filter(event -> event.getGuildId().isPresent())
 							.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
