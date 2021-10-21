@@ -3,6 +3,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -18,6 +19,7 @@ import discord4j.rest.util.MultipartRequest;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandler;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandHandlerType;
+import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.GuildStatistics;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.Leaderboard;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.stats.UserStatistics;
@@ -26,7 +28,7 @@ import reactor.core.publisher.Mono;
 
 public final class StatsCommand implements CommandHandler {
 	@Override
-	public Mono<?> handle(ChatInputInteractionEvent event) {
+	public Mono<?> handle(ChatInputInteractionEvent event, ChannelSpecificData csd, GatewayDiscordClient client) {
 		if (event.getOption("server").isPresent()) {
 			return handleGuildStatsCommand(event);
 		}

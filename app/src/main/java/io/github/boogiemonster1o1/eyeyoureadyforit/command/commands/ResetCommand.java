@@ -2,6 +2,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -18,11 +19,7 @@ import reactor.core.publisher.Mono;
 
 public final class ResetCommand implements CommandHandler {
 	@Override
-	public Mono<?> handle(ChatInputInteractionEvent event) {
-		ChannelSpecificData csd = GuildSpecificData
-				.get(event.getInteraction().getGuildId().orElseThrow())
-				.getChannel(event.getInteraction().getChannelId());
-
+	public Mono<?> handle(ChatInputInteractionEvent event, ChannelSpecificData csd, GatewayDiscordClient client) {
 		if (csd.isTourney()) {
 			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**You can not use this command in a tourney**"));
 		}

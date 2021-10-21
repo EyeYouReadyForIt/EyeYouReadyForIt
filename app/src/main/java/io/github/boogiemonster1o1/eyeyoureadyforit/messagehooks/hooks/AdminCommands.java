@@ -1,6 +1,7 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.hooks;
 
 import java.util.function.Predicate;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
@@ -10,14 +11,14 @@ import reactor.core.publisher.Mono;
 
 public final class AdminCommands implements MessageHook {
 	@Override
-	public void handle(MessageCreateEvent event) {
+	public void handle(MessageCreateEvent event, GatewayDiscordClient client) {
 		switch (event.getMessage().getContent().split("\\s+")[1]) {
 			case "shutdown":
 				event
 						.getMessage()
 						.getChannel()
 						.flatMap(channel -> channel.createMessage("**Shutting down...**"))
-						.then(App.getClient().logout())
+						.then(client.logout())
 						.subscribe();
 				break;
 

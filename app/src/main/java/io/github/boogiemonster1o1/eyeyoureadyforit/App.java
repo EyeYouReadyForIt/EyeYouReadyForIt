@@ -63,7 +63,7 @@ public class App {
 							});
 
 					if (args.length >= 1 && args[0].equals("reg")) {
-						CommandManager.registerSlashCommands()
+						CommandManager.registerSlashCommands(client)
 								.then(Mono.fromRunnable(() -> LOGGER.info("Registered commands!")))
 								.subscribe();
 					}
@@ -90,9 +90,9 @@ public class App {
 							.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
 							.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).reset());
 
-					CommandManager.init();
-					ButtonManager.init();
-					MessageHookManager.init();
+					CommandManager.init(client);
+					ButtonManager.init(client);
+					MessageHookManager.init(client);
 					client.onDisconnect().block();
 				});
 	}

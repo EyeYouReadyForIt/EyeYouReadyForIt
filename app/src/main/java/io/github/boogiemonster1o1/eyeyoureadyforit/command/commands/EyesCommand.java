@@ -2,6 +2,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
 import java.time.Instant;
 import discord4j.common.util.Snowflake;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -20,11 +21,7 @@ import reactor.core.publisher.Mono;
 
 public final class EyesCommand implements CommandHandler {
 	@Override
-	public Mono<?> handle(ChatInputInteractionEvent event) {
-		ChannelSpecificData csd = GuildSpecificData
-				.get(event.getInteraction().getGuildId().orElseThrow())
-				.getChannel(event.getInteraction().getChannelId());
-
+	public Mono<?> handle(ChatInputInteractionEvent event, ChannelSpecificData csd, GatewayDiscordClient client) {
 		if (csd.getMessageId() != null && csd.getCurrent() != null) {
 			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**There is already a context**"));
 		}
