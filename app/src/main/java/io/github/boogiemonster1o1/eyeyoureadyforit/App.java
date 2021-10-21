@@ -33,7 +33,6 @@ public class App {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
 	public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
 	private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
-	private static GatewayDiscordClient CLIENT;
 	private static Set<Snowflake> currentGuilds = new HashSet<>();
 
 	public static void main(String[] args) {
@@ -49,7 +48,6 @@ public class App {
 					t.printStackTrace();
 				})
 				.subscribe(client -> {
-					CLIENT = client;
 					client.getEventDispatcher()
 							.on(ReadyEvent.class)
 							.subscribe(event -> {
@@ -95,9 +93,5 @@ public class App {
 					MessageHookManager.init(client);
 					client.onDisconnect().block();
 				});
-	}
-
-	public static GatewayDiscordClient getClient() {
-		return CLIENT;
 	}
 }
