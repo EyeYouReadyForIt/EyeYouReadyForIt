@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
 public class App {
-
 	// eyes™
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Eye You Ready For It");
@@ -42,57 +41,60 @@ public class App {
 		LOGGER.info("Using token {}", TOKEN);
 		EyeEntry.reload();
 		DiscordClient discordClient = DiscordClientBuilder.create(TOKEN).build();
-		CLIENT = discordClient
-				.gateway()
+		discordClient.gateway()
 				.setEnabledIntents(IntentSet.of(Intent.GUILDS, Intent.GUILD_MESSAGES))
 				.login()
-				.blockOptional()
-				.orElseThrow();
+				.onErrorContinue((t, o) -> {
+					LOGGER.error("Unable to login");
+					t.printStackTrace();
+				})
+				.subscribe(client -> {
+					CLIENT = client;
+					client.getEventDispatcher()
+							.on(ReadyEvent.class)
+							.subscribe(event -> {
+								LOGGER.info("Logged in as [{}#{}]", event.getData().user().username(), event.getData().user().discriminator());
+								LOGGER.info("Guilds: {}", event.getGuilds().size());
+								LOGGER.info("Gateway version: {}", event.getGatewayVersion());
+								LOGGER.info("Session ID: {}", event.getSessionId());
+								LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
 
-		CLIENT.getEventDispatcher()
-				.on(ReadyEvent.class)
-				.subscribe(event -> {
-					LOGGER.info("Logged in as [{}#{}]", event.getData().user().username(), event.getData().user().discriminator());
-					LOGGER.info("Guilds: {}", event.getGuilds().size());
-					LOGGER.info("Gateway version: {}", event.getGatewayVersion());
-					LOGGER.info("Session ID: {}", event.getSessionId());
-					LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
+								currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
+							});
 
-					currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
+					if (args.length >= 1 && args[0].equals("reg")) {
+						CommandManager.registerSlashCommands()
+								.then(Mono.fromRunnable(() -> LOGGER.info("Registered commands!")))
+								.subscribe();
+					}
+
+					client.getEventDispatcher()
+							.on(GuildCreateEvent.class)
+							.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
+							.subscribe(event -> {
+								LOGGER.info("New Guild {} added", event.getGuild().getId());
+								StatisticsManager.initDb(event.getGuild().getId())
+										.then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getGuild().getId())))
+										.subscribe();
+							});
+
+					client.getEventDispatcher()
+							.on(MessageDeleteEvent.class)
+							.filter(event -> event
+									.getMessage()
+									.flatMap(Message::getAuthor)
+									.map(User::getId)
+									.equals(client.getSelfId())
+							)
+							.filter(event -> event.getGuildId().isPresent())
+							.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
+							.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).reset());
+
+					CommandManager.init();
+					ButtonManager.init();
+					MessageHookManager.init();
+					client.onDisconnect().block();
 				});
-
-		if (args.length >= 1 && args[0].equals("reg")) {
-			CommandManager.registerSlashCommands()
-					.then(Mono.fromRunnable(() -> LOGGER.info("Registered commands!")))
-					.subscribe();
-		}
-
-		CLIENT.getEventDispatcher()
-				.on(GuildCreateEvent.class)
-				.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
-				.subscribe(event -> {
-					LOGGER.info("New Guild {} added", event.getGuild().getId());
-					StatisticsManager.initDb(event.getGuild().getId())
-							.then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getGuild().getId())))
-							.subscribe();
-				});
-
-		CLIENT.getEventDispatcher()
-				.on(MessageDeleteEvent.class)
-				.filter(event -> event
-						.getMessage()
-						.flatMap(Message::getAuthor)
-						.map(User::getId)
-						.equals(getClient().getSelfId())
-				)
-				.filter(event -> event.getGuildId().isPresent())
-				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))
-				.subscribe(event -> GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).reset());
-
-		CommandManager.init();
-		ButtonManager.init();
-		MessageHookManager.init();
-		CLIENT.onDisconnect().block();
 	}
 
 	public static GatewayDiscordClient getClient() {

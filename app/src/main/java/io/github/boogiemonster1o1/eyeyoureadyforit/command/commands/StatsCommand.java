@@ -147,7 +147,7 @@ public final class StatsCommand implements CommandHandler {
 
 						// tf is this
 						// send help
-						if(!realBoard.isEmpty()) {
+						if (!realBoard.isEmpty()) {
 							for (Leaderboard lb : realBoard) {
 								switch (lb.getRank()) {
 									case 1:
