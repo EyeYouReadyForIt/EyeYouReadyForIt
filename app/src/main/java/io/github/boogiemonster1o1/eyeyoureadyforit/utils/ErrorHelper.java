@@ -9,7 +9,7 @@ import discord4j.rest.util.Color;
 
 public final class ErrorHelper {
 	public static void sendErrorEmbed(Throwable exception, MessageCreateEvent event) {
-		if(event == null) {
+		if (event == null) {
 			return;
 		}
 
@@ -19,7 +19,7 @@ public final class ErrorHelper {
 	}
 
 	public static void sendErrorEmbed(Throwable exception, InteractionCreateEvent event) {
-		if(event == null) {
+		if (event == null) {
 			return;
 		}
 

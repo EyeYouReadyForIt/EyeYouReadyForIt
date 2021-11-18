@@ -52,6 +52,11 @@ public class App {
 		CLIENT.getEventDispatcher()
 				.on(ReadyEvent.class)
 				.subscribe(event -> {
+					Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+						System.out.println("Shutting down...");
+						CLIENT.logout().block();
+					}));
+
 					LOGGER.info("Logged in as [{}#{}]", event.getData().user().username(), event.getData().user().discriminator());
 					LOGGER.info("Guilds: {}", event.getGuilds().size());
 					LOGGER.info("Gateway version: {}", event.getGatewayVersion());
@@ -72,6 +77,7 @@ public class App {
 				.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
 				.subscribe(event -> {
 					LOGGER.info("New Guild {} added", event.getGuild().getId());
+					currentGuilds.add(event.getGuild().getId());
 					StatisticsManager.initDb(event.getGuild().getId())
 							.then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getGuild().getId())))
 							.subscribe();
@@ -83,7 +89,7 @@ public class App {
 						.getMessage()
 						.flatMap(Message::getAuthor)
 						.map(User::getId)
-						.equals(getClient().getSelfId())
+						.equals(Optional.of(getClient().getSelfId()))
 				)
 				.filter(event -> event.getGuildId().isPresent())
 				.filter(event -> event.getMessageId().equals(GuildSpecificData.get(event.getGuildId().orElseThrow()).getChannel(event.getChannelId()).getMessageId()))

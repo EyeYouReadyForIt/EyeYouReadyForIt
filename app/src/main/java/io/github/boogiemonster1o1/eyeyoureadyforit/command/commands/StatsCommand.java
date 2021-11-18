@@ -82,7 +82,7 @@ public final class StatsCommand implements CommandHandler {
 	private static Mono<?> handleUserStatsCommand(ChatInputInteractionEvent event) {
 		// looking at this makes me want to cry
 
-		Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").get().getOption("user")
+		Mono<User> userMono = Mono.justOrEmpty(event.getOption("users").orElseThrow().getOption("user")
 						.flatMap(ApplicationCommandInteractionOption::getValue)
 				).flatMap(ApplicationCommandInteractionOptionValue::asUser)
 				.switchIfEmpty(Mono.just(event.getInteraction().getUser()));
@@ -133,59 +133,57 @@ public final class StatsCommand implements CommandHandler {
 	private static Mono<?> handleGuildStatsCommand(ChatInputInteractionEvent event) {
 		return event.getInteraction().getGuild().flatMap(guild -> StatisticsManager.getGuildStats(guild.getId())
 				.defaultIfEmpty(new GuildStatistics())
-				.flatMap(statistic -> {
-					return StatisticsManager.getLeaderboard(guild.getId()).flatMap(board -> {
-						ArrayList<Leaderboard> realBoard = (ArrayList<Leaderboard>) board
-								.stream()
-								.filter(e -> e.getId().asLong() != 0 && e.getGamesWon() != 0)
-								.collect(Collectors.toList());
+				.flatMap(statistic -> StatisticsManager.getLeaderboard(guild.getId()).flatMap(board -> {
+					ArrayList<Leaderboard> realBoard = (ArrayList<Leaderboard>) board
+							.stream()
+							.filter(e -> e.getId().asLong() != 0 && e.getGamesWon() != 0)
+							.collect(Collectors.toList());
 
-						String lbString = "Nobody has won yet!";
-						String first = "";
-						String second = "";
-						String third = "";
+					String lbString = "Nobody has won yet!";
+					String first = "";
+					String second = "";
+					String third = "";
 
-						// tf is this
-						// send help
-						if(!realBoard.isEmpty()) {
-							for (Leaderboard lb : realBoard) {
-								switch (lb.getRank()) {
-									case 1:
-										first = String.format("🥇 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
-										break;
-									case 2:
-										second = String.format("🥈 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
-										break;
-									case 3:
-										third = String.format("🥉 - <@%s> - %s wins", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
-										break;
-								}
+					// tf is this
+					// send help
+					if (!realBoard.isEmpty()) {
+						for (Leaderboard lb : realBoard) {
+							switch (lb.getRank()) {
+								case 1:
+									first = String.format("🥇 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+									break;
+								case 2:
+									second = String.format("🥈 - <@%s> - %s wins\n", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+									break;
+								case 3:
+									third = String.format("🥉 - <@%s> - %s wins", lb.getId().asString(), App.FORMATTER.format(lb.getGamesWon()));
+									break;
 							}
-
-							lbString = first + second + third;
 						}
 
-						EmbedCreateSpec embedSpec = EmbedCreateSpec
-								.builder()
-								.title(String.format("Server Statistics: %s", guild.getName()))
-								.color(Color.of(0, 93, 186))
-								.addField("Tourneys Played", App.FORMATTER.format(statistic.getGames()), true)
-								.addField("Eyes Missed", App.FORMATTER.format(statistic.getMissed()), true)
-								.addField("Top 3 Players", lbString, false)
-								.footer(String.format("Guild ID: %s", guild.getId().asString()), null)
-								.timestamp(Instant.now())
-								.build();
+						lbString = first + second + third;
+					}
 
-						return event.deferReply().then(
-								event.getInteractionResponse().createFollowupMessage(
-										MultipartRequest.ofRequest(WebhookExecuteRequest
-												.builder()
-												.addEmbed(embedSpec.asRequest())
-												.build()
-										)
-								)
-						);
-					});
-				}));
+					EmbedCreateSpec embedSpec = EmbedCreateSpec
+							.builder()
+							.title(String.format("Server Statistics: %s", guild.getName()))
+							.color(Color.of(0, 93, 186))
+							.addField("Tourneys Played", App.FORMATTER.format(statistic.getGames()), true)
+							.addField("Eyes Missed", App.FORMATTER.format(statistic.getMissed()), true)
+							.addField("Top 3 Players", lbString, false)
+							.footer(String.format("Guild ID: %s", guild.getId().asString()), null)
+							.timestamp(Instant.now())
+							.build();
+
+					return event.deferReply().then(
+							event.getInteractionResponse().createFollowupMessage(
+									MultipartRequest.ofRequest(WebhookExecuteRequest
+											.builder()
+											.addEmbed(embedSpec.asRequest())
+											.build()
+									)
+							)
+					);
+				})));
 	}
 }
