@@ -1,6 +1,5 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.command.commands;
 
-import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -16,7 +15,11 @@ import reactor.core.publisher.Mono;
 
 public final class HintCommand implements CommandHandler {
 	@Override
-	public Mono<?> handle(ChatInputInteractionEvent event, ChannelSpecificData csd, GatewayDiscordClient client) {
+	public Mono<?> handle(ChatInputInteractionEvent event) {
+		ChannelSpecificData csd = GuildSpecificData
+				.get(event.getInteraction().getGuildId().orElseThrow())
+				.getChannel(event.getInteraction().getChannelId());
+
 		if (csd.isTourney() && csd.getTourneyData().shouldDisableHints()) {
 			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**Hints are disabled for this tourney**"));
 		}

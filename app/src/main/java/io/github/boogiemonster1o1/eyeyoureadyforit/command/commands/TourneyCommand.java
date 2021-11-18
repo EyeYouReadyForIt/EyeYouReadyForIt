@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
@@ -36,7 +35,11 @@ import reactor.core.scheduler.Schedulers;
 
 public final class TourneyCommand implements CommandHandler {
 	@Override
-	public Mono<?> handle(ChatInputInteractionEvent event, ChannelSpecificData csd, GatewayDiscordClient client) {
+	public Mono<?> handle(ChatInputInteractionEvent event) {
+		ChannelSpecificData csd = GuildSpecificData
+				.get(event.getInteraction().getGuildId().orElseThrow())
+				.getChannel(event.getInteraction().getChannelId());
+
 		if (csd.isTourney()) {
 			return event.deferReply().withEphemeral(Boolean.TRUE).then(event.getInteractionResponse().createFollowupMessage("**There is already a tourney**"));
 		}

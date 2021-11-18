@@ -2,11 +2,8 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.command;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.ChannelSpecificData;
-import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
 import io.github.boogiemonster1o1.eyeyoureadyforit.utils.ErrorHelper;
 import org.reactivestreams.Publisher;
 import org.reflections.Reflections;
@@ -16,7 +13,7 @@ public final class CommandManager {
 	private static final Map<String, CommandHandler> COMMANDS = new ConcurrentHashMap<>();
 	private static final Reflections reflections = new Reflections("io.github.boogiemonster1o1.eyeyoureadyforit.command.commands");
 
-	public static void init(GatewayDiscordClient client) {
+	public static void init() {
 		COMMANDS.clear();
 		reflections.getSubTypesOf(CommandHandler.class)
 				.forEach(aClass -> {
@@ -28,9 +25,10 @@ public final class CommandManager {
 					}
 				});
 
-		client.getEventDispatcher()
+		App.getClient()
+				.getEventDispatcher()
 				.on(ChatInputInteractionEvent.class)
-				.flatMap((ChatInputInteractionEvent event1) -> accept(event1, client))
+				.flatMap(CommandManager::accept)
 				.onErrorContinue((error, event) -> {
 					error.printStackTrace();
 					ErrorHelper.sendErrorEmbed(error, (ChatInputInteractionEvent) event);
@@ -38,7 +36,7 @@ public final class CommandManager {
 				.subscribe();
 	}
 
-	private static Publisher<?> accept(ChatInputInteractionEvent event, GatewayDiscordClient client) {
+	private static Publisher<?> accept(ChatInputInteractionEvent event) {
 		if (event.getInteraction().getGuildId().isEmpty()) {
 			return event.reply("You can only run this command in a guild");
 		}
@@ -49,21 +47,19 @@ public final class CommandManager {
 			return Mono.empty();
 		}
 
-		ChannelSpecificData csd = GuildSpecificData.get(event.getInteraction().getGuildId().get()).getChannel(event.getInteraction().getChannelId());
-
-		return commandHandler.handle(event, csd, client);
+		return commandHandler.handle(event);
 	}
 
-	public static Mono<?> registerSlashCommands(GatewayDiscordClient client) {
+	public static Mono<?> registerSlashCommands() {
 		App.LOGGER.info("REGISTERING COMMANDS YEE HAW");
 
 		for (CommandHandler handler : COMMANDS.values()) {
 			switch (handler.getType()) {
 				case GLOBAL_COMMAND:
-					client.getRestClient()
+					App.getClient().getRestClient()
 							.getApplicationService()
 							.createGlobalApplicationCommand(
-									client.getRestClient().getApplicationId().block(),
+									App.getClient().getRestClient().getApplicationId().block(),
 									handler.asRequest()
 							)
 							.doOnError(Throwable::printStackTrace)
@@ -72,10 +68,10 @@ public final class CommandManager {
 					break;
 
 				case ADMIN_COMMAND:
-					client.getRestClient()
+					App.getClient().getRestClient()
 							.getApplicationService()
 							.createGuildApplicationCommand(
-									client.getRestClient().getApplicationId().block(),
+									App.getClient().getRestClient().getApplicationId().block(),
 									859274373084479508L,
 									handler.asRequest()
 							)

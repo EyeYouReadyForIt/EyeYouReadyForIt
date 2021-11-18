@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.MessageReference;
 import discord4j.core.object.entity.User;
@@ -20,7 +19,7 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.MessageHook;
 
 public final class EyesAnswerHook implements MessageHook {
 	@Override
-	public void handle(MessageCreateEvent event, GatewayDiscordClient client) {
+	public void handle(MessageCreateEvent event) {
 		String content = event.getMessage().getContent().toLowerCase();
 		GuildSpecificData guildData = GuildSpecificData.get(event.getGuildId().orElseThrow());
 		ChannelSpecificData data = guildData.getChannel(event.getMessage().getChannelId());
