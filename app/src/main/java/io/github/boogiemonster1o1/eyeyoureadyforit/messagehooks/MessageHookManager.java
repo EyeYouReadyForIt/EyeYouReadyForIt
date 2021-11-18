@@ -2,6 +2,7 @@ package io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks;
 
 import java.util.HashSet;
 import java.util.Set;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import io.github.boogiemonster1o1.eyeyoureadyforit.App;
 import io.github.boogiemonster1o1.eyeyoureadyforit.utils.ErrorHelper;
@@ -13,7 +14,7 @@ public final class MessageHookManager {
 	private static final Set<MessageHook> MESSAGE_HOOKS = new HashSet<>();
 
 
-	public static void init() {
+	public static void init(GatewayDiscordClient client) {
 		MESSAGE_HOOKS.clear();
 		reflections.getSubTypesOf(MessageHook.class)
 				.forEach(aClass -> {
@@ -24,15 +25,14 @@ public final class MessageHookManager {
 					}
 				});
 
-		App.getClient()
-				.getEventDispatcher()
+		client.getEventDispatcher()
 				.on(MessageCreateEvent.class)
 				.filterWhen(event -> event.getClient().getSelf().flatMap(self ->
 						Mono.just(event.getGuildId().isPresent()
 								&& event.getMember().isPresent()
 								&& event.getMember().map(member -> !member.isBot()).orElse(false)
 								&& !event.getMessage().getAuthor().get().equals(self))))
-				.flatMap(MessageHookManager::accept)
+				.flatMap((MessageCreateEvent event1) -> accept(event1, client))
 				.onErrorContinue((error, event) -> {
 					error.printStackTrace();
 					ErrorHelper.sendErrorEmbed(error, (MessageCreateEvent) event);
@@ -40,10 +40,10 @@ public final class MessageHookManager {
 				.subscribe();
 	}
 
-	private static Mono<?> accept(MessageCreateEvent event) {
+	private static Mono<?> accept(MessageCreateEvent event, GatewayDiscordClient client) {
 		for (MessageHook hook : MESSAGE_HOOKS) {
 			if (hook.getCondition().test(event)) {
-				hook.handle(event);
+				hook.handle(event, client);
 			}
 		}
 

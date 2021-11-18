@@ -1,5 +1,6 @@
 package io.github.boogiemonster1o1.eyeyoureadyforit.button.buttons;
 
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -16,7 +17,7 @@ public final class HintButton implements ButtonHandler {
 	}
 
 	@Override
-	public Mono<?> interact(ButtonInteractionEvent event, ChannelSpecificData csd) {
+	public Mono<?> interact(ButtonInteractionEvent event, ChannelSpecificData csd, GatewayDiscordClient client) {
 		if (csd.isTourney()) {
 			csd.getTourneyStatisticsTracker().addHint(event.getInteraction().getUser().getId());
 		}
