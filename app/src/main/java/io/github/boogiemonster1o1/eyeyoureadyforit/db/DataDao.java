@@ -33,6 +33,11 @@ public interface DataDao {
 	@RegisterRowMapper(GuildStatistics.class)
 	GuildStatistics getGuildStats(@Define("table") String guildId);
 
+	@SqlQuery("SELECT TRIM(LEADING 'data_' FROM TABLE_NAME) FROM information_schema.tables \n" +
+			"WHERE table_schema LIKE 'guild_data' \n" +
+			"AND TABLE_NAME LIKE 'data\\_%'")
+	ArrayList<String> getCurrentGuilds();
+
 	@SqlQuery(
 			"SELECT id, " +
 					"won," +

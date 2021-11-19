@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -21,6 +19,8 @@ import io.github.boogiemonster1o1.eyeyoureadyforit.button.ButtonManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.command.CommandManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.EyeEntry;
 import io.github.boogiemonster1o1.eyeyoureadyforit.data.GuildSpecificData;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataDao;
+import io.github.boogiemonster1o1.eyeyoureadyforit.db.DataSource;
 import io.github.boogiemonster1o1.eyeyoureadyforit.db.stats.StatisticsManager;
 import io.github.boogiemonster1o1.eyeyoureadyforit.messagehooks.MessageHookManager;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class App {
 	public static final NumberFormat FORMATTER = NumberFormat.getInstance(Locale.US);
 	private static final String TOKEN = Optional.ofNullable(System.getenv("EYRFI_TOKEN")).orElseThrow(() -> new RuntimeException("Missing token"));
 	private static GatewayDiscordClient CLIENT;
-	private static Set<Snowflake> currentGuilds = new HashSet<>();
+	private static Set<String> currentGuilds = new HashSet<>();
 
 	public static void main(String[] args) {
 		LOGGER.info("Starting Eye You Ready For It");
@@ -48,6 +48,15 @@ public class App {
 				.login()
 				.blockOptional()
 				.orElseThrow();
+
+		try {
+			currentGuilds.addAll(DataSource.get().withExtension(DataDao.class, DataDao::getCurrentGuilds));
+			for(String a : currentGuilds) {
+				System.out.println(a);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		CLIENT.getEventDispatcher()
 				.on(ReadyEvent.class)
@@ -62,8 +71,6 @@ public class App {
 					LOGGER.info("Gateway version: {}", event.getGatewayVersion());
 					LOGGER.info("Session ID: {}", event.getSessionId());
 					LOGGER.info("Shard Info: Index {}, Count {}", event.getShardInfo().getIndex(), event.getShardInfo().getCount());
-
-					currentGuilds = event.getGuilds().stream().map(ReadyEvent.Guild::getId).collect(Collectors.toSet());
 				});
 
 		if (args.length >= 1 && args[0].equals("reg")) {
@@ -74,10 +81,10 @@ public class App {
 
 		CLIENT.getEventDispatcher()
 				.on(GuildCreateEvent.class)
-				.filter(event -> !currentGuilds.contains(event.getGuild().getId()))
+				.filter(event -> !currentGuilds.contains(event.getGuild().getId().asString()))
 				.subscribe(event -> {
-					LOGGER.info("New Guild {} added", event.getGuild().getId());
-					currentGuilds.add(event.getGuild().getId());
+					LOGGER.info("New Guild {} added", event.getGuild().getId().asString());
+					currentGuilds.add(event.getGuild().getId().asString());
 					StatisticsManager.initDb(event.getGuild().getId())
 							.then(Mono.fromRunnable(() -> LOGGER.info("Guild Data Table created for {}", event.getGuild().getId())))
 							.subscribe();
